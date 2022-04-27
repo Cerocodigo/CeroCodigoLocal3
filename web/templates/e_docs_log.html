@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#333">
+    <title>Cero Código</title>
+    <meta name="description" content="Material Style Theme">
+    <link rel="shortcut icon" href="http://nlubkov.com/web2/versiones/icono_cero_nego.png">
+    <link rel="stylesheet" href="/static/icon.css">
+    <link rel="stylesheet" href="/static/preload.min.css" />
+    <link rel="stylesheet" href="/static/plugins.min.css" />
+    <link rel="stylesheet" href="/static/style.light-blue-500.min.css" />
+  </head>
+  <body>
+ 
+    <div class="bg-full-page bg-primary back-fixed">
+      <div class="mw-500 absolute-center">
+        <div class="card animated zoomInDown animation-delay-5">
+          <div class="card-block">
+            <h4 class="color-primary" style="    font-family: sans-serif;">Documentos Electronicos</h4>
+
+              <img class="site-footer-logo img-responsive"  style="visibility: visible;" src="/static/assets/img/logo_negro.png" data-sr="bottom">
+
+
+            <form method="post">
+                          {% csrf_token %}
+              <fieldset>
+                <div class="form-group label-floating">
+                  <div class="input-group">
+                    <span class="input-group-addon">
+                      <i class="zmdi zmdi-account"></i>
+                    </span>
+                    <label class="control-label" for="ms-form-user">Usuario</label>
+                     <input type="hidden" id="ms-form-user"  name="Tipo" class="form-control" value="Receptor">
+                    <input type="text" id="ms-form-user"  name="Ruc" class="form-control"> </div>
+                </div>
+                <div class="form-group label-floating">
+                  <div class="input-group">
+                    <span class="input-group-addon">
+                      <i class="zmdi zmdi-lock"></i>
+                    </span>
+                    <label class="control-label" for="ms-form-pass">Clave</label>
+                    <input type="password" id="ms-form-pass" name="password" class="form-control"> </div>
+                </div>
+                <div class="row ">
+                   <h3 class="ms-footbar-title text-center mb-2" style="COLOR: RED;">{{error_message_receptor}}</h3>
+       
+                    
+                    
+                    <button class="btn btn-primary btn-lg btn-block">Ingresar
+                      <i class="zmdi zmdi-long-arrow-right no-mr ml-1"></i>
+                    </button>
+                    
+                    
+                 
+                    </fieldset>
+            </form>
+            
+           
+          </div>
+        </div>
+        <div class="text-center animated fadeInUp animation-delay-7">
+          <a href="http://www.cerocodigo.com" class="btn btn-white">
+            <i class="zmdi zmdi-home"></i>Inicio</a>
+          
+        </div>
+      </div>
+    </div>
+    <script src="/static/plugins.min.js"></script>
+    <script src="/static/app.min.js"></script>
+  </body>
+</html>

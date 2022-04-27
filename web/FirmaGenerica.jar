@@ -1,0 +1,448 @@
+
+public abstract class GenericXMLSignature {
+
+
+    //Path de la firma electronica
+    private String pathSignature;
+    //calve de la firma electronica
+    private String passSignature;
+
+    /**
+    *
+    * Ejecución del ejemplo. La ejecución consistirá en la firma de los datos
+    * creados por el método abstracto createDataToSign mediante el
+    * certificado declarado en la constante PKCS12_FILE. El
+    * resultado del proceso de firma será almacenado en un fichero XML en el
+    * directorio correspondiente a la constante OUTPUT_DIRECTORY
+    * del usuario bajo el nombre devuelto por el método abstracto
+    * getSignFileName
+    *
+
+    */
+
+    /*Metodos Getters y Setters (Propiedades)*/
+    public String getPathSignature() {
+        return pathSignature;
+    }
+
+    public void setPathSignature(String pathSignature) {
+        this.pathSignature = pathSignature;
+    }
+
+    public String getPassSignature() {
+        return passSignature;
+    }
+
+    public void setPassSignature(String passSignature) {
+        this.passSignature = passSignature;
+    }
+
+    protected void execute() {
+
+        // Obtencion del gestor de claves
+        KeyStore keyStore = getKeyStore();
+
+        if(keyStore==null){
+            System.err.println("No se pudo obtener almacen de firma.");
+            return;
+        }
+        String alias=getAlias(keyStore);
+
+        // Obtencion del certificado para firmar. Utilizaremos el primer
+        // certificado del almacen.          
+        X509Certificate certificate = null;
+        try {
+            certificate = (X509Certificate)keyStore.getCertificate(alias);
+            if (certificate == null) {
+                System.err.println("No existe ningún certificado para firmar.");
+                return;
+            }
+        } catch (KeyStoreException e1) {
+            e1.printStackTrace();
+        }
+
+        // Obtención de la clave privada asociada al certificado
+        PrivateKey privateKey = null;
+        KeyStore tmpKs = keyStore;
+        try {
+            privateKey = (PrivateKey) tmpKs.getKey(alias, this.passSignature.toCharArray());
+        } catch (UnrecoverableKeyException e) {
+            System.err.println("No existe clave privada para firmar.");
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            System.err.println("No existe clave privada para firmar.");
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("No existe clave privada para firmar.");
+            e.printStackTrace();
+        }
+
+         // Obtención del provider encargado de las labores criptográficas
+         Provider provider = keyStore.getProvider();
+
+         /*
+          * Creación del objeto que contiene tanto los datos a firmar como la
+          * configuración del tipo de firma
+          */
+         DataToSign dataToSign = createDataToSign();
+
+         /*
+          * Creación del objeto encargado de realizar la firma
+          */
+         FirmaXML firma = new FirmaXML();
+
+         // Firmamos el documento
+         Document docSigned = null;
+         try {
+             Object[] res = firma.signFile(certificate, dataToSign, privateKey, provider);
+             docSigned = (Document) res[0];
+         } catch (Exception ex) {
+             System.err.println("Error realizando la firma");
+             ex.printStackTrace();
+             return;
+         }
+
+         // Guardamos la firma a un fichero en el home del usuario
+         String filePath = getPathOut() + File.separatorChar + getSignatureFileName();
+         System.out.println("Firma salvada en en: " + filePath);
+
+         saveDocumenteDisk(docSigned, filePath);
+    }
+
+     /**
+      *
+      * Crea el objeto DataToSign que contiene toda la información de la firma
+      * que se desea realizar. Todas las implementaciones deberán proporcionar
+      * una implementación de este método
+      *
+
+      *
+     * @return El objeto DataToSign que contiene toda la información de la firma
+      *         a realizar
+      */
+    protected abstract DataToSign createDataToSign();
+
+
+    protected abstract String getSignatureFileName();
+
+    protected abstract String getPathOut();
+
+
+
+     protected Document getDocument(String resource) {
+         Document doc = null;
+         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+         dbf.setNamespaceAware(true);
+         File file = new File(resource);
+         try {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+
+            doc=db.parse(file);
+         } catch (ParserConfigurationException ex) {
+             System.err.println("Error al parsear el documento");
+             ex.printStackTrace();
+             System.exit(-1);
+         } catch (SAXException ex) {
+             System.err.println("Error al parsear el documento");
+             ex.printStackTrace();
+             System.exit(-1);
+         } catch (IOException ex) {
+             System.err.println("Error al parsear el documento");
+             ex.printStackTrace();
+             System.exit(-1);
+         } catch (IllegalArgumentException ex) {
+            System.err.println("Error al parsear el documento");
+             ex.printStackTrace();
+            System.exit(-1);
+         }
+         return doc;
+     }
+
+
+     private KeyStore getKeyStore()
+     {
+         KeyStore ks = null;
+        try {
+            ks = KeyStore.getInstance("PKCS12");
+            ks.load(new FileInputStream(pathSignature), passSignature.toCharArray());
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+         return ks;
+     }
+
+
+
+     private static String getAlias(KeyStore keyStore)
+     {
+         String alias = null;
+         Enumeration nombres;
+           try {
+               nombres = keyStore.aliases();
+
+               while(nombres.hasMoreElements())
+               {
+                   String tmpAlias = (String)nombres.nextElement();
+                   if(keyStore.isKeyEntry(tmpAlias))
+                   alias=tmpAlias;
+               }
+           }
+           catch (KeyStoreException e) {
+               e.printStackTrace();
+           }
+           return alias;
+     }
+
+
+
+
+
+
+
+ public static void saveDocumenteDisk(Document document,String pathXml)
+     {
+         try {
+                 DOMSource source = new DOMSource(document);
+                 StreamResult result = new StreamResult(new File(pathXml));
+
+                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                 Transformer transformer;
+                 transformer = transformerFactory.newTransformer();
+                 transformer.transform(source, result);
+         } catch (TransformerConfigurationException e) {
+                 // TODO Auto-generated catch block
+                 e.printStackTrace();
+         } catch (TransformerException e) {
+                 // TODO Auto-generated catch block
+                 e.printStackTrace();
+         }
+     }
+}
+
+
+////Esta es la clase que extiende de Generic.
+public class XAdESBESSignature extends GenericXMLSignature{
+
+
+
+        private static String nameFile;
+        private static String pathFile;
+        /**
+        *
+        * Recurso a firmar
+        *
+
+        */
+        private String fileToSign;
+
+        /**
+        *
+        * Fichero donde se desea guardar la firma
+        *
+
+        */
+        public XAdESBESSignature(String fileToSign) {
+            super();
+            this.fileToSign = fileToSign;
+        }
+
+        /**
+           *
+           * Punto de entrada al programa
+           *
+
+           *
+           * @param args
+           *            Argumentos del programa
+           */
+
+
+        public static void firmar(String xmlPath,String pathSignature,String passSignature,String pathOut,String nameFileOut)
+        {           
+              //Document document=UtilApplication.convertStringToDocument(xml);
+
+              //String pathXml=UtilApplication.getTempPath()+"\\"+UUID.randomUUID().toString()+".xml";
+
+              //UtilApplication.saveDocumenteDisk(document, pathXml);
+
+
+
+              XAdESBESSignature signature = new XAdESBESSignature(xmlPath);
+              signature.setPassSignature(passSignature);
+              signature.setPathSignature(pathSignature);
+              pathFile=pathOut;
+              nameFile=nameFileOut;
+
+              signature.execute();
+          }
+
+
+          @Override
+          protected DataToSign createDataToSign() {
+
+              DataToSign datosAFirmar = new DataToSign();
+
+              datosAFirmar.setXadesFormat(es.mityc.javasign.EnumFormatoFirma.XAdES_BES);
+
+              datosAFirmar.setEsquema(XAdESSchemas.XAdES_132);
+              datosAFirmar.setXMLEncoding("UTF-8");
+              datosAFirmar.setEnveloped(true);
+              datosAFirmar.addObject(new ObjectToSign(new InternObjectToSign("comprobante"), "contenido comprobante", null, "text/xml", null));
+              datosAFirmar.setParentSignNode("comprobante");
+
+              Document docToSign = getDocument(fileToSign);
+              datosAFirmar.setDocument(docToSign);
+
+              return datosAFirmar;
+          }
+
+
+        @Override
+        protected String getSignatureFileName() {
+            return XAdESBESSignature.nameFile;
+        }
+
+        @Override
+        protected String getPathOut() {
+            return XAdESBESSignature.pathFile;
+        }
+
+}
+
+//Como usar dicha clase
+
+XAdESBESSignature.firmar(String xmlPath,String pathFirma,String clavefirma,String directoriosalida, String nombreArchivoSalida);
+
+//Hasta aqui la firma.
+
+Los jars de referencias y necesarios son:
+bcmail-jdk16-1.45.jar
+bcprov-jdk16-1.45.jar
+bctsp-jdk16-1.45.jar
+commons-codec-1.8.jar
+commons-httpclient-3.0.1.jar
+commons-lang-2.4.jar
+commons-logging-1.1.3.jar
+DNIeJCAProvider-1.4.jar
+iaikPkcs11Wrapper-1.1.7.jar
+jss-4.2.5.jar
+MITyCLibAPI-1.1.7.jar
+MITyCLibCert-1.1.7.jar
+MITyCLibOCSP-1.1.7.jar
+MITyCLibTrust-1.1.7.jar
+MITyCLibTSA-1.1.7.jar
+MITyCLibXADES-1.1.7.jar
+serializer-2.7.1.jar
+sunpkcs11-1.0.jar
+xalan-2.7.1.jar
+xml-apis-1.3.04.jar
+xmlsec-1.4.2-ADSI-1.1.jar
+xmlsec-1.5.5.jar
+
+
+///Para c# al momento lo que he logrado es esto por cuestiones de tiempo no he logrado terminar si alguien tiene terminao hagamelo saber.
+
+public class Signature
+    {
+
+        Random rnd = new Random(DateTime.Now.
+
+Millisecond);
+
+        public const string XmlDsigRSASHA1Url = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+
+        public void Xml(String pathXml,String pathSignature,String passFirma)
+        {
+            //Declaro variable XMLDocument
+            XmlDocument xmlDoc = new XmlDocument();
+            // Cargo el documento en el xmlDoc
+            xmlDoc.PreserveWhitespace = true;
+            xmlDoc.Load(pathXml);
+
+            //Obtengo la firma en el Certificado X509
+            X509Certificate2 uidCert = new X509Certificate2(pathSignature, passFirma, X509KeyStorageFlags.DefaultKeySet);
+
+            //Inicializo el RSA
+            RSACryptoServiceProvider rsaKey = (RSACryptoServiceProvider)uidCert.PrivateKey;
+
+            //Agrego el SgnedXml que permite firmar el xml
+            SignedXml signedXml = new SignedXml(xmlDoc);
+
+            // Add the key to the SignedXml document.
+            signedXml.SigningKey = rsaKey;
+
+            //signedXml.Signature.Id = newID("Signature");
+
+
+            //Agregamos el metodo de firmado
+            signedXml.SignedInfo.SignatureMethod = XmlDsigRSASHA1Url;
+
+            //signedXml.SignedInfo.Id = newID("Signature-SignedInfo");
+
+            // Create a reference to be signed.
+            Reference reference = new Reference();
+            //reference.Id = newID("SignedPropertiesID");
+            reference.Uri = "";
+
+            // Add an enveloped transformation to the reference.
+            XmlDsigEnvelopedSignatureTransform env = new XmlDsigEnvelopedSignatureTransform();
+            reference.AddTransform(env);
+
+            // Add the reference to the SignedXml object.
+            signedXml.AddReference(reference);
+
+
+            // Add an RSAKeyValue KeyInfo (optional; helps recipient find key to validate).
+            KeyInfo keyInfo = new KeyInfo();
+
+            KeyInfoX509Data clause = new KeyInfoX509Data();
+            clause.AddSubjectName(uidCert.Subject);
+            clause.AddCertificate(uidCert);
+            keyInfo.AddClause(clause);
+
+            //keyInfo.Id = newID("Certificate1");
+
+            signedXml.KeyInfo = keyInfo;
+
+            // Compute the signature.
+            signedXml.ComputeSignature();
+
+
+            Boolean respuesta = signedXml.CheckSignature();
+            System.Console.WriteLine(respuesta);
+
+            // Get the XML representation of the signature and save
+            // it to an XmlElement object.
+            XmlElement xmlDigitalSignature = signedXml.GetXml();
+
+
+            //XmlElement signature = signedXml.GetXml();
+            foreach (XmlNode node in xmlDigitalSignature.SelectNodes(
+                "descendant-or-self::*[namespace-uri()='http://www.w3.org/2000/09/xmldsig#']"))
+            {
+                node.Prefix = "ds";
+            }
+
+
+            System.Console.WriteLine(signedXml.GetXml().InnerXml);
+            // Append the element to the XML document.
+            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(xmlDigitalSignature, true));
+
+            xmlDoc.Save(@"D:\Xml\firmado.xml");
+
+        }
+
+
+        private String newID(String prefix)
+        {
+            String newID = prefix + rnd.Next(1048576);
+            newID = prefix + rnd.Next(1048576);
+            return newID;
+        }
+    }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload de archivos con Ajax</title>
+</head>
+
+<script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+
+<script>
+  function subir(){    
+
+
+    const files = document.getElementById('filess').files
+    const formData = new FormData()
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+    formData.append('Id_empresa','{{Id_empresa}}')
+    formData.append('id_archivo',files[0].name)
+
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i]
+
+      formData.append('files', file)
+    }
+    formData.append('nombre', files[0].name)
+    fetch('/dropbox', {method: 'POST',body: formData,}).then(response => {
+
+
+      console.log(response)
+      f = document.getElementById('logo_cia')
+      f.src = 'https://www.dropbox.com/preview/Aplicaciones/nlubkov/nlubkov/' + files[0].name +'/?raw=1'
+
+      f2 = document.getElementById('logo_ciaaaa')
+      f2.src = 'https://www.cerocodigo.com/static/img/sub1_3.png'
+
+    })
+}
+
+</script>
+<body>
+    
+    <div style="width: 800px; margin: 0 auto;">
+        <input type="file" name="excelfile" id="filess">
+        <input type="submit" value="Submit" />
+        <button type="button" id="btn_grabar_7" onclick="subir()" class="btn bg-green btn-flat margin"><span>Grabar</span></button>
+        <p> imagen</p>
+        <img src="/static/img/acesor.png" id="logo_cia" width="160" alt="logo" class="img-fluid" style="width: 140px;">        
+        <img src="/static/img/acesor.png" id="logo_ciaaaa" width="160" alt="logo" class="img-fluid" style="width: 140px;"> 
+        
+        <img src="https://www.dropbox.com/preview/Aplicaciones/nlubkov/nlubkov/logo_web.png/?raw=1" id="success" width="160" alt="logo" class="img-fluid" style="width: 140px;">
+        <img src="https://www.dropbox.com/preview/Aplicaciones/nlubkov/nlubkov/logo_mega.png/?raw=1" id="aaaa" width="160" alt="logo" class="img-fluid" style="width: 140px;">
+
+    </div> 
+
+    
+    <script>
+
+    </script>
+</body>
+<script src="/static/a/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="/static/a/bower_components/jquery-ui/jquery-ui.min.js"></script>
+<script src="/static/a/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</html>

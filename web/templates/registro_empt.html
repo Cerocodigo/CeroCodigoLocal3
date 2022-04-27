@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{Id_empresa}}</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="/static/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="/static/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+  
+    <!-- bootstrap-progressbar -->
+    <link href="/static/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="/static/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="/static/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="/static/build/css/custom.min.css" rel="stylesheet">
+
+       <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+ 
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+
+
+<script type="text/javascript">
+
+
+
+function cerrar_elemento(id_tab) {
+        //document.getElementById("ref"+clicked_id).value = clicked_id;
+        //a=window.open()
+        //a.document.write("<div id='mydiv'>test</div>")
+        //a.document.getElementById("mydiv")
+//        var myWindow = window.open("http://45.55.178.17/reporte/ref/buscar/"+clicked_id +"/", "myWindow", "width=800, height=500");
+$('#' +'id' + id_tab).remove();
+$('#' +'rr' + id_tab).remove();
+
+
+}
+  
+
+</script>
+<script language="JavaScript" type="text/javascript">  
+
+$(document).ready(function(){
+
+$(".opciones_list").click(function(e){
+window.open("log/opciones/Ingresar/"+$(this).attr("id") +"/", '_blank');
+    });
+
+$(".dropdown-item").click(function(e){
+
+
+        $("#id"+ $(this).attr("id")).remove();
+        $("#rr"+ $(this).attr("id")).empty();
+        $("#myTab").prepend('<li role="presentation" class="" id="li' + $(this).attr("id") + '"><a href="#rr' + $(this).attr("id") + '" id="id' + $(this).attr("id") + '" role="tab" data-toggle="tab" aria-expanded="false">' + $(this).attr("result") + '</a></li>');
+//        $("#ul_list").prepend('<li class="" style="padding-right: 10px; padding-left: 10px;"><a href="#rr' + $(this).attr("id") + ' "id="rr' + $(this).attr("id") + '" data-toggle="tab">' + $(this).attr("result") + '</a></li>');
+        var id_tab = $(this).attr("id");
+
+
+
+        $.ajax({
+          type: 'POST',
+          url: '/menu_click',
+          data: {'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{Id_empresa}}','pk': $(this).attr("id"), 'usuario':'{{usuario}}', 'idioma':'{{ idioma }}'},
+          beforeSend: function () {
+            $("#myTabContent").prepend('<div role="tabpanel" class="tab-pane fade" id="rr' + id_tab + '" aria-labelledby="id' + $(this).attr("id") + '"> Procesando </div>');
+                },
+          success: function(response){
+
+
+            buton_cerrar = ' <button type="button" onclick="cerrar_elemento(xxx)" class="btn btn-warning"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></button>'
+
+            buton_cerrar = buton_cerrar.replace("xxx", "'num'" );
+            buton_cerrar = buton_cerrar.replace("num",  id_tab);
+         
+            tag_id = "rr" + id_tab
+            response = response.replace("**boton_cierre**", buton_cerrar);
+         
+            response = response.replace("**tabla**", tag_id);
+            $('#rr' + id_tab).html(response);
+
+
+
+          }
+          });
+
+
+        });
+    });
+
+
+
+function registro(pkmodulo, pkregistro, tipo, tabla) {
+
+var x=window.open('registro');
+
+
+        $.ajax({
+          type: 'POST',
+          url: 'registro',
+          data: {'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{Id_empresa}}','pk': $(this).attr("id"), 'usuario':'{{usuario}}', 'idioma':'{{ idioma }}'},
+          beforeSend: function () {
+             },
+          success: function(response){
+x.document.open().write(response);
+
+
+
+          }
+          });
+      
+}
+
+
+function filtrar(pkmodulo, eliminar, modifica) {
+
+
+// no coge el id tad como document
+
+        //v_where_campo= $('#campo' + pkmodulo).value;
+       // v_where_valor= $('#valor' + pkmodulo).value;
+        //filtro_sentencia= $('#senten' + pkmodulo).value;
+
+        v_where_campo= document.getElementById('campo' + pkmodulo).value;
+        v_where_valor= document.getElementById('valor' + pkmodulo).value;
+        v_senten= document.getElementById('senten' + pkmodulo).value;
+        v_top= document.getElementById('top' + pkmodulo).value;
+
+
+        $.ajax({
+          type: 'POST',
+          url: '/menu_filtro',
+          data: {'fuente': 'filtro', 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{Id_empresa}}', 'usuario':'{{usuario}}', 'idioma':'{{ idioma }}', 'pkmodulo':pkmodulo, 'v_where_campo':v_where_campo, 'v_senten':v_senten, 'v_where_valor':v_where_valor, 'eliminar':eliminar, 'modifica':modifica, 'v_top':v_top},
+          success: function(response){
+
+            $('#tabla' + pkmodulo).html(response);
+
+          }
+          });
+    
+}
+
+function eliminar(pkmodulo,pkregistro ) {
+    var mensaje;
+    var opcion = confirm("{{idioma_html.msg_eliminar}}");
+    if (opcion == true) {
+        mensaje = "{{idioma_html.eliminado}}";
+        $('#f' +pkmodulo + '-f'+ pkregistro ).remove();
+
+        $.ajax({
+          type: 'POST',
+          url: '/menu_eliminar',
+          data: {'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{Id_empresa}}','pkregistro': pkregistro, 'pkmodulo':pkmodulo, 'usuario':'{{usuario}}'},
+          success: function(response){
+
+
+          }
+          });
+    } else {
+        mensaje = "{{idioma_html.cancelado}}";
+    }
+}
+
+function consulta(pkmodulo,pkregistro ) {
+
+
+open()
+        $.ajax({
+          type: 'POST',
+          url: '/menu_eliminar',
+          data: {'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{Id_empresa}}','pkregistro': pkregistro, 'pkmodulo':pkmodulo, 'usuario':'{{usuario}}'},
+          success: function(response){
+
+
+          }
+          });
+}
+
+
+</script>
+
+
+  </head>
+
+  <body class="nav-sm">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>{{Id_empresa}}</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <br />
+        <form name="Reportes" method="post">
+          {% csrf_token %}
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <h3>Opciones</h3>
+                <ul class="nav side-menu">
+
+
+
+         
+
+                </ul>
+              </div>
+              <div class="menu_section">
+              </div>
+
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <div class="sidebar-footer hidden-small">
+              <a data-toggle="tooltip" data-placement="top" title="Settings">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Lock">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+              </a>
+            </div>
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <img src="images/img.jpg" alt="">John Doe
+                    <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <li><a href="javascript:;"> Profile</a></li>
+                    <li>
+                      <a href="javascript:;">
+                        <span class="badge bg-red pull-right">50%</span>
+                        <span>Settings</span>
+                      </a>
+                    </li>
+                    <li><a href="javascript:;">Help</a></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                  </ul>
+                </li>
+
+                <li role="presentation" class="dropdown">
+                  <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-envelope-o"></i>
+                    <span class="badge bg-green">6</span>
+                  </a>
+                  <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                    <li>
+                      <a>
+                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                        <span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
+                        </span>
+                        <span class="message">
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a>
+                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                        <span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
+                        </span>
+                        <span class="message">
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a>
+                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                        <span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
+                        </span>
+                        <span class="message">
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a>
+                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                        <span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
+                        </span>
+                        <span class="message">
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="text-center">
+                        <a>
+                          <strong>See All Alerts</strong>
+                          <i class="fa fa-angle-right"></i>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          
+                  <div class="x_content">
+
+                    <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                    
+
+                      <div id="myTabContent" class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+
+                          <div class="row" role="main">
+          <!-- top tiles -->
+       
+          <!-- /top tiles -->
+
+          <div class="row">
+
+
+      
+
+          </div>
+          <br />
+
+          <div class="row">
+
+
+       
+
+           
+
+
+
+          </div>
+
+
+     
+        </div>
+        
+                        </div>  
+                      </div>
+                    </div>
+                  </div>
+
+                <div class="x_content" id="centro">
+
+                 
+                   
+                    </div>
+
+
+
+        
+         
+                  </div>
+
+
+
+          
+       
+        
+
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="/static/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="/static/vendors/nprogress/nprogress.js"></script>
+    <!-- Chart.js -->
+    <script src="/static/vendors/Chart.js/dist/Chart.min.js"></script>
+    <!-- gauge.js -->
+    <script src="/static/vendors/gauge.js/dist/gauge.min.js"></script>
+    <!-- bootstrap-progressbar -->
+    <script src="/static/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- iCheck -->
+    <script src="/static/vendors/iCheck/icheck.min.js"></script>
+    <!-- Skycons -->
+    <script src="/static/vendors/skycons/skycons.js"></script>
+    <!-- Flot -->
+    <script src="/static/vendors/Flot/jquery.flot.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.pie.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.time.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.stack.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.resize.js"></script>
+    <!-- Flot plugins -->
+    <script src="/static/vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
+    <script src="/static/vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
+    <script src="/static/vendors/flot.curvedlines/curvedLines.js"></script>
+    <!-- DateJS -->
+    <script src="/static/vendors/DateJS/build/date.js"></script>
+    <!-- JQVMap -->
+    <script src="/static/vendors/jqvmap/dist/jquery.vmap.js"></script>
+    <script src="/static/vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script>
+    <script src="/static/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="/static/vendors/moment/min/moment.min.js"></script>
+    <script src="/static/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="/static/build/js/custom.min.js"></script>
+  
+
+    <script src="/static/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="/static/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/static/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="/static/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="/static/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="/static/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="/static/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="/static/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="/static/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/static/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="/static/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+
+  </body>
+</html>

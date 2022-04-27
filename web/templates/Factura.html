@@ -1,0 +1,590 @@
+<html lang="en"><head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  
+    <title>Cero Codigo Edocs</title>
+  <!-- Latest compiled and minified CSS -->
+
+  <link rel="stylesheet" href="/static/a/bower_components/bootstrap/dist/css/bootstrap.min.css">
+<!-- Optional theme -->
+<script src="/static/a/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js"></script>
+
+    <!-- MetisMenu CSS -->
+    <link href="/static/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="/static/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="/static/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+<!--<link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <!--       
+        <script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-ui-1.8.17.custom.min.js"></script>
+    <script type="text/javascript" src="../dist/jspdf.debug.js"></script>
+    <script type="text/javascript" src="js/basic.js"></script>
+  
+<script type="text/javascript" src="/static/zlib.js"></script>
+<script type="text/javascript" src="/static/png.js"></script>
+<script type="text/javascript" src="/static/addimage.js"></script>
+<script type="text/javascript" src="/static/png_support.js"></script>       
+<script type="text/javascript" src="/static/jspdf.js"></script>
+  -->
+   
+    
+    <!--[endif]---->
+<script type="text/javascript">
+
+        
+function format2(n, currency) {
+    //return currency + " " + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+    return currency + " " + Number(n).toFixed(2)
+}
+function hacer_pdf(){
+
+        var doc = new jsPDF();
+
+       //var doc = new jsPDF();
+        doc.setFontSize(10);
+       
+       // var imgData = 'data:image/jpeg;base64,'+ Base64.encode('/static/archivos/{{val_fijos.ruc}}.png');
+        //doc.addImage(this, 10, 10);
+
+        //doc.addImage(data, 'JPEG', 15, 40, 180, 180);
+        doc.setDrawColor(179, 179, 179);
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(100, 8, 100, 60, 3, 3, 'FD'); //  Black square with rounded corners
+        doc.text(110, 15, 'Ruc:');
+        doc.text(110, 20, 'Factura');
+        doc.text(110, 25, 'No.:');
+        doc.text(110, 30, 'Numero de autorizacion');
+        doc.text(110, 40, 'Fecha y hora:');
+        doc.text(110, 45, 'Ambiente:');
+        doc.text(110, 50, 'Emision:');
+        doc.text(110, 55, 'Clave acceso:');
+        doc.setFontSize(9);
+        doc.text(105, 35, '{{val_fijos.numeroAutorizacion}}');
+        doc.text(105, 60, '{{val_fijos.claveAcceso}}');
+        doc.text(190, 15, '{{val_fijos.ruc}}', 'right');
+        doc.text(190, 25, '{{val_fijos.estab}}-{{val_fijos.ptoEmi}}-{{val_fijos.secuencial}}', 'right');
+        doc.text(190, 40, '{{val_fijos.fechaEmision}}', 'right');
+        doc.text(190, 45, 'Produccion', 'right');
+        doc.text(190, 50, 'Normal', 'right');
+               
+        doc.text(10, 40, '{{val_fijos.nombreComercial}}');
+        doc.text(10, 45, '{{val_fijos.razonSocial}}');
+        doc.text(10, 50, '{{val_fijos.contribuyenteEspecial}}');
+        doc.text(10, 55, 'OBLIGADO A LLEVAR CONTABILIDAD:{{val_fijos.obligadoContabilidad}}');
+        doc.text(10, 60, 'Direccion');
+        doc.text(10, 65, '{{val_fijos.dirMatriz}}');
+              
+        doc.setDrawColor(179, 179, 179);
+        doc.setFillColor(255, 255, 255);    
+        doc.roundedRect(5, 70 , 200, 20 , 3, 3, 'FD'); //  Black square with rounded corners
+           
+        doc.text(20, 75, 'RAZON SOCIAL / NOMBRES APELLIDOS:');
+        doc.text(110, 75, 'IDENTIFICACION:');
+        doc.text(140, 75, '{{val_fijos.identificacionComprador}}');
+        doc.text(20, 85, '{{val_fijos.razonSocialComprador}}');
+
+        
+           
+                              
+          //----------------------------------------detalle
+        doc.text(5, 95, 'Codigo');
+        doc.text(25, 95, 'Auxiliar');
+        doc.text(55, 95, 'Descripcion');
+        doc.text(140, 95, 'Cant', 'right');
+        doc.text(160, 95, 'Precio', 'right');
+        doc.text(180, 95, 'Descuento', 'right');
+        doc.text(200, 95, 'Precio total', 'right');
+
+        var JVcodigoPrincipal= {% autoescape off %}{{ JVcodigoPrincipal }}{% endautoescape %};
+        var JVcodigoAuxiliar = {% autoescape off %}{{ JVcodigoAuxiliar }}{% endautoescape %};
+        var JVdescripcion = {% autoescape off %}{{ JVdescripcion }}{% endautoescape %};
+        var JVcantidad = {% autoescape off %}{{ JVcantidad }}{% endautoescape %};
+        var JVprecioUnitario = {% autoescape off %}{{ JVprecioUnitario }}{% endautoescape %};
+        var JVdescuento = {% autoescape off %}{{ JVdescuento }}{% endautoescape %};
+        var JVprecioTotalSinImpuesto = {% autoescape off %}{{ JVprecioTotalSinImpuesto }}{% endautoescape %};
+        
+        var JVinfoAdicional_nombre = {% autoescape off %}{{ JVinfoAdicional_nombre }}{% endautoescape %};
+        var JVinfoAdicional_valor = {% autoescape off %}{{ JVinfoAdicional_valor }}{% endautoescape %};
+                
+        doc.line(5, 96, 205, 96); // horizontal line
+        var paguina  = 0
+        var ultima_fila = 0
+          
+        for (i = 0; i < JVcodigoPrincipal.length; i++) {
+                doc.text(5, (i * 5) + 100 - paguina, JVcodigoPrincipal[i]);
+                doc.text(25, (i * 5) + 100 - paguina, JVcodigoAuxiliar[i]);
+                if (JVdescripcion[i].length > 35) {
+                doc.text(55, (i * 5) + 100 - paguina,  JVdescripcion[i].substring(0, 33).concat('...'));
+                } else { 
+                doc.text(55, (i * 5) + 100 - paguina, JVdescripcion[i]);
+                }
+                doc.text(140, (i * 5) + 100 - paguina, JVcantidad[i], 'right');
+                doc.text(160, (i * 5) + 100 - paguina, JVprecioUnitario[i], 'right');
+                doc.text(180, (i * 5) + 100 - paguina, JVdescuento[i], 'right');
+                doc.text(200, (i * 5) + 100 - paguina, JVprecioTotalSinImpuesto[i], 'right');
+                
+                if ((( i * 5) + 100 - paguina)> 240) {
+                        paguina += 235;
+                        doc.addPage();}
+                doc.line(5, (i * 5) + 101 - paguina, 205, (i * 5) + 101 - paguina); // horizontal line
+                ultima_fila =  ((i+1) * 5) + 100 - paguina
+        }
+            
+          //-----------------------------------------detalle
+        
+        doc.setDrawColor(179, 179, 179);
+        doc.setFillColor(255, 255, 255);
+                  
+        doc.roundedRect(2, ultima_fila + 5, 90, 25 , 3, 3, 'FD'); //  Black square with rounded corners
+
+          //-----------------------------------------Pie
+            
+        doc.text(5, ultima_fila + 10, 'Forma de Pago:');
+        doc.text(5, ultima_fila + 15, '{{val_fijos.Forma_pago}}');
+        doc.text(5, ultima_fila + 20, 'Valor');
+        doc.text(40, ultima_fila + 20, 'Plazo');
+        doc.text(60, ultima_fila + 20, 'Tiempo');
+        doc.text(35, ultima_fila + 25, '{{val_fijos.total}}', 'right');
+        doc.text(55, ultima_fila + 25, '{{val_fijos.plazo}}','right');
+        doc.text(85, ultima_fila + 25, '{{val_fijos.unidadTiempo}}', 'right');
+                                //-----------------------------------------Pie
+            
+        doc.text(5, ultima_fila + 35, 'Info Adicional');
+                
+          for (ii = 0; ii < JVinfoAdicional_nombre.length; ii++) {
+                  doc.text(5, (ii * 5) + 40 + ultima_fila, JVinfoAdicional_nombre[ii].concat(': '));
+                  if (JVinfoAdicional_valor[ii].length > 60)
+                  {
+                  doc.text(5, (ii * 5) + 40 + ultima_fila, JVinfoAdicional_nombre[ii].concat(': ', JVinfoAdicional_valor[ii].substring(0, 55).concat('...') ) );
+                  } else {doc.text(5, (ii * 5) + 40 + ultima_fila, JVinfoAdicional_nombre[ii].concat(': ', JVinfoAdicional_valor[ii] ));}                 
+          }
+
+                    //-----------------------------------------subtotal
+              doc.text(140, ultima_fila + 10, 'Subtotal 0%:');
+              doc.text(140, ultima_fila + 15, 'Descuento 0%:');
+              doc.text(140, ultima_fila + 20, 'Subtotal 12%:');
+              doc.text(140, ultima_fila + 25, 'Descuento 12%:');
+              doc.text(140, ultima_fila + 30, 'Subtotal 14%:');
+              doc.text(140, ultima_fila + 35, 'Descuento 14%:');
+              doc.text(140, ultima_fila + 40, 'Subtotal No objeto Iva:');
+              doc.text(140, ultima_fila + 45, 'Subtotal:');
+              doc.text(140, ultima_fila + 50, 'Descuento Total:');
+              doc.text(140, ultima_fila + 55, 'ICE:');
+              doc.text(140, ultima_fila + 60, 'IVA:');
+              doc.text(140, ultima_fila + 65, 'VALOR TOTAL:');
+              var base0 = '{{Val_Totales.base0}}';
+              var base0des = '{{Val_Totales.base0des}}';
+              var base12 = '{{Val_Totales.base12}}';
+              var base12des = '{{Val_Totales.base12des}}';
+              var base14 = '{{Val_Totales.base14}}';
+              var base14des= '{{Val_Totales.base14des}}';
+              var totalSinImpuestos = '{{val_fijos.totalSinImpuestos}}';
+              var totalDescuento = '{{val_fijos.totalDescuento}}';
+              var iva = '{{Val_Totales.iva}}';
+              var importeTotal = '{{val_fijos.importeTotal}}';
+              
+                         
+
+                                        
+              doc.text(200, ultima_fila + 10, format2(base0, "$"), 'right');
+              doc.text(200, ultima_fila + 15, format2(base0des, "$"), 'right');
+              doc.text(200, ultima_fila + 20, format2(base12, "$"), 'right');
+              doc.text(200, ultima_fila + 25, format2(base12des, "$"), 'right');
+              doc.text(200, ultima_fila + 30, format2(base14, "$"), 'right');
+              doc.text(200, ultima_fila + 35, format2(base14des, "$"), 'right');
+              doc.text(200, ultima_fila + 40, format2(0, "$"), 'right');
+              doc.text(200, ultima_fila + 45, format2(totalSinImpuestos, "$"), 'right');
+              doc.text(200, ultima_fila + 50, format2(totalDescuento, "$"), 'right');
+              doc.text(200, ultima_fila + 55, format2(0, "$"), 'right');
+              doc.text(200, ultima_fila + 60, format2(iva, "$"), 'right');
+              doc.text(200, ultima_fila + 65, format2(importeTotal, "$"), 'right');         
+      doc.save('{{val_fijos.claveAcceso}}.pdf');
+}
+</script>
+
+
+</head>
+
+<body>
+
+    
+          
+            <table style="background-color: white; width: 60%; text-align: left;" align="center" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr align="center">
+<td>
+
+<div class="panel panel-primary">
+<div class="panel-heading">
+                           Factura
+                        </div>
+                        <div class="panel-body">
+<table style="width: 20px;" border="0" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <table class="table">
+        <tbody>
+          <tr>
+                
+
+
+
+            <td style="vertical-align: top; width: 50%;">
+                                  
+
+                <img style="width: 350px; height: 169px;" src="/static/archivos/{{val_fijos.ruc}}.png" alt=""><br>
+&nbsp;{{val_fijos.contribuyenteEspecial}}<br>
+&nbsp;OBLIGADO A LLEVAR CONTABILIDAD <span>&nbsp;{{val_fijos.obligadoContabilidad}}<br>
+            </span><span></span></td>
+            <td colspan="1" rowspan="1" style="vertical-align: top;">
+            <table style="text-align: left; width: 441px; height: 159px;" border="0" cellpadding="1" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td style="vertical-align: top; height: 100%; width: 100px;">&nbsp;<span style="font-weight: bold;"><br>
+                  </span>
+                  <table class="table-hover">
+                    <tbody>
+                      <tr>
+                        <td><span style="font-weight: bold;">RUC:</span></td>
+                        <td style="text-align: right;"><span>{{val_fijos.ruc}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                      </tr>
+                      <tr>
+                        <td><span>Factura</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                        <td style="text-align: right;"></td>
+                      </tr>
+                      <tr>
+                        <td><span style="font-weight: bold;">No.:</span><span></span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                        <td style="text-align: right;"><span style="font-weight: bold;"> </span><span>{{val_fijos.estab}}</span><span>
+- </span><span>{{val_fijos.ptoEmi}}</span><span>
+- </span><span>{{val_fijos.secuencial}}</span></td>
+                      </tr>
+                      <tr>
+                        <td><span style="font-weight: bold;">AUTORIZACION</span></td>
+                        <td style="text-align: right;"></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" rowspan="1"><span>{{val_fijos.numeroAutorizacion}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                      </tr>
+                      <tr>
+                        <td><span style="font-weight: bold;">FECHA
+Y HORA:</span></td>
+                        <td style="text-align: right;"><span>{{val_fijos.fechaAuto}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                      </tr>
+                      <tr>
+                        <td><span style="font-weight: bold;">AMBIENTE:</span></td>
+                        <td style="text-align: right;"><span>Produccion</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                      </tr>
+                      <tr>
+                        <td><span style="font-weight: bold;">EMISION:</span></td>
+                        <td style="text-align: right;">Normal<span></span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                      </tr>
+                      <tr>
+                        <td><span style="font-weight: bold;">CLAVE
+ACCESO:</span></td>
+                        <td style="text-align: right;"></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" rowspan="1"><span>{{val_fijos.claveAcceso}}</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <span style="font-weight: bold;"></span><span></span></td>
+                </tr>
+              </tbody>
+            </table>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" rowspan="1"><span>&nbsp;{{val_fijos.razonSocial}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span><br>
+&nbsp;<span>{{val_fijos.nombreComercial}}<br>
+            </span>&nbsp;Direccion: <span style="font-family: monospace;"></span><span>{{val_fijos.dirMatriz}}</span>
+&nbsp; </td>
+          </tr>
+       
+        </tbody>
+      </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td colspan="2" rowspan="1">&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; background-color: white;">
+      <div class="well">
+      
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td>
+            <table style="text-align: left; width: 797px; height: 61px;" border="0" cellpadding="4" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td style="vertical-align: top; width: 50%;"><span style="font-weight: bold;">RAZON
+SOCIAL / NOMBRES APELLIDOS:</span><br>
+                  <span></span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                  <td style="vertical-align: top;"><span style="font-weight: bold;">IDENTIFICACION</span>:
+                  <span>{{val_fijos.identificacionComprador}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span><br>
+                  <span></span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                </tr>
+                <tr>
+                  <td><span>{{val_fijos.razonSocialComprador}}</span></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    
+    </div>
+
+
+                  
+  
+    <table class="table">
+    <tbody>
+    
+        <tr>
+            <td>Cod. Principal</td>
+            <td>Cod Aux </td>
+<td>Cant</td>
+<td>Descripcion</td>            
+		
+            
+            <td>Precio</td>
+            <td>Descuento</td>
+            <td>Precio total</td>
+        </tr>
+    
+           {% autoescape off %}{{ html_Datelle }}{% endautoescape %}
+    
+    </tbody>
+</table>
+
+ 
+
+
+
+<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <table class="table">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top; width: 60%; background-color: white;"><span style="font-weight: bold;">Forma de Pago:<br>
+            </span>{{val_fijos.Forma_pago}}<br>
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Valor</td>
+                  <td>Plazo</td>
+                  <td>Tiempo</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right;">{{val_fijos.total}}<br>
+                  </td>
+                  <td style="text-align: right;">{{val_fijos.plazo}}<br>
+                  </td>
+                  <td style="text-align: right;">{{val_fijos.unidadTiempo}}<br>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <span style="font-weight: bold;">INFORMACION
+ADICIONAL</span><br>
+
+{% autoescape off %}{{ html_Adicional }}{% endautoescape %}
+
+            </td>
+            <td style="vertical-align: top;">
+            <table class="table-hover">
+              <tbody>
+                <tr>
+                  <td style="vertical-align: top; width: 50%;">&nbsp;Subtotal
+0%<br>
+                  </td>
+                  <td style="vertical-align: top; text-align: right;">{{Val_Totales.base0}}<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td>&nbsp;Descuento 0%</td>
+                  <td style="text-align: right;">{{Val_Totales.base0des}}</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;Subtotal&nbsp;12%</td>
+                  <td style="text-align: right;">{{Val_Totales.base12}}</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;Descuento&nbsp;12%</td>
+                  <td style="text-align: right;">{{Val_Totales.base12des}}
+                  </td>
+                </tr>
+               <!-- <tr>
+                  <td style="vertical-align: top;">&nbsp;Subtotal
+14%<br>
+                  </td>
+                  <td style="vertical-align: top; text-align: right;">{{Val_Totales.base14}}</td>
+                
+                </tr>
+                <tr>
+                  <td>&nbsp;Descuento 14%</td>
+                  <td style="text-align: right;">{{Val_Totales.base14des}}</td>
+                </tr>-->
+                <tr>
+                  <td style="vertical-align: top;">&nbsp;Subtotal
+No
+objeto Iva<br>
+                  </td>
+                  <td style="vertical-align: top; text-align: right;">0.0</td>
+                </tr>
+                
+                <tr>
+                  <td style="vertical-align: top;">&nbsp;Subtotal<br>
+                  </td>
+                  <td style="vertical-align: top; text-align: right;"><span>{{val_fijos.totalSinImpuestos}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                </tr>
+                
+                <tr>
+                  <td style="vertical-align: top;">&nbsp;Descuento
+Total<br>
+                  </td>
+                  <td style="vertical-align: top; text-align: right;"><span>{{val_fijos.totalDescuento}}</span><span style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span></td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">&nbsp;ICE<br>
+                  </td>
+                  <td style="vertical-align: top; text-align: right;">0.0<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">&nbsp;IVA<br> </td> <td
+                  style="vertical-align: top; text-align:
+                  right;">{{Val_Totales.iva}}</td>
+                </tr> <tr>
+                  <td style="vertical-align: top; font-weight:
+                  bold;">&nbsp;VALOR
+TOTAL<br>
+                  </td> <td style="vertical-align: top; text-align:
+                  right;">{{val_fijos.importeTotal}}<br> </td>
+                </tr>
+              </tbody>
+            </table> </td> <td></td>
+          </tr> <tr>
+            <td></td> <td></td> <td></td>
+          </tr>
+        </tbody>
+      </table> </td>
+    </tr>
+  </tbody>
+</table>
+                               <div class="panel-footer" style="text-align: left;">
+                  Descargar Archivos  
+                        
+                <a href="/static/archivos/{{val_fijos.claveAcceso}}.xml" class="btn btn-primary" download="">XML</a>
+                
+                <button type="button" onclick="hacer_pdf()" class="btn btn-primary">PDF</button>
+   <a href="http://www.cerocodigo.com" target="_blank"> <h3 class="ms-footbar-title text-center mb-2">www.cerocodigo.com</h3></a>
+
+
+                        </div>
+                             
+                                </div>
+                </div>
+        
+
+   
+  
+      
+      </td>
+
+        </tr>
+          
+        </tbody></table>
+
+                         
+              
+            
+        
+        <!-- /#page-wrapper -->
+
+
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="/static/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="/static/jquery.dataTables.min.js"></script> 
+    <script src="/static/dataTables.bootstrap.min.js"></script>
+    <script src="/static/dataTables.responsive.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/static/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            responsive: true,
+        });
+    });
+    </script>
+  
+    
+  
+
+
+
+
+</body></html>

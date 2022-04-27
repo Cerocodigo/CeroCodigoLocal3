@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload de archivos con Ajax</title>
+</head>
+<body>
+    
+   <div style="width: 800px; margin: 0 auto;">
+    <form enctype="multipart/form-data"  action="." method='POST'> {% csrf_token %}
+        <input type="file" name="excelfile">
+        <input type="submit" value="Submit" />
+    </form>
+</div> 
+    
+    
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script>
+    $(function(){
+        $("#formuploadajax").on("submit", function(e){
+            e.preventDefault();
+            var f = $(this);
+            var formData = new FormData(document.getElementById("formuploadajax"));
+            formData.append("dato", "valor");
+            //formData.append(f.attr("name"), $(this)[0].files[0]);
+            $.ajax({
+                url: "upload",
+                type: "post",
+                dataType: "html",
+                data: formData,
+                cache: false,
+                contentType: false,
+       processData: false
+            })
+                .done(function(res){
+                    $("#mensaje").html("Respuesta: " + res);
+                });
+        });
+    });
+    </script>
+</body>
+</html>

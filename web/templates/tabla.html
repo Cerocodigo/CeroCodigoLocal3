@@ -1,0 +1,82 @@
+
+            <div class="row" style="padding-left: 10px;">
+                <div class="col-lg-14">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            {{tipo_print}}
+                            <div> 
+                            <a onclick="docs_recibidas('{{tipo}}',{{num_pag_menos}},{{limite}});"><i class="glyphicon glyphicon-triangle-left"></i></a>
+                            <a onclick="docs_recibidas('{{tipo}}',0,{{limite}});"><i class="glyphicon glyphicon-home"></i></a>
+
+                            <a onclick="docs_recibidas('{{tipo}}',{{num_pag_mas}},{{limite}});"><i class="glyphicon glyphicon-triangle-right"></i></a>
+                            Num: {{num_pag}} de {{max_pag}}
+
+                      </div>
+                        </div>
+                        
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+
+                           
+                            <table width="100%" class="table table-striped table-bordered table-hover">
+
+                           <thead>
+                                    <tr>
+                                        <th>Estado</th>
+                                        <th>Clave</th>
+                                        <th>Estab</th>
+                                        <th>Punto</th>
+                                        <th>Numero</th>
+                                        <th>Id</th>
+                                        <th>Razon Social</th>
+                                        <th>Fecha</th>
+                                        
+                                  
+                                    </tr>
+                                </thead> 
+                           
+                               
+                               <tbody>
+                                        
+    <ul>
+
+          
+
+                   
+
+    {% for documentos in Lista_docs %}
+                                <tr class="odd gradeX">
+                                    <td>{{ documentos.estado}}</td>
+                                    <td><a href="/{{ documentos.tipo }}/{{ documentos.clave }}" target="_blank">{{ documentos.abre }}</a></td>
+                                    <td>{{ documentos.estab}}</td>
+                                    <td>{{ documentos.punto}}</td>
+                                    <td>{{ documentos.numero}}</td>
+                                    <td>{{ documentos.emisor_id}}</td>
+                                    <td>{{ documentos.emisor_razon}}</td>
+                                    <td>{{ documentos.fecha}}</td>
+                                    
+                                    
+                
+                                </tr>
+        
+    {% endfor %}
+    </ul>
+
+                                </tbody>
+
+
+                            </table>
+
+
+                            <!-- /.table-responsive -->
+                           
+                        </div>
+
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+              
+                

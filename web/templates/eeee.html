@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<img src="http://127.0.0.1:8000/media/archivos/resta/resta_img.png" class="img-fluid animated" alt=""  id="mapa_img_2">
+<input type="text" id="cordsX" name="">
+<input type="text" id="cordsY" name="">
+
+<canvas id="myCanvas" width="700" height="800" style="border:1px solid #d3d3d3;" onclick="click_cnavas()">
+Your browser does not support the HTML canvas tag.</canvas>
+
+<script>
+
+window.onload = function() {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  var img = document.getElementById("mapa_img_2");
+  ctx.drawImage(img, 0, 0);
+
+
+  //var c2 = c.getContext('2d');
+  //c2.fillStyle = '#f00';
+  //c2.beginPath();
+  //c2.moveTo(0, 0);
+  //c2.lineTo(100,50);
+  //c2.lineTo(50, 100);
+  //c2.lineTo(0, 90);
+  //c2.closePath();
+  //c2.fill();
+
+
+};
+
+
+var ultimo_x = 0
+var ultimo_y = 0
+var punto = 0
+
+function click_cnavas(){
+
+var canvas = document.getElementById("myCanvas");
+
+
+elemLeft = canvas.offsetLeft + canvas.clientLeft
+elemTop = canvas.offsetTop + canvas.clientTop
+context = canvas.getContext('2d')
+
+
+var x = event.pageX - elemLeft
+var y = event.pageY - elemTop
+
+document.getElementById('cordsX').value = document.getElementById('cordsX').value  +x +','
+
+document.getElementById('cordsY').value = document.getElementById('cordsY').value  +y +','
+
+
+if(punto > 0){
+  var ctx = canvas.getContext("2d");
+  ctx.moveTo(ultimo_x, ultimo_y);
+  ctx.lineTo(x, y);
+  ctx.stroke();  
+}
+
+ultimo_x = x
+ultimo_y = y
+punto = punto + 1
+}
+
+</script>
+
+</body>
+</html>

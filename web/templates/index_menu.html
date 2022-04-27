@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{Id_empresa}}</title>
+
+   <!-- Bootstrap Core CSS -->
+    <link href="static/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="static/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="static/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="static/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="static/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+
+
+
+<script>
+function addtab(var1) {
+        document.getElementById("targetDiv").innerHTML = var1;
+}
+ 
+function repor_variables(pkreprote) {
+        document.getElementById("targetDiv").innerHTML = var1;
+}
+function HandlePopupResult(result,  valor) {
+        document.getElementById("ref"+result).value = valor;
+
+}
+function buscar(clicked_id) {
+       // alert(clicked_id);
+        //document.getElementById("ref"+clicked_id).value = clicked_id;
+        //a=window.open()
+        //a.document.write("<div id='mydiv'>test</div>")
+        //a.document.getElementById("mydiv")
+//        var myWindow = window.open("http://45.55.178.17/reporte/ref/buscar/"+clicked_id +"/", "myWindow", "width=800, height=500");
+        var myWindow = window.open("log/reporte/ref/buscar/{{Id_empresa}}/"+clicked_id +"/", "myWindow", "width=800, height=500");
+ }
+
+function cerrar_elemento(id_tab) {
+        //document.getElementById("ref"+clicked_id).value = clicked_id;
+        //a=window.open()
+        //a.document.write("<div id='mydiv'>test</div>")
+        //a.document.getElementById("mydiv")
+//        var myWindow = window.open("http://45.55.178.17/reporte/ref/buscar/"+clicked_id +"/", "myWindow", "width=800, height=500");
+$(id_tab["0"].hash).remove();
+
+}
+
+function fecha_repor(tipoFecha) {
+        
+        var fecha_hoy = new Date();
+        switch(tipoFecha) {
+                case "FechaAnio":
+                        return fecha_hoy.getFullYear + '-' + '01-01' 
+                case "FechaMes":
+                        return fecha_hoy.getFullYear + '-' + (fecha_hoy.getMonth() +1 )  + '-01' 
+                default:
+                        return fecha_hoy.getFullYear + '-' + (fecha_hoy.getMonth() +1 )  + '-' +  fecha_hoy.getDate()
+                            }
+}
+function ejecutar_reporte(clicked_id) {
+       // alert("entro " + clicked_id);   
+}
+function getCookie(c_name){
+    if (document.cookie.length > 0)
+    {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1)
+        {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start,c_end));
+        }
+    }
+    return "";
+}
+</script>
+
+
+<script> // fufnciones del inrgeso de registor 
+function ingreso_add_detalle(pkmodulo) {
+        alert("entro " + pkmodulo);   
+$('#' + pkmodulo).append('<tr>...</tr><tr>...</tr>');
+
+}
+</script>  
+
+<script>  
+$(document).ready(function(){
+
+$(".opciones_list").click(function(e){
+window.open("log/opciones/Ingresar/"+$(this).attr("id") +"/", '_blank');
+    });
+
+$(".reporte_list").click(function(e){
+        $("#rr"+ $(this).attr("id")).remove();
+        $("#rr"+ $(this).attr("id")).empty();
+        $("#ul_list").prepend('<li class=""><a href="#rr' + $(this).attr("id") + ' "id="rr' + $(this).attr("id") + '" data-toggle="tab" aria-expanded="false">' + $(this).attr("result") + '</a></li>');
+        var id_tab = $(this).attr("id");
+        $.ajax({
+                type: 'POST',
+                url: 'log/reporte/var/',
+                data: {'pkrepo': $(this).attr("value"), 'tipo':$(this).attr("label"), 'Fuente':'Inicio', 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{Id_empresa}}'},
+                success: function(response){
+
+                    var fecha_hoy = new Date();
+                    var dia
+                    var mes
+                    data = response;
+                    mes = fecha_hoy.getMonth() 
+                    if (fecha_hoy.getMonth() > 9) {mes = (mes +1)} else { mes = ("0"+ (mes + 1))}
+                    if (fecha_hoy.getDate() > 10) {dia = (fecha_hoy.getDate())} else {dia = ("0"+fecha_hoy.getDate()) }
+                    data = data.replace("v_Fecha", fecha_hoy.getFullYear() + '-' + (mes)  + '-' +  (dia));
+                    data = data.replace("v_AFecha", fecha_hoy.getFullYear() + '-' + '01-01' );
+                    data = data.replace("v_MFecha", fecha_hoy.getFullYear() + '-' + (mes)  + '-01' );
+
+                    buton_cerrar = ' <button type="button" onclick="cerrar_elemento(rr'+ id_tab +')" class="btn btn-primary">Cerrar</button>'
+                    tag_id = "rr" + id_tab
+                    data = data.replace("**boton_cierre**", buton_cerrar);             
+                    data = data.replace("**tabla**", tag_id);
+
+                    $("#ul_div").prepend('<div class="tab-pane fade" id="rr' + id_tab + '">' + data + '</div>');
+                }
+            });  
+        });
+    });
+
+
+</script>
+
+<!-- $.get("log/reporte/var/"+$(this).attr("value") +"/"+$(this).attr("label") +"/", function(data, status){
+    }); -->
+
+       
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;background: aliceblue;">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">CeroCódigo</a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+            
+                <li><a href="#"><i class="fa fa-sign-out fa-fw" onclick="hacer_pdf()"></i>Limpiar todo</a>
+                    </ul>
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+
+        <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                        <ul class="nav" id="side-menu">
+                            <form name="Reportes" method="post">
+                                {% csrf_token %}
+      
+                                {% for id in menu %}
+                                
+                                <li class="">
+                                    <a href="#"><i class="fa fa-sitemap fa-fw"></i>{{ id.Nombre }}<span class="fa arrow"></span></a>
+                                        <ul class="">
+                                             
+                                                        {% for pkmodulo in modulos %}
+                                                        
+                                                        {% if id.PkModGen == pkmodulo.PkModGen %}
+                                                                <li>
+                                                                <a href="#">{{ pkmodulo.modulo }} <span class="fa arrow"></span></a>
+                                                                <ul>
+                                                                        
+                                                                {% for PkReporte in reportes %}
+                                                                {% if PkReporte.pkmodulo == pkmodulo.id %}
+                                                                <li>
+                                                                   <a class="reporte_list" id="{{ PkReporte.id }}" value="{{ PkReporte.id }}" result="{{PkReporte.diplay}}" label="Reportes"></i>{{ PkReporte.diplay }}</a>
+                                                                   <input type="hidden" id="Tipo"  name="Tipo" value="Reporte">
+                                                                <input type="hidden" id="pkreporte"  name="pkreporte" value="{{ pkreporte.nombre }}">
+                                                                </li>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                                
+                                                                {% for PkOpciones in opciones %}
+                                                                {% if PkOpciones.PkModulo == pkmodulo.id %}
+                                                                <li>
+                                                
+                                                               <a class="opciones_list" id="{{ PkOpciones.PkModulo }}" value="{{ PkOpciones.PkModulo }}" result="{{ pkmodulo.modulo }} - {{ PkOpciones.Nombre }}" label="{{ PkOpciones.Nombre }}"></i> {{ PkOpciones.Nombre }} </a>
+                                                                   <input type="hidden" id="Tipo"  name="Tipo" value="Ingreso">
+                                                                <input type="hidden" id="PkOpciones"  name="PkOpciones" value="{{ PkOpciones.nombre }}">
+                                                                
+                                                                </li>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                                
+                                                                </ul>
+                                                                </li>
+                                                        {% endif %}
+                                                          
+                                                        {% endfor %}
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                              
+                                        </ul>
+                            <!-- /.nav-second-level -->
+                                </li>
+                        {% endfor %}
+                        
+                                <fieldset>
+                                </fieldset>             
+        </form>
+                       
+                         
+                            <!-- /.nav-second-level -->
+
+
+                        
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+      
+       
+        <div id="page-wrapper">
+
+                <div class="col-lg-12">
+          
+
+          
+             <div class="panel-body">
+    
+                            <ul class="nav nav-tabs" id="ul_list">
+                               
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content"  id="ul_div">
+                                
+                              
+                            </div>
+                        </div>
+             
+
+           </div>
+            <!-- /.row -->
+          
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+
+    <script src="static/jquery.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="static/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="static/metisMenu.min.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="static/raphael.js"></script>
+    <script src="static/morris.js"></script>
+    <script src="static/morris-data.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="static/sb-admin-2.js"></script>
+</body>
+
+</html>

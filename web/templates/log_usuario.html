@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie ie9 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9 | !IE]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>CeroCódigo</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="apple-touch-icon" href="/static/assets/img/apple-touch-icon.png">
+  <link rel="icon" href="/static/assets/img/logo_negro.ico">
+  <link rel='stylesheet' href='/static/assets/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='/static/assets/css/vendor.css'>
+  <link rel='stylesheet' href='/static/assets/css/style.css'>
+  <link rel='stylesheet' href='/static/assets/css/custom.css'>
+  <!--[if lte IE 9]><!-->
+  <script src='/static/assets/js/vendor/html5shiv.min.js'></script>
+  <!--<![endif]-->
+  
+      <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87398686-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+      
+      
+<script>
+
+
+
+function banner1() {
+
+$.get("/banner1/", function(data, status){
+             
+$("#div_intro").html(data );
+});
+
+}
+
+
+
+function correo() {
+  
+if (humano.checked == 0){
+  $("#msg_correo_humano").show();
+
+}
+if (document.getElementById('contactName').innerHTML  == ""){$("#msg_correo_contactName").show();}
+if (document.getElementById('contactEmail').innerHTML == ""){$("#msg_correo_contactEmail").show();}
+if (document.getElementById('contactPhone').innerHTML == ""){$("#msg_correo_contactPhone").show();}
+if (document.getElementById('contactMessage').innerHTML == ""){$("#msg_correo_contactMessage").show();}
+
+}
+
+
+
+function alphanumeric(inputtxt) 
+{
+            var strValidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for (i = 0; i < inputtxt.length; i++) {
+                var paso = false
+                for (i2 = 0; i2 < strValidChars.length; i2++) {
+                  if(inputtxt.charAt(i) === strValidChars.charAt(i2)){paso = true} 
+                }
+                if(paso === false){return false}
+            }
+            return true;
+}
+
+
+
+
+function envio() {
+
+var userNombre = document.getElementById("userNombre").value
+var userMensaje = document.getElementById("userMensaje").value
+var userCorreo = document.getElementById("userCorreo").value
+
+if (userNombre === ""){
+    $("#div_conctacto2").html("Falta Nombre");
+    return
+}
+if (userMensaje === ""){
+    $("#div_conctacto2").html("Falta Situacion");
+    return
+}
+if (userCorreo === ""){
+    $("#div_conctacto2").html("Falta Correo");
+    return
+}
+if (document.getElementById('humano').checked) {
+        } else {
+    $("#div_conctacto2").html("Eres humano???");
+    return
+}
+
+$.ajax({
+        type: 'POST',
+        url: 'mensaje',
+        data: {'userNombre': document.getElementById("userNombre").value, 'userMensaje':document.getElementById("userMensaje").value, 'userCorreo':document.getElementById("userCorreo").value, 'userTipo':document.getElementById("userTipo").value},
+        beforeSend: function () {
+                        $("#div_conctacto2").html("Procesando, espere por favor...");
+                },
+        success: function(response){
+            $("#div_conctacto2").html(response);
+        }
+    });  
+}
+
+
+function cuenta() {
+
+var userNombre = document.getElementById("userNombre").value
+var userMensaje = document.getElementById("userMensaje").value
+var userCorreo = document.getElementById("userCorreo").value
+var userTipo = document.getElementById("userTipo").value
+
+
+if (userNombre === ""){
+    $("#div_conctacto").html("Falta Nombre");
+    return
+}
+if (userMensaje === ""){
+    $("#div_conctacto").html("Falta Mensaje");
+    return
+}
+if (userCorreo === ""){
+    $("#div_conctacto").html("Falta Correo");
+    return
+}
+if (userTipo === ""){
+    $("#div_conctacto").html("Falta Tipo");
+    return
+}
+if (alphanumeric(userUsuario) === false){
+    $("#div_conctacto").html("Usuario solo numeros o letras");
+    return
+}
+
+
+$.ajax({
+        type: 'POST',
+        url: 'crearcuenta',
+        data: {'userNombre': userNombre, 'userMensaje':userMensaje, 'userCorreo':userCorreo, 'userTipo':userTipo},
+        beforeSend: function () {
+                        $("#div_conctacto").html("Procesando, espere por favor...");
+                },
+        success: function(response){
+            $("#div_conctacto").html(response);
+        }
+    });  
+}
+
+
+function banner2() {
+
+$.get("/banner2/", function(data, status){
+             
+$("#div_intro").html(data );
+});
+
+}
+function banner3() {
+  
+$.get("/banner3/", function(data, status){
+             
+$("#div_intro").html(data );
+});
+
+}
+
+function banner4() {
+  
+$.get("/banner4/", function(data, status){
+             
+$("#div_intro").html(data );
+});
+
+}
+
+function banner5() {
+  
+$.get("/banner5/", function(data, status){
+             
+window.open(url);
+
+});
+
+}
+
+</script>
+      
+
+   <script src='https://www.google.com/recaptcha/api.js'></script>
+      
+      
+</head>
+<body>
+
+  <div class="site">
+    <div class="site-loader">
+      <div class="site-loader-spinner"></div>
+    </div> <!-- .site-loader -->
+
+    <div class="site-canvas">
+      <header class="site-header">
+        <nav class="navbar navbar-theme">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <div class="navbar-brand-wrap">
+                <a class="navbar-brand" href="#">
+                  <img src="/static/assets/img/site-header-logo.png" alt="">
+                </a>
+              </div>
+            </div> <!-- .navbar-header -->
+
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="#home">Início</a></li>
+                   <li><a href="#brief_1">Ventajas</a></li>
+                <li><a href="#brief_2">Alcance</a></li>
+               <li><a href="#brief_3" target="_blank">Experiencia</a></li>
+                            <li><a href="#contact" target="_blank">Contactos</a></li>
+
+
+      
+                <li class="audio-toggle"><a href="#"><i class="fa fa-volume-up"></i></a></li>
+              </ul>
+            </div> <!-- .navbar-collapse -->
+          </div>
+        </nav>
+      </header> <!-- .site-header -->
+      <main class="site-main">
+        <div id="home" class="section block-primary position-r align-c-xs-max" style="padding: 125px 0 180px;">
+          <div id="particles-js" class="site-bg">
+            <div class="site-bg-img"></div>
+            <div class="site-bg-video"></div>
+            <div class="site-bg-overlay"></div>
+            <div class="site-bg-effect layer" data-depth=".30"></div>
+            <canvas class="site-bg-canvas layer" data-depth=".30"></canvas>
+          </div> <!-- .site-bg -->
+
+          <div class="container">
+            <div class="row row-table">
+              <!-- <div class="col-sm-4">
+                <ul class="icon-list align-m m-t-30">
+
+                <li><a class="btn btn-default m-y-5 waves-effect waves-light" style="width: 250px;" onclick= banner1()>ERP Libre</a></li>
+               
+                <li><a class="btn btn-warning m-y-7 waves-effect waves-light" style="width: 250px;" onclick= banner3()>Crea Cuenta</a></li>
+                <li><a class="btn btn-success m-y-5 waves-effect waves-light" style="width: 250px;" onclick= banner4()>Descargar</a></li>
+                <li><a class="btn btn-invert m-y-5 waves-effect waves-light" style="width: 250px;" href="/demo" target="_blank">Demos y Tutoriales</a></li>
+               </ul>
+               </div>
+               -->
+               <div id="div_intro" class="col-sm-11">
+           
+        
+     <h2>Software Empresarial Dinámico ERP</h2>
+ 
+        <div class="row row-table">
+              <div class="col-sm-6">
+                <div class="col-inner" data-sr="left" data-sr-id="12" style="; visibility: visible;  -webkit-transform: translateX(0); opacity: 1;transform: translateX(0); opacity: 1;-webkit-transition: -webkit-transform 0.8s ease-in-out 0s, opacity 0.8s ease-in-out 0s; transition: transform 0.8s ease-in-out 0s, opacity 0.8s ease-in-out 0s; ">
+                  <div class="section-heading">
+                  
+          
+   <h5>El ERP Ideal Para Tu Negocio Con Nuestra Tecnología Flexible Personalizamos Tus Necesidades Con Tu Presupuesto</h5>
+        <ul class="icon-list align-l m-t-30">
+          <li><img src="/static/assets/img/icon/thunder.png" alt="">Cambios incluidos hasta 2 meses después de instalar.</li>
+          <li><img src="/static/assets/img/icon/thunder.png" alt="">Garantizamos el presupuesto inicial de venta.</li>
+          <li><img src="/static/assets/img/icon/thunder.png" alt="">0% de Anticipo, 2 meses sin compromiso de compra.</li>
+
+                    </ul>
+                            
+                  </div> 
+                <a class="btn btn-success m-y-5" style="width: 300px;" href="#brief_1" target="_blank">Ventajas de  CeroCódigo</a>
+
+                <a class="btn btn-warning m-y-5" style="width: 300px;" href="#brief_2" target="_blank">Módulos del ERP?</a>
+                 
+                </div>
+              </div>
+              <div class="col-sm-4 col-md-p-l-1 m-t-60-xs-max">
+<iframe width="400" height="300" src="https://www.youtube.com/embed/FBaHJgowDkI" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+      
+               </div>
+              
+            </div>
+               
+          </div>
+        </div> 
+
+        <div id="brief_1" class="section block-success align-c-xs-max" style="padding-top: 20px; padding-bottom: 20px;">
+          <div class="container">              
+            <h5 style="text-align: center;">Software enfocado a negocios sin complicaciones</h5>
+            <div class="row row-table">
+         
+              <div class="col-sm-5">
+                <div class="col-inner">
+                  <div class="section-content">
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            Oferta Unica
+                        </div>
+                        <div class="panel-body">
+                          <p style="text-align: justify;color: black;">
+                      CeroCódigo funciona con tecnología hibrida que nos permite manipular la estructura del ERP de forma ágil y rápida. Esto nos permite ser los únicos que pueden garantizar una implementación en el tiempo y presupuesto acordado.
+                   </p>
+                        </div>
+                      
+                    </div>
+                    
+                  
+                   <ul class="icon-list align-l m-t-30">
+                      <li><img src="/static/img/pencil.png" alt="">Enfocados en resolver tus problemas</li>
+                      <li><img src="/static/img/pencil.png" alt="">Tiempos de respuestas inmediatos</li>
+                      <li><img src="/static/img/pencil.png" alt="">Instalación sin compromiso de compra</li>
+                    </ul>
+                    
+
+                  </div> <!-- .section-content -->
+                </div>
+              </div>
+              <div class="col-sm-5 m-t-60-xs-max p-l-60-md-min">
+                <div class="col-inner clearfix">
+                  <iframe width="400" height="250" src="https://www.youtube.com/embed/jMWEXct_3n0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>     
+                </div>
+                <a class="btn btn-default m-y-5" href="#contact" style="width: 100%;">Pide una cotización</a>
+              </div>
+            </div>
+          </div>
+        </div>
+       <!-- #brief_3 -->
+
+
+        <div id="brief_2" class="section block-warning align-c-xs-max" style="padding-top: 20px; padding-bottom: 20px;"> 
+          <div class="container">
+            <h5 style="text-align: center;">CeroCódigo parte de una serie de módulos y procesos estándares especializándolos para cada cliente y según su flujo de trabajo</h5>
+             
+              <div class="col-sm-6"> 
+             
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-puzzle-piece" style="padding-right: 10px;"></i>Módulos y Procesos
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="list-group">
+                       <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-dollar" style="padding-right: 10px;"></i> Ventas, Crédito, Punto de venta.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-truck" style="padding-right: 10px;"></i> Ordenes de compra, Compras, Pagos.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-user" style="padding-right: 10px;"></i> Clientes, Proveedores, Personal.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-sliders" style="padding-right: 10px;"></i> Cuentas Pendientes, Contabilidad.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-calendar" style="padding-right: 10px;"></i> Obra, Presupuestos, Asientos Diario .
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+              </div>
+
+
+              </div>
+
+              <div class="col-sm-6"> 
+             
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-puzzle-piece" style="padding-right: 10px;"></i>Módulos y Procesos
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="list-group">
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-barcode" style="padding-right: 10px;"></i> Inventarios, Mínimos, Bodegas.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-money" style="padding-right: 10px;"></i> Bancos, Cobros, Pagos.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-undo" style="padding-right: 10px;"></i> Devoluciones, Notas de Crédito.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-cubes" style="padding-right: 10px;"></i> Producción, Entregas, Lotes.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                        <p class="list-group-item" style="color: black;">
+                          <i class="fa fa-legal" style="padding-right: 10px;"></i> ATS, 104, Documentos electrónicos.
+                            <span class="pull-right text-muted small"><em>...</em>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+              </div>
+
+
+              </div>
+
+          </div>
+         
+        </div> <!-- #brief_2 -->
+
+       
+
+      <div id="brief_3" class="section block-primary align-c-xs-max" style="padding-top: 20px; padding-bottom: 20px;">
+          <div class="container">
+            <h5 style="text-align: center;">Implementaciones anteriores</h5>
+             
+
+
+              <div class="row" style="background-color: white;">
+                <div class="col-lg-2 col-md-6">
+                  <img class="media-object" src="static/empresas/bassa.png" data-holder-rendered="true">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                  <img class="media-object" src="static/empresas/gt.png" data-holder-rendered="true">
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                  <img class="media-object" src="static/empresas/indunidas.png" data-holder-rendered="true">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                  <img class="media-object" src="static/empresas/yl.png" data-holder-rendered="true">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <img class="media-object" src="static/empresas/mm.png" data-holder-rendered="true">
+                </div>                
+
+                <div class="col-lg-2 col-md-6">
+                    <img class="media-object" src="static/empresas/ql.png" data-holder-rendered="true">
+                </div>
+
+
+
+
+
+              </div>
+
+
+        
+          </div>
+      </div> <!-- #brief_2 -->
+     
+     
+     
+      
+      
+      
+    
+
+
+  <div id="contact" class="section block-default" style="padding-top: 20px; padding-bottom: 20px;">
+    <div class="container">
+      <div class="section-heading text-center">
+        <h5>Quieres implementar CeroCodigo?</h5>
+        <h4>Enviamos un mensaje.</h4>
+        <p>Pregunta lo que necesites, nos comunicaremos contigo lo antes posible.</p>
+
+        <div class="row">
+          <div class="col-sm-6"> 
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                  Sevilla, España
+              </div>
+              <div class="panel-body">
+                  <<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3171.1965048124057!2d-5.98814558469421!3d37.36152697983676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd126d2ba0fa688b%3A0x67b035d43d4d461a!2sCeroCodigo!5e0!3m2!1ses!2ses!4v1541375934416" width="400" height="150" frameborder="0" style="border:0" allowfullscreen></iframe>
+              </div>
+              <div class="panel-footer">
+                  Ave. Reina Mercedez #19A Escalera C Piso 6
+                  +34 622581335
+              </div>
+            </div>
+            
+          </div>
+        
+
+        <div class="col-sm-6">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              Guayaquil, Ecuador
+            </div>
+            <div class="panel-body">
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3986.9722207564937!2d-79.91515968502516!3d-2.1642724756666234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902d6d8c1002860d%3A0x5a86aca80917837f!2sCero+Codigo!5e0!3m2!1ses-419!2sec!4v1541506729717" width="400" height="150" frameborder="0" style="border:0" allowfullscreen></iframe>
+            </div>
+            <div class="panel-footer">
+              Bálsamos 813 Coworking Invernadero
+              +593 958920389
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <div class="row">
+          <div class="col-sm-6">
+
+              <div class="col-inner">
+                <div class="icon-box _left">
+                  <div class="icon-box-media">
+                    <img src="/static/img/user.png" alt="" data-sr="bottom">
+                  </div>
+                  <div class="icon-box-heading">
+                    <h4>Nombre</h4>
+                  </div>
+                  <div class="icon-box-content font-sub font-italic">
+                    <input class="form-control" id="userNombre" name="userNombre" pattern="[A-Za-z0-9]" type="text" name="name">
+                  </div>
+                  <div class="icon-box-heading">
+                    <h4>Situacion actual</h4>
+                  </div>
+                  <div class="icon-box-content font-sub font-italic">
+                      <input class="form-control" id="userMensaje" name="userMensaje" type="text" name="name">
+                  </div>
+                  <div class="icon-box-heading">
+                    <h4>Correo</h4>
+                  </div>
+                  <div class="icon-box-content font-sub font-italic">
+                    <input class="form-control" id="userCorreo" name="userCorreo" type="text" name="name">
+                  </div>
+                 
+                </div>
+              </div>
+          </div>
+          <div class="col-sm-6">
+
+            <div class="icon-box-heading">
+            <h4>Tipo de Negocio</h4>
+            </div>
+            <div class="icon-box-content font-sub font-italic">
+              <div class="form-group">
+                <div class="col-md-10">
+                  <select id="userTipo" class="form-control selectpicker">
+                    <option>Compra y Venta Inventarios</option>
+                    <option>Servicios Profesionales Proyectos</option>
+                    <option>Punto de Venta</option>
+                    <option>Manufactura Bajo Pedido</option>
+                    <option>Restaurante</option>
+                    <option>Fabrica o industrial</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="section-heading text-center">
+              <br>
+               <input id="humano" name="humano" type="checkbox"/> Eres humano?
+               <br>
+              <a class="btn btn-success m-y-5 waves-effect waves-light" style="width: 100%;" onclick="envio();">Enviar Mensaje</a>
+            </div>
+            <div id="div_conctacto2">
+            </div>
+          </div>
+
+        </div>
+
+
+
+      
+      </div>
+    </div>
+  </div>
+
+
+
+    
+
+       
+      </main> <!-- .site-main -->
+      <footer class="site-footer block-invert">
+        <div class="container">
+        
+            <img class="site-footer-logo img-responsive"  style="visibility: visible;" src="/static/assets/img/site-footer-logo.png" data-sr="bottom">
+           
+          <p class="site-footer-copyright">2020 © <a href="#" target="_blank">CeroCódigo</a> | Derechos reservados.</p>
+          
+          
+        </div>
+      </footer> <!-- .site-footer -->
+    </div>
+  </div>
+
+  <script src="/static/assets/js/vendor/jquery-1.11.3.min.js"></script>
+  <script src='/static/assets/js/vendor/bootstrap.min.js'></script>
+  <script src='/static/assets/js/vendor/plugin.js'></script>
+  <script src='/static/assets/js/variable.js'></script>
+  <script src='/static/assets/js/map.js'></script>
+  <script src='/static/assets/js/main.js'></script>
+
+  <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+  <!--
+  <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='https://www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X','auto');ga('send','pageview');
+  </script>
+  -->
+
+</body>
+
+</html>

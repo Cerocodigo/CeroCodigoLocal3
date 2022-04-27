@@ -1,0 +1,2178 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- SEO Meta description -->
+    <meta name="description"
+    content="Cero Codigo">
+    <meta name="author" content="ThemeTags">
+ 
+    <!-- OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+ -->
+    <meta property="og:site_name" content=""/> <!-- website name -->
+    <meta property="og:site" content=""/> <!-- website link -->
+    <meta property="og:title" content=""/> <!-- title shown in the actual shared post -->
+    <meta property="og:description" content=""/> <!-- description shown in the actual shared post -->
+    <meta property="og:image" content=""/> <!-- image link, make sure it's jpg -->
+    <meta property="og:url" content=""/> <!-- where do you want your post to link to -->
+    <meta property="og:type" content="article"/>
+
+    <!--title-->
+    <title>Cero Codigo</title>
+
+    <!--favicon icon-->
+    <link rel="icon" href="/static/img/New_Logo_solo.ico">
+
+    <!--google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700%7COpen+Sans&display=swap"
+    rel="stylesheet">
+
+    <!--Bootstrap css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/bootstrap.min.css">
+    <!--Magnific popup css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/magnific-popup.css">
+    <!--Themify icon css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/themify-icons.css">
+    <!--animated css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/animate.min.css">
+    <!--ytplayer css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/jquery.mb.YTPlayer.min.css">
+    <!--Owl carousel css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/static/AppBeats/css/owl.theme.default.min.css">
+    <!--custom css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/style.css">
+    <!--responsive css-->
+    <link rel="stylesheet" href="/static/AppBeats/css/responsive.css">
+
+    <link rel="stylesheet" href="/static/a/dist/css/AdminLTE.min.css">
+
+
+    <link rel="stylesheet" href="/static/a/dist/css/MaterialAdminLTE.min.css">
+    <link rel="stylesheet" href="/static/a/bower_components/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="/static/a/bower_components/font-awesome/css/font-awesome.min.css">
+
+
+<!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/21125503.js"></script>
+<!-- End of HubSpot Embed Code -->
+
+<!-- Google Font -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+<script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+
+
+<style>
+    .zoom {
+      transition: transform .2s; /* Animation */
+    }
+    .zoom:hover {
+      transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+      position:absolute;
+      right:0;
+      top:-50;
+    }
+    </style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-87398686-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-87398686-2');
+</script>
+
+
+<script type="text/javascript">
+
+idleTime = 0
+
+
+function timerIncrement() {
+  idleTime = idleTime + 1;
+  if(idleTime <5){
+
+    $.ajax({
+        type: 'POST',
+        url: '/logrep',
+        data: {'csrfmiddlewaretoken': '{{ csrf_token }}','userc_name': 0,'us_idleTime': idleTime, 'us_home': 'Home'},
+        success: function(response){        }
+    });  
+  }else{
+    if(idleTime <10){
+        $.ajax({
+            type: 'POST',
+            url: '/logrep',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','userc_name': 0,'us_idleTime': idleTime, 'us_home': 'Home'}, 
+            success: function(response){            }
+    }); 
+    }
+  }
+}
+
+
+  $(window).load(function() {
+   // executes when complete page is fully loaded, including all frames, objects and images
+        //traer_alertas()
+        log()
+        var fecha_now = new Date();
+        document.getElementById("c_fecha").value = fecha_now.format("Y-m-d")
+        var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+    });
+
+
+
+  function cambiar_logo(){
+    id =document.getElementById('u_logo')
+    if ( CheckFileName('PNG', u_logo_file) == true){
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            document.getElementById(id.id).src = e.target.result
+            $(id.id).attr('src', e.target.result);
+            window.cambio_img = 1
+        //tt_id = id.id
+        //tt_id =tt_id.replace('_img','_label') 
+        //label = document.getElementById(tt_id)
+
+        //label.innerHTML = '<a href="/media/archivos/{{Id_empresa}}/' + document.getElementById(id.id + '_file').files[0].name + '" target="_blank"><img id="' + id.id + '" style="width: 80%;height: 80px;margin-left: auto;margin-right: auto; display: block;" src="/media/archivos/{{Id_empresa}}/' + document.getElementById(id.id + '_file').files[0].name + '" alt="image">' + document.getElementById(id.id + '_file').files[0].name + '</a>'
+
+
+          //const files = document.getElementById(envio_archi[x2]).files
+          const files = document.getElementById(id.id + '_file').files
+          const formData = new FormData()
+          formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+          formData.append('Id_empresa','{{Id_empresa}}')
+          formData.append('id_archivo',document.getElementById(id.id + '_file').files[0].name)
+
+          for (let i = 0; i < files.length; i++) {
+            let file = files[i]
+
+            formData.append('files', file)
+        }
+
+          //fetch('/archi_car_home', {method: 'POST',body: formData,}).then(response => {
+          //  console.log(response)
+          //  const ele_imagen = document.getElementById(id.id + '_file').files
+          //  ele_imagen.attr('src', '/media/archivos/{{Id_empresa}}/' + document.getElementById(id.id + '_file').files[0].name);
+
+
+        //})
+
+
+    }
+
+    reader.readAsDataURL(document.getElementById(id.id + '_file').files[0]);
+
+}
+}
+
+function log(){
+
+
+    $.ajax({
+        type: 'POST',
+        url: 'logweb',
+        data: {'userc_name': 0},
+        success: function(response){
+        }
+    });  
+}
+
+
+function cambiar_p12(){
+
+    CheckFileName('P12', u_p12_file)
+
+}
+
+function CheckFileName(tipo, fuente) {
+    var fileName = fuente.value
+    if (fileName == "") {
+        alert("Browse to upload a valid File with png extension");
+        return false;
+    }
+    else if (fileName.split(".")[1].toUpperCase() == tipo)
+        return true;
+    else {
+        alert("Archivo " + fileName.split(".")[1] + " invalido, debe ser " + tipo);
+        fuente.value= ''
+        return false;
+    }
+    return true;
+}
+
+function enviar_mensaje(){
+    var userc_name = document.getElementById("c_name").value
+    var userc_email = document.getElementById("c_email").value
+    var userc_message = document.getElementById("c_message").value
+
+    //var userc_fecha = document.getElementById("c_franja").value
+    //var userc_hora = document.getElementById("c_fecha").value
+    var userc_fecha = ''
+    var userc_hora = ''
+
+    var userc_telefono = document.getElementById("c_telefono").value
+    
+
+    if (userc_name === ""){
+        $("#div_mensaje").html("Falta Nombre");
+        return
+    }
+    if (userc_email === ""){
+        $("#div_mensaje").html("Falta Correo");
+        return
+    }
+    if (userc_telefono === ""){
+        $("#div_mensaje").html("Falta Telefono");
+        return
+    }
+    if (userc_message === ""){
+        $("#div_mensaje").html("Falta Mensaje");
+        return
+    }
+    if (document.getElementById('c_mens_h').checked) {
+    }else{
+        $("#div_mensaje").html("Valida la casilla de envio");
+        return
+    }
+    var modulos = ''
+
+    if (document.getElementById('c_mod_Ventas').checked){modulos = modulos + 'Ventas -'}    
+    if (document.getElementById('c_mod_Pos').checked){modulos = modulos + 'Pos -'}    
+    if (document.getElementById('c_mod_Compras').checked){modulos = modulos + 'Compras -'}    
+    if (document.getElementById('c_mod_Cobros').checked){modulos = modulos + 'Cobros -'}    
+    if (document.getElementById('c_mod_Pagos').checked){modulos = modulos + 'Pagos -'}    
+    if (document.getElementById('c_mod_Bancos').checked){modulos = modulos + 'Bancos -'}    
+    if (document.getElementById('c_mod_Inventario').checked){modulos = modulos + 'Inventario -'}    
+    if (document.getElementById('c_mod_Contabilidad').checked){modulos = modulos + 'Contabilidad -'}    
+    if (document.getElementById('c_mod_Produccion').checked){modulos = modulos + 'Produccion -'}    
+    if (document.getElementById('c_mod_rrhh').checked){modulos = modulos + 'rrhh -'}    
+    if (document.getElementById('c_mod_SRI').checked){modulos = modulos + 'SRI -'}    
+    if (document.getElementById('c_mod_agricola').checked){modulos = modulos + 'agricola -'}    
+    if (document.getElementById('c_mod_unico').checked){modulos = modulos + 'unico -'}    
+
+    modulos = modulos + ', usuarios: ' +  document.getElementById('num_user').value
+    modulos = modulos + ', pvp Final: ' +  document.getElementById('p_valor_final').innerHTML
+
+
+    $.ajax({
+        type: 'POST',
+        url: 'enviar_mensaje',
+        data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 'userc_name': userc_name, 'userc_email':userc_email, 'userc_message':userc_message,'userc_fecha':userc_fecha,'userc_hora':userc_hora,'userc_telefono':userc_telefono, 'userc_modulos':modulos},
+        beforeSend: function() {
+            $("#div_mensaje").html("Procesando, espere por favor...");
+            document.getElementById('c_mens_h').checked = false
+
+        },
+        success: function(response){
+            $("#div_mensaje").html("Enviado");
+            document.getElementById('c_mens_h').checked = false
+        }
+    });  
+}
+
+function registro_cuenta(){
+
+    var userId_erp = document.getElementById("Id_erp").value
+    var userId = document.getElementById("d_Id").value
+    var userRazonSocial = document.getElementById("d_RazonSocial").value
+    var userNombreComercial = document.getElementById("d_NombreComercial").value
+    
+    var userCorreo = document.getElementById("u_correo").value
+    var userTipo = document.getElementById("u_Tipo").value
+    
+    var userClave1 = document.getElementById("u_Clave1").value
+    var userClave2 = document.getElementById("u_Clave2").value
+    var userp12 = document.getElementById("u_p12_file")
+    var userlogo = document.getElementById("u_logo_file")
+
+    var userClaveElect = document.getElementById("u_ClaveElect").value
+    var userContri = document.getElementById("u_contri").value
+    var userObligado = document.getElementById("u_obligado").value
+    var userDireccion = document.getElementById("u_direccion").value
+
+    
+
+
+    if (userContri === ""){
+        $("#div_registro").html("Falta Especiicar si es Contribuyente Especial");
+        return
+    }
+    if (userObligado === ""){
+        $("#div_registro").html("Falta si es obligado a lleva contabilidad");
+        return
+    }
+    if (userDireccion === ""){
+        $("#div_registro").html("Falta Direccion");
+        return
+    }
+
+    if (userId_erp === ""){
+        $("#div_registro").html("Falta Usuario");
+        return
+    }
+    if (userId === ""){
+        $("#div_registro").html("Falta Id / Ruc");
+        return
+    }
+    if (userRazonSocial === ""){
+        $("#div_registro").html("Falta Razon Social");
+        return
+    }
+
+    if (userNombreComercial === ""){
+        $("#div_registro").html("Falta Nombre Comercial");
+        return
+    }
+    if (!(userClave1 === userClave2)){
+        $("#div_registro").html("Claves no coinciden");
+        return
+    }
+    if (userClave1 === ""){
+        $("#div_registro").html("Falta Mensaje");
+        return
+    }
+    if (userCorreo === ""){
+        $("#div_registro").html("Falta Correo");
+        return
+    }
+    if (userTipo === ""){
+        $("#div_registro").html("Falta Tipo");
+        return
+    }
+    if (numeric(userId) === false){
+        $("#div_registro").html("Id o Ruc solo numeros");
+        return
+    }    
+    if (alphanumeric(userId_erp) === false){
+        $("#div_registro").html("Usuario solo numeros, letras y _");
+        return
+    }    
+
+    if (userClaveElect === ""){
+        $("#div_registro").html("Falta Clave de firma Electronica");
+        return
+    }
+
+
+    if (userp12.value === ""){
+        $("#div_registro").html("Falta firma electronica");
+        return
+    }
+    if (userlogo.value === ""){
+        $("#div_registro").html("Falta Logo");
+        return
+    }
+    if (document.getElementById('c_reg_h').checked) {
+
+    }else{
+        $("#div_registro").html("Valida la casilla de Registro");
+        return
+    }
+
+
+    const logos = document.getElementById('u_logo_file').files
+
+
+    const fileP12 = document.getElementById('u_p12_file').files
+
+    const formData = new FormData()
+
+    for (let i = 0; i < logos.length; i++) {
+        let filea = logos[i]
+
+        formData.append('logos', filea)
+    }
+
+    for (let i = 0; i < fileP12.length; i++) {
+        let fileb = fileP12[i]
+
+        formData.append('fileP12', fileb)
+    }
+
+          //fetch('/archi_car_home', {method: 'POST',body: formData,}).then(response => {
+          //  console.log(response)
+          //  const ele_imagen = document.getElementById(id.id + '_file').files
+          //  ele_imagen.attr('src', '/media/archivos/{{Id_empresa}}/' + document.getElementById(id.id + '_file').files[0].name);
+
+
+          formData.append('userId_erp',userId_erp)
+          formData.append('userId',userId)
+          formData.append('userRazonSocial',userRazonSocial)
+          formData.append('userNombreComercial',userNombreComercial)
+          formData.append('userCorreo',userCorreo)
+          formData.append('userTipo',userTipo)
+          formData.append('userClave1',userClave1)
+          formData.append('userClaveElect',userClaveElect)
+          formData.append('userContri',userClaveElect)
+          formData.append('userObligado',userClaveElect)
+          formData.append('userDireccion',userClaveElect)
+
+
+
+
+
+
+          fetch('/crear_usuario', {method: 'POST',body: formData,}).then(response => {
+            $("#div_registro").html(response);
+
+        })
+
+
+    //$.ajax({
+    //        type: 'POST',
+     //       url: 'crear_usuario',
+    //        data: formData,
+    //        beforeSend: function () {
+    //            $("#div_registro").html("Procesando, espere por favor...");
+     //       },
+    //        success: function(response){
+     //           $("#div_registro").html(response);
+     //       }
+     //   });  
+ }
+
+function abrir_sub(idtr, quien_envia){
+    if(idtr.style.display == 'none'){
+        idtr.style.display = ''        
+        quien_envia.innerHTML = quien_envia.innerText + '<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-up"></i></div>'
+    }else{
+        idtr.style.display = 'none'
+        quien_envia.innerHTML = quien_envia.innerText + '<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div>'
+    }
+
+}
+
+
+function valorees_user(checko){
+    var p_valor_final = document.getElementById('p_valor_final')
+    var total = document.getElementById('p_valor')
+
+    var valor_user = document.getElementById('num_user').value
+    if(valor_user < 1){
+        document.getElementById('num_user').value = 1
+        valor_user = 1
+    }
+    //if(valor_user > 20){
+    //    valor_user = parseFloat(valor_user * 40)
+    //}else{
+    //    if(valor_user < 5){
+    //        valor_user = parseFloat(valor_user * 20)
+    //    }else{
+    //        valor_user = parseFloat(valor_user * 30)
+    //    }
+    //}
+
+
+    valor_user = parseFloat(valor_user * 4)
+    document.getElementById('p_valor_user').innerHTML = valor_user
+
+
+
+    p_valor_final.innerHTML = (parseFloat(total.innerHTML)  + parseFloat(valor_user))
+
+}
+
+
+function valorees(checko, valor){
+    var total = document.getElementById('p_valor')
+    var p_valor_final = document.getElementById('p_valor_final')
+
+    //var valor_user = document.getElementById('num_user').value
+    //if(valor_user < 1){
+    //    document.getElementById('num_user').value = 1
+    //    valor_user = 1
+    //}
+    //if(valor_user > 20){
+    //    valor_user = parseFloat(valor_user * 40)
+    //}else{
+    //    if(valor_user < 5){
+    //        valor_user = parseFloat(valor_user * 20)
+    //    }else{
+    //        valor_user = parseFloat(valor_user * 30)
+    //    }
+    //}
+    valor_user = document.getElementById('p_valor_user').innerHTML 
+
+
+
+    if(checko.checked == true){
+        total.innerHTML = (parseFloat(total.innerHTML)  + parseFloat(valor)).toFixed(2)        
+    }else{
+       total.innerHTML = (parseFloat(total.innerHTML)  - parseFloat(valor)).toFixed(2)        
+    }
+    
+    p_valor_final.innerHTML = (parseFloat(total.innerHTML)  + parseFloat(valor_user))
+
+
+}
+
+ function alphanumeric(inputtxt) 
+ {
+    var strValidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+    for (i = 0; i < inputtxt.length; i++) {
+        var paso = false
+        for (i2 = 0; i2 < strValidChars.length; i2++) {
+          if(inputtxt.charAt(i) === strValidChars.charAt(i2)){paso = true} 
+      }
+  if(paso === false){return false}
+}
+return true;
+}
+
+function numeric(inputtxt) 
+{
+    var strValidChars = "0123456789";
+    for (i = 0; i < inputtxt.length; i++) {
+        var paso = false
+        for (i2 = 0; i2 < strValidChars.length; i2++) {
+          if(inputtxt.charAt(i) === strValidChars.charAt(i2)){paso = true} 
+      }
+  if(paso === false){return false}
+}
+return true;
+}
+</script>
+
+<!-- Global site tag (gtag.js) - Google Ads: 1015901002 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1015901002"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-1015901002');
+</script>
+
+<script>
+function ir_a(t_div){
+    t_div.scrollIntoView();
+}
+
+
+</script>
+
+
+<!-- Event snippet for Website lead conversion page -->
+<script>
+  gtag('event', 'conversion', {'send_to': 'AW-1015901002/7WvHCLmTpd4BEMrWteQD'});
+</script>
+
+</head>
+
+<body>
+
+
+    <!--loader start-->
+    <div id="preloader">
+        <div class="loader1">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <!--loader end-->
+
+    <!--header section start-->
+    <header class="header">
+        <!--start navbar-->
+        <nav class="navbar navbar-expand-lg fixed-top bg-transparent" style="background-image: linear-gradient(to left, rgba(50, 100, 245, 0.90), rgba(74, 84, 232, 0.88), rgba(91, 66, 219, 0.85), rgba(104, 44, 203, 0.88), rgba(114, 2, 187, 0.90));">
+            <div class="container" style="height: 70px;"> <!-- style="background: darkmagenta;"-->
+                <a class="navbar-brand">
+                    <img src="/static/img/logos_blanco.png" width="160" alt="logo" class="img-fluid" style="width: 140px;"/ >
+                </a>    
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="ti-menu"></span>
+            </button>
+            <div class="collapse navbar-collapse h-auto" id="navbarSupportedContent" style="background-image: linear-gradient(to left, rgba(50, 100, 245), rgba(74, 84, 232), rgba(91, 66, 219), rgba(104, 44, 203));">
+
+                <ul class="navbar-nav ml-auto menu">
+                    <li><a onclick="ir_a(principal)" style="font-weight: bold;cursor: pointer;color: white;">Inicio</a>
+                    <!--<li><a onclick="ir_a(modulos)" style="font-weight: bold;cursor: pointer;color: white;"></a></li>-->
+                    <li><a onclick="ir_a(modulos)" style="font-weight: bold;cursor: pointer;color: white;">Ventajas</a></li>
+                    <li><a onclick="ir_a(Presupuestos)" style="font-weight: bold;cursor: pointer;color: white;">Módulos</a></li>
+                    <li><a onclick="ir_a(Preguntas)" style="font-weight: bold;cursor: pointer;color: white;">Preguntas</a></li>
+                    <li><a onclick="ir_a(conctacto)" style="font-weight: bold;cursor: pointer;color: white;">Contactos</a></li>
+                    <li><a href="https://www.cerocodigo.com/demo" target="blank" class="page-scroll" style="font-weight: bold;">Demo</a></li>
+                    <li><a href="https://www.cerocodigo.com/esp/log" target="blank" class="page-scroll" style="font-weight: bold;">Ingreso</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <!--header section end-->
+
+
+    <!--body content wrap start-->
+    <div class="main">
+
+        <!--hero section start-->
+        <section class="hero-equal-height ptb-100 gradient-overlay" id='principal'
+        style="background: url('img/hero-bg-3.jpg')no-repeat center center / cover">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-md-7 col-lg-6">
+                    <div class="hero-content-left text-white my-lg-0 my-md-5 my-sm-5 my-5">
+                        <h1 class="text-white">Sistema Contable, Financiero y Productivo</h1>
+                            <p class="lead">
+                           La solución que crece contigo, cero códigos, cero problemas.
+
+                            <div class='row'>
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> 100% Personalizable</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Balanced ScoreCard</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Ficha de Clientes y Productos</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Calendarios Interactivos</li>
+
+                                </ul>
+                                <ul class="list-unstyled footer-nav-list mt-3"  style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> 100% Módulos Integrado</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Indicadores Financieros</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Flujo de Información</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Auditoría y Trazabilidad</li>
+                                </ul>
+                            </div>
+                            </p>
+                                
+                        <div class="action-btns download-btn mt-4">
+                           <a href="https://www.cerocodigo.com/demo" target="blank" class="page-scroll btn outline-white-btn animated-btn">Demo Gratis</a>
+                           <a href="#" class="page-scroll btn outline-white-btn animated-btn" onclick="ir_a(conctacto)">Contáctanos</a>
+
+                       </div>
+
+                   </div>
+               </div>
+               <div class="col-md-5 col-lg-6">
+                <div class="video-app-wrap m-sm-auto ml-auto">
+                    <div class="iphone-mask">
+                        <img src="/static/AppBeats/img/iphone-mask.png" alt="app" class="img-fluid mask-img"/>
+                        <div class="video-wrap">
+                            <video autoplay loop muted playsinline width="400" height="300">
+                                <source src="/static/img/vid_main2.mp4" type="video/mp4" />
+                                <source src="/static/img/vid_main2.mp4" type="video/webm" />             
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="shape-bottom">
+        <img src="/static/AppBeats/img/wave-line-bw-long.svg" alt="shape" class="bottom-shape img-fluid">
+    </div>
+</section>
+<!--hero section end-->
+
+
+<div class="trusted-client pt-5 pb-5 d-none d-sm-none d-md-none d-lg-block">
+    <div class="container">
+           <!-- <div class="row">
+                <div class="col-md-7">
+                    <div class="client-section-wrap d-flex flex-row align-items-center">
+                        <p class="lead mr-5 mb-0">Trusted by 5,000 company:</p>
+                        <ul class="list-inline justify-content-between">
+                            <li class="list-inline-item mx-3"><img src="img/clients-logo-01.png" width="85" alt="client" class="img-fluid"></li>
+                            <li class="list-inline-item mx-3"><img src="img/clients-logo-02.png" width="85" alt="client" class="img-fluid"></li>
+                            <li class="list-inline-item mx-3"><img src="img/clients-logo-03.png" width="85" alt="client" class="img-fluid"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+    <!--trusted company end-->
+
+    <!--promo section new start-->
+    <section  id="modulos" class="promo-new ptb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading text-center mb-2">
+                        <h2>¿Por qué Nosotros?</h2>
+                        <p class="lead" style="color: darkviolet; font-weight: bold;">
+                             Somos tu aliado estratégico para la gestión y control de la información de tu empresa.</p>
+                       
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-lg-4">
+                    <div class="new-single-promo rounded p-5 border-color-3 mt-4 text-center">
+                        <div class="promo-img-wrap mb-4">
+                            <img src="/static/AppBeats/img/promo-2.svg" width="80" alt="promo" class="img-fluid"/>
+                        </div>
+                        <div class="promo-content-wrap">
+                            <h5>Procesos Robustos e Integrados</h5>
+                             <div class="row" style="justify-content: center;">
+                           <!-- <p>Facturación, Compras, Bancos, Inventarios, Kardex, Contabilidad, Cobranzas, Producción, Lotes, Pedidos</p>-->
+                            
+                        </div>
+                            <span class="color-6 color-2-bg rounded py-1 px-2 text-uppercase">Documentos Electrónicos</span>
+                            <span class="color-4 color-2-bg rounded py-1 px-2 text-uppercase">SRI</span>
+                            <span class="color-4 color-2-bg rounded py-1 px-2 text-uppercase">ATS</span>
+                            <span class="color-1 color-2-bg rounded py-1 px-2 text-uppercase">Compras</span>
+                            <span class="color-2 color-2-bg rounded py-1 px-2 text-uppercase">Bancos</span>
+                            <span class="color-3 color-2-bg rounded py-1 px-2 text-uppercase">Inventarios</span>
+                            <span class="color-4 color-2-bg rounded py-1 px-2 text-uppercase">Kardex</span>
+                            <span class="color-5 color-2-bg rounded py-1 px-2 text-uppercase">Contabilidad</span>
+                            <span class="color-6 color-2-bg rounded py-1 px-2 text-uppercase">Cobranzas</span>
+                            <span class="color-5 color-2-bg rounded py-1 px-2 text-uppercase">Producción</span>
+                            <span class="color-4 color-2-bg rounded py-1 px-2 text-uppercase">Lotes</span>
+                            <span class="color-3 color-2-bg rounded py-1 px-2 text-uppercase">Pedidos</span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-4">
+                    <div class="new-single-promo rounded p-5 border-color-3 mt-4 text-center">
+                        <div class="promo-img-wrap mb-4">
+                            <img src="/static/AppBeats/img/promo-1.svg" width="80" alt="promo" class="img-fluid"/>
+
+                        </div>
+                        <div class="promo-content-wrap">
+                            <h5>Herramientas Potentes</h5>
+                           <!-- <p>Cero Código cuenta con funcionalidades que facilitan el  Control, Medición y evaluación de tu negocio.</p>
+                            <br>-->
+
+                            <span class="color-3 color-1-bg rounded py-1 px-2 text-uppercase">Balanced Scorecard</span>
+                            <span class="color-2 color-4-bg rounded py-1 px-2 text-uppercase">Fichas de Análisis</span>
+                            <span class="color-1 color-4-bg rounded py-1 px-2 text-uppercase">Flujos de Procesos y Estados</span>
+                            <span class="color-5 color-5-bg rounded py-1 px-2 text-uppercase">Aprobaciones</span>
+                            <span class="color-2 color-2-bg rounded py-1 px-2 text-uppercase">Asignación de Tareas</span>
+                            <span class="color-6 color-4-bg rounded py-1 px-2 text-uppercase">Calendario de Actividades</span>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-4">
+                    <div class="new-single-promo rounded p-5 border-color-3 mt-4 text-center">
+                        <div class="promo-img-wrap mb-4">
+                            <img src="/static/AppBeats/img/promo-3.svg" width="80" alt="promo" class="img-fluid"/>
+
+                        </div>
+                        <div class="promo-content-wrap">
+                            <h5>Enfoque de servicio y ayuda</h5>
+                            <!--<p>El sistema se adapta a ti no tú al sistema, Cero código  sobre todo es un servicio que busca potencializar tu forma de trabajar.</p>-->
+                            <span class="color-3 color-1-bg rounded py-1 px-2 text-uppercase">Desarrollo Continuo</span>
+                            <span class="color-5 color-5-bg rounded py-1 px-2 text-uppercase">Asistencia directa</span>
+                            <span class="color-2 color-2-bg rounded py-1 px-2 text-uppercase">Módulos y procesos personalizados</span>
+                            <span class="color-1 color-5-bg rounded py-1 px-2 text-uppercase">Trazabilidad</span>
+                            <span class="color-1 color-5-bg rounded py-1 px-2 text-uppercase">Asistente Virtual</span>
+
+
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--promo section new end-->
+
+    <!--feature section tab style start
+    <section id="features" class="feature-tab-section ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="feature-content-wrap">
+                        <ul class="nav nav-tabs feature-tab justify-content-center border-bottom-0" data-tabs="tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active h6 d-flex align-items-center" href="#tab6-1" data-toggle="tab">
+                                    <span class="ti-palette d-inline-block color-1 mr-2 icon-sm p-1"></span>
+                                    Modulos Habilitados
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-2" data-toggle="tab">
+                                    <span class="ti-rss-alt d-inline-block color-2 mr-2 icon-sm p-1"></span>
+                                    Connect Wifi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-3" data-toggle="tab">
+                                    <span class="ti-shopping-cart d-inline-block color-3 mr-2 icon-sm p-1"></span>
+                                    Online Shopping
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-4" data-toggle="tab">
+                                    <span class="ti-palette d-inline-block color-4 mr-2 icon-sm p-1"></span>
+                                    Display Store
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content feature-tab-content">
+                            <div class="tab-pane active" id="tab6-1">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">01.</span>
+                                            <h3>Fully Branded Portal</h3>
+                                            <p>Assertively incentivize long-term high-impact scenarios whereas accurate imperatives.</p>
+                                            <p>Quickly communicate multimedia based materials for enabled channels. Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-1.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-2">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">02.</span>
+                                            <h3>Returns to Exchanges</h3>
+                                            <p>Quickly communicate multimedia based materials for enabled channels. Turn Returns to Exchanges Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <p>Dramatically reconceptualize user-centric expertise whereas competitive synergy.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-2.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-3">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">03.</span>
+                                            <h3>Multichannel Returns</h3>
+                                            <p>Quickly communicate multimedia based materials to team driven infrastructures. Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <p>Competently disintermediate web-enabled growth strategies whereas professional applications.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-3.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-4">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">04.</span>
+                                            <h3>Set goals & timelines</h3>
+                                            <p>Quickly communicate multimedia based materials for enabled channels. Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <p>Continually architect multifunctional schemas rather than superior users. Conveniently scale.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-4.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+    <!--feature section tab style end-->
+   <section id="Trabajando" class="gradient-overlay">
+        <div class="container">
+            <div class="row justify-content-around align-items-end">
+                <div class="col-md-12 col-lg-12">
+                    <div class="download-txt text-white ptb-100">
+                        <h4 class="text-white" style="text-align: center;">
+                            Enfocados en resolver problemas de forma eficiente, efectiva y sin sorpresas.</h4>
+                    </div>
+                </div>
+               <!-- <div class="col-md-6 col-lg-7">
+                    <div class="d-flex align-items-end">
+                        <img class="img-fluid" src="/static/img/img_ayuda.png" alt="download" style="width: 80%;"/>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+    </section>
+    <!--promo-section start-->
+    <section id="howitwork" class="feature-tab-section ptb-100" style="padding-top: 15px;padding-bottom: 55px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="feature-content-wrap">
+                        <ul class="nav nav-tabs feature-tab justify-content-center border-bottom-0" data-tabs="tabs">
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center active" href="#tab6-1" data-toggle="tab">
+                                    <i class="fa fa-fw fa-pie-chart"></i>
+                                    Cuadro de mando integral
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-2" data-toggle="tab">
+                                    <i class="fa fa-fw fa-calendar-check-o"></i>
+                                    Calendarios
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-3" data-toggle="tab">
+                                    <i class="fa fa-fw fa-search"></i>
+                                    Perfiles
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-4" data-toggle="tab">
+                                    <i class="fa fa-fw fa-check-square-o"></i>
+                                    Flujo de estados
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-5" data-toggle="tab">
+                                    <i class="fa fa-fw fa-map"></i> 
+                                    Mapas Interactivos
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content feature-tab-content">
+                            <div class="tab-pane active" id="tab6-1">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-7">
+                                        <div class="img-wrap" style="cursor: zoom-in;">
+                                            <!--<h4 class="zoom"><img style="border: 1px solid black; align: right;" title="" src="static/img/collage1.png" alt="" class="img-fluid rounded" align="right" border="1" hspace="" vspace="" /></h4>-->
+
+                                             <img src="static/img/collage1.png" alt="feature" class="img-fluid rounded" style="cursor: zoom-in;" data-toggle="modal" data-target="#modal-default_imagen1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-4">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">01.</span>
+                                            <h3>Monitoreo Continuo</h3>
+                                            <p style="text-align: justify;">Identificar que se desea monitorear.</p>
+                                            <p style="text-align: justify;">Por medio de indicadores, medidores, gráficos y barras. Podemos identificar de forma sencilla y rápida cuando algo NO está como debería ser.</p>
+                                            <p style="text-align: justify;">Una cartera vencida muy prominente, una baja de ventas en relación al periodo anterior, un vendedor con comportamiento anormal, una proyección de flujo negativo....<p>
+
+                                            <a href="https://es.wikipedia.org/wiki/Cuadro_de_mando_integral" class="mt-3 d-flex align-items-center"  target="blank">Investiga más
+                                                <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-2">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-7">
+                                        <div class="img-wrap" style="cursor: zoom-in;">
+                                               <!-- <h4 class="zoom"><img style="border: 1px solid black; align: right;" title="" src="static/img/collage2.png" alt="" class="img-fluid rounded" align="right" border="1" hspace="" vspace="" /></h4> -->
+
+                                             <img src="static/img/collage2.png" alt="feature" class="img-fluid rounded" style="cursor: zoom-in;" data-toggle="modal" data-target="#modal-default_imagen2">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-4">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">02.</span>
+                                            <h3>Eventos en fechas</h3>
+                                            <p style="text-align: justify;">Calendariza automáticamente los eventos y sucesos que deseas recordar.</p>
+                                            <p style="text-align: justify;">Mantén el control de depósitos, pagos y entregas en los días planificados. Manteniendo categorías de los mismos a través de colores para resaltar y evitar problemas.</p>
+
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-3">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-7">
+                                        <div class="img-wrap" style="cursor: zoom-in;">
+                                            <!--<h4 class="zoom"><img style="border: 1px solid black; align: right;" title="" src="static/img/collage3.png" alt="" class="img-fluid rounded" align="right" border="1" hspace="" vspace="" /></h4>-->
+
+                                             <img src="static/img/collage3.png" alt="feature" class="img-fluid rounded" style="cursor: zoom-in;" data-toggle="modal" data-target="#modal-default_imagen3">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-4">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">03.</span>
+                                            <h3>Creando un perfil</h3>
+                                            <p style="text-align: justify;">Un análisis enfocado sobre una persona o producto, este permite crear una imagen de la relación y comportamiento. Permitiendo identificar de forma rápida comportamientos positivos o negativos</p>
+                                            <p style="text-align: justify;">Identificar si un cliente paga a tiempo sus facturas, el estado de su cartera actual, la diversidad de los productos que adquiere. Identificar si un producto tiene variabilidad en su costo, quien lo adquiere, sus saldo de inventario en el tiempo.</p>
+                                         
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-4">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-7">
+                                        <div class="img-wrap" style="cursor: zoom-in;">
+                                            <!--<h4 class="zoom"><img style="border: 1px solid black; align: right;" title="" src="static/img/collage4.png" alt="" class="img-fluid rounded" align="right" border="1" hspace="" vspace="" /></h4>-->
+
+                                            <img src="static/img/collage4.png" alt="feature" class="img-fluid rounded" style="cursor: zoom-in;" data-toggle="modal" data-target="#modal-default_imagen4">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-4">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">04.</span>
+                                            <h3>Workflow - Flujos</h3>
+                                            <p style="text-align: justify;">El controlar casos, pedidos, cuentas por cobrar o pagar mediante estados es una forma ágil de validar el correcto funcionamiento de un proceso producto o flujo de dinero.</p>
+                                            <p style="text-align: justify;">Manteniendo un control sobre las cuentas por pagar según el vencimiento, pudiendo revisar fácilmente que valores están a cobrar. Revisar el avance de órdenes de pedido o trabajo según su estado de avance, cumplimento y fechas de forma automática permite identificar atrasos y evitar problemas futuros</p>
+
+                                         
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-5">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-7">
+                                        <div class="img-wrap" style="cursor: zoom-in;">
+                                            <!--<h4 class="zoom"><img style="border: 1px solid black; align: right;" title="" src="static/img/collage4.png" alt="" class="img-fluid rounded" align="right" border="1" hspace="" vspace="" /></h4>-->
+
+                                            <img src="static/img/collage5.png" alt="feature" class="img-fluid rounded" style="cursor: zoom-in;" data-toggle="modal" data-target="#modal-default_imagen5">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-4">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">05.</span>
+                                            <h3>Mapas interactivos</h3>
+                                            <p style="text-align: justify;">Establecer imágenes sectorizadas donde definimos piscinas, campos, tanques y más. Enlazadas a controles específicos con mediciones y alertas sobre valores fuera de los márgenes de aceptación, identificando de forma rápida comportamientos extraños y posibles perjuicios.</p>
+                                            <p style="text-align: justify;">Ideal para cultivo de Camarón, Agronomía, Piscicultura. Pudiendo enlazar los controles y tener la visualización global de las unidades de producción.</p>
+
+                                         
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
+
+    <!--promo-section end-->
+
+    <!--screenshots section start
+    <section id="screenshots" class="screenshots-section ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading text-center mb-5">
+                        <h2>Show Our Apps Screenshots</h2>
+                        <p>Credibly synthesize multimedia based networks vis-a-vis top-line growth strategies. Continually leverage existing worldwide interfaces </p>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-slider-content">
+                <div class="screenshot-frame"></div>
+                <div class="screen-carousel owl-carousel owl-theme dot-indicator">
+                    <img src="img/01.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/02.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/03.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/04.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/05.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/06.png" class="img-fluid" alt="screenshots"/>
+                </div>
+            </div>
+
+        </div>
+    </section>-->
+    <!--screenshots section end-->
+
+    <!--download section start-->
+ 
+    <!--download section end-->
+
+    <!--testimonial section start
+    <section id="reviews" class="testimonial-section ptb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading mb-5 text-center">
+                        <h2>Testimonios de CLientes</h2>
+                        <p class="lead">
+                            Renovando la forma de vender e implementar sistemas en ecuador, tu sistema ajustado a tus necesdades, dandelo valor a tu informacion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 col-lg-12">
+                    <div class="owl-carousel owl-theme client-testimonial">
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    test Bassa.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-1.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Austin Cesar</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    Tes indunidas.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-2.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Pirtle Karol</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    test mega.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-3.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Aminul Islam</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    test gallegos.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-4.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Pirtle Karol</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>-->
+    <!--testimonial section end-->
+
+    <!--pricing section start-->
+    <section id="Presupuestos" class="pricing ptb-100 gray-light-bg" style="padding-top: 35px;padding-bottom: 15px;">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading text-center mb-2">
+                        <h2>Módulos</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center justify-content-around">
+                <div class="col-md-12 col-lg-12">
+                    <div class="tab-content feature-tab-content">
+                        <div class="tab-pane active" id="monthly">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-lg-12 col-md-12 col-12">
+                                    <div class="card popular-price text-center single-pricing-pack">
+                                        <div class="pt-4"><h5>Selecciona los módulos que necesitas</h5></div>
+
+                                        <div class="card-body">
+                                            <p>Recuerda que Calendarios, Fichas, Flujos y Cuadro de Mando Integral se puede aplicar sobre cualquier módulo.</p>
+                                        <!--<a onclick="ir_a(conctacto)"  class="btn solid-btn mb-3">Registrate</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center justify-content-around">
+            <div class="col-md-12 col-lg-12">
+                <table class="table table-hover table-striped" style="color: purple;">
+                    <thead style="font-weight: bold;">
+                        <tr>
+                            <th style="width: 80%;text-align: center;">Módulo</th>
+                            <th style="width: 20%;text-align: center;">Valor Mensual</th>
+                            <th style="width: 20%;text-align: center;">Selección</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <tr style="background: white;">          
+                            <td onclick="abrir_sub(t_tr01, this)" style="cursor: pointer;">Contabilidad<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$8.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Ventas" name="c_mod_Ventas" type="checkbox" onchange="valorees(this,8.00)"></td>
+                        </tr>
+                        <tr id="t_tr01" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+
+                                    <li><i class="fa fa-fw fa-list"></i> Contabilidad</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Plan de Cuentas</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Asientos de Diario</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Diarios Contables</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Cierre Contable</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Centro de Costos </li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Rubros y más (agrupación de cuentas)</li>
+                                    </ul>    
+
+                                    <li><i class="fa fa-fw fa-list"></i> Reportes</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Balance General</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Estado de Pérdidas y Ganancias</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Balance de Comprobación</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Reporte de Movimientos contables por módulo</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Reporte de Cuentas por Pagar</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Reporte de Cuentas por Cobrar</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Informe Plan de Cuentas</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Reporte 103, 104</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Dinardap</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Resumen Gerencial</li>
+                                    </ul>
+
+                                    <li><i class="fa fa-fw fa-list"></i>Tributación</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>ATS</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Carga de Documentos electrónicos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Documentos Electrónicos</li>
+                                        <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                            <li><i class="fa fa-fw fa-circle"></i>Factura</li>
+                                            <li><i class="fa fa-fw fa-circle"></i>Nota de Crédito</li>
+                                            <li><i class="fa fa-fw fa-circle"></i>Nota de Débito</li>
+                                            <li><i class="fa fa-fw fa-circle"></i>Liquidación de Compra</li>
+                                            <li><i class="fa fa-fw fa-circle"></i>Retenciones</li>
+                                            <li><i class="fa fa-fw fa-circle"></i>Guías de Remisión</li>
+                                        </ul>
+                                    </ul>
+
+                                    <li><i class="fa fa-fw fa-list"></i>Pagos</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Anticipos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Registro de pagos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Cheque</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Transferencia</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Efectivo</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Cruce de Documentos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Reportes</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Resumen Gerencial</li>
+                                    </ul>
+
+
+                                    <li><i class="fa fa-fw fa-list"></i>Cobros</li>
+
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Anticipo</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Registro de Cobros</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Cheques </li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Transferencia</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Efectivo</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Cruce de documentos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Reportes</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Resumen Gerencial</li>
+                                    </ul>
+
+
+                                    <li><i class="fa fa-fw fa-list"></i>Bancos</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Control de Cheques</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Documentos Bancarios</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Consolidación Bancaria</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Reportes</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i>Resumen Gerencial</li>
+                                    </ul>
+
+
+
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr02, this)" style="cursor: pointer;">Socios de Negocio<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$0.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Pos" name="c_mod_Pos" type="checkbox" onchange="valorees(this, 0.00)"></td>
+                        </tr>
+                        <tr id="t_tr02" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+
+
+                                    <li><i class="fa fa-fw fa-list"></i> Clientes</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Cupos de Crédito</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Acuerdos de pagos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Cuentas Contables</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Datos Bancarios</li>
+                                    </ul>
+                                    <li><i class="fa fa-fw fa-list"></i> Proveedores</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Cuentas Contables</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Acuerdos de pagos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Datos Bancarios</li>
+                                    </ul>
+
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+
+
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr03, this)" style="cursor: pointer;">Calendarios<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$0.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Compras" name="c_mod_Compras" type="checkbox" onchange="valorees(this, 0.00)"></td>
+                        </tr>
+                        <tr id="t_tr03" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i>Citas</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i>Recordatorios</li>
+                                    
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr04, this)" style="cursor: pointer;">Flujos de Aprobaciones<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$8.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Cobros" name="c_mod_Cobros" type="checkbox" onchange="valorees(this, 8.00)"></td>
+                        </tr>
+                        <tr id="t_tr04" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Ventas</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Compras</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Pagos</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Trazabilidad</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr05, this)" style="cursor: pointer;">Facturación Express<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$12.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Pagos" name="c_mod_Pagos" type="checkbox" onchange="valorees(this, 12.00)"></td>
+                        </tr>
+                        <tr id="t_tr05" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+
+                                    <li><i class="fa fa-fw fa-list"></i> Generación de Documentos Electrónicos</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Facturas</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Notas de Crédito</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Notas de Débito</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Liquidación de Compras</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Retenciones</li>
+                                    </ul>
+
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reporte de los documentos emitidos (por tipo)</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+
+
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr06, this)" style="cursor: pointer;">Ventas<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$4.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Bancos" name="c_mod_Bancos" type="checkbox" onchange="valorees(this, 4.00)"></td>
+                        </tr>
+                        <tr id="t_tr06" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Clientes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Cotización</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Orden de Pedido</li>
+                                    <li><i class="fa fa-fw fa-list"></i> Facturación de Clientes</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Productos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Servicios</li>
+                                    </ul>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Notas de Crédito </li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Notas Internas</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Notas de débito</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Recibos de cobro</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr07, this)" style="cursor: pointer;">Compras<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$4.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Inventario" name="c_mod_Inventario" type="checkbox" onchange="valorees(this, 4.00)"></td>
+                        </tr>
+                        <tr id="t_tr07" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Proveedores</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Solicitud de Compra (requisición)</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Cotización</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Orden de Compra</li>
+                                    <li><i class="fa fa-fw fa-list"></i> Factura de proveedores</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Productos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Servicios</li>
+                                    </ul>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Notas Crédito </li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Notas Débito</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Recibos de Pago</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr08, this)" style="cursor: pointer;">Inventario<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$6.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Contabilidad" name="c_mod_Contabilidad" type="checkbox" onchange="valorees(this, 6.00)"></td>
+                        </tr>
+                        <tr id="t_tr08" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Productos/Ítems</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Bodegas</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Unidades de Medida</li>
+                                    <li><i class="fa fa-fw fa-list"></i> Operaciones</li>
+                                    <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Recepción</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Despacho</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Ajuste de Inventario</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Ingresos</li>
+                                        <li><i class="fa fa-fw fa-check-square-o"></i> Salidas</li>
+                                    </ul>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Transferencias</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Guías de Remisión</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr09, this)" style="cursor: pointer;">Punto de Venta<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$8.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_Produccion" name="c_mod_Produccion" type="checkbox" onchange="valorees(this, 8.00)"></td>
+                        </tr>
+                        <tr id="t_tr09" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Facturación esquema online/offline</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Clientes</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Notas de crédito</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i>  Retenciones</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Caja chica</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Cierre de caja</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Sincronización con nube</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i>  Reportes</li>
+                                <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+
+                                                                        
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr10, this)" style="cursor: pointer;">Producción<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$12.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_rrhh" name="c_mod_rrhh" type="checkbox" onchange="valorees(this, 12.00)"></td>
+                        </tr>
+                        <tr id="t_tr10" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Lista de Materiales</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Orden de Producción</li>
+                                    <li><i class="fa fa-fw fa-list"></i> Órdenes de Trabajo</li>
+                                        <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                            <li><i class="fa fa-fw fa-check-square-o"></i> Etapas de Producción</li>
+                                            <li><i class="fa fa-fw fa-check-square-o"></i> Centros de Producción</li>
+                                        </ul>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i>  Horas Hombre (nómina)</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i>  Costos Indirectos</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr11, this)" style="cursor: pointer;">Nómina<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$10.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_SRI" name="c_mod_SRI" type="checkbox" onchange="valorees(this, 10.00)"></td>
+                        </tr>
+                        <tr id="t_tr11" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+          
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Empleados</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Roles de Pago</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Provisiones</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Beneficios sociales</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr12, this)" style="cursor: pointer;">Bróker de Seguro<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$12.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_SRI" name="c_mod_SRI" type="checkbox" onchange="valorees(this, 12.00)"></td>
+                        </tr>
+                        <tr id="t_tr12" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-list"></i>Asesores</li>
+                                        <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                            <li><i class="fa fa-fw fa-check-square-o"></i> Equipos de trabajo</li>
+                                            <li><i class="fa fa-fw fa-check-square-o"></i> Líderes</li>
+                                            <li><i class="fa fa-fw fa-check-square-o"></i> Vendedores</li>
+                                        </ul>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Aseguradores</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Comisiones </li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Devoluciones</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reclamos/Siniestros</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Reportes</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Resumen Gerencial</li>
+
+
+                                    
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr style="background: white;">
+                            <td onclick="abrir_sub(t_tr13, this)" style="cursor: pointer;">Cultivo Camarón - Agrícola – Piscicultura<div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$24.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_agricola" name="c_mod_agricola" type="checkbox" onchange="valorees(this, 24.00)"></td>
+                        </tr>
+                        <tr id="t_tr13" style="display: none;">
+                            <td colspan="3">
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Lotes - Siembras - Cosechas</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Controles - Medidas</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Trabajos - Tarifarios</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Unidades de producción - Rendimiento</li>
+                                    
+                                </ul>
+                            </td>
+                        </tr>
+<!--
+                        <tr style="background: white;">                            
+                            <td onclick="abrir_sub(t_tr14, this)" style="cursor: pointer;">Personalizado - Propio <div class="box-tools pull-right"><i class="fa fa-fw fa-caret-square-o-down"></i></div></td>
+                            <td style="width: 20%;text-align: center;">$12.00</td>
+                            <td style="width: 20%;text-align: center;"><input id="c_mod_unico" name="c_mod_unico" type="checkbox" onchange="valorees(this, 12.00)"></td>
+                        </tr>
+                        <tr id="t_tr14" style="display: none;">
+                            <td colspan="3">
+
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Desarrollo Desde Cero</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Identificamos el problema principal</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Definimos los objetivos a cumplir</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Creamos los procesos y validaciones</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Integramos a tu sistema</li>
+                                    
+                                </ul>
+                            </td>
+                        </tr>
+                    -->
+
+                        <tr style="background: white;">
+                            <td style="width: 60%">Cantidad de Usuarios<div class="box-tools pull-right"><input type="number" id="num_user" name="" value="1" style="width: 45px;" onchange="valorees_user(this)"></div></td>
+                            <td style="width: 10%;text-align: center;">$4.00</td>
+                            <td style="width: 20%;text-align: center;">$<label id="p_valor_user">4</label></td>
+                        </tr>
+
+                        <tr style="background: white;font-size: 17px;background: #7688ca;color: white;">
+                            <td style="width: 60%"  colspan="2">Plan Mensual sin Impuestos</td> 
+                            <td style="width: 10%;text-align: center;cursor: pointer;display: none;"> <label id="p_valor" style="display: none;">0</label></td>
+                            <td style="width: 20%;text-align: center;">$<label id="p_valor_final">4</label></td>
+                        </tr>
+                                      <!-- <a onclick="ir_a(conctacto)" class="page-scroll btn outline-white-btn animated-btn" style="cursor: pointer;">Cotizar</a> -->     
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        </div>
+    </section>
+
+
+    <!--<section id="planes" class="feature-tab-section ptb-100" style="padding-top: 15px;padding-bottom: 55px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row justify-content-center">
+                        <div class="col-md-9 col-lg-8">
+                            <div class="section-heading text-center mb-2">
+                                <h2>Perfiles Prefabricados</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-content-wrap">
+                        <ul class="nav nav-tabs feature-tab justify-content-center border-bottom-0" data-tabs="tabs">
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center active" href="#tab6-1" data-toggle="tab">
+                                    <i class="fa fa-fw fa-pie-chart"></i>
+                                    Servicios Empresariales  
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center active" href="#tab6-1" data-toggle="tab">
+                                    <i class="fa fa-fw fa-pie-chart"></i>
+                                    Produccion por etapas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center active" href="#tab6-1" data-toggle="tab">
+                                    <i class="fa fa-fw fa-pie-chart"></i>
+                                    Restaurantes
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center active" href="#tab6-1" data-toggle="tab">
+                                    <i class="fa fa-fw fa-pie-chart"></i>
+                                    Importadores
+                                </a>
+                            </li>
+
+                            
+                        </ul>
+                        <div class="tab-content feature-tab-content">
+                            <div class="tab-pane active" id="tab6-1">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-7">
+                                        <div class="img-wrap" style="cursor: zoom-in;">
+                                             <img src="static/img/collage1.png" alt="feature" class="img-fluid rounded" style="cursor: zoom-in;" data-toggle="modal" data-target="#modal-default_imagen1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-4">
+                                        <div class="tab-content-wrap">
+                                            <h3>Enfoque en equipos de trabajo</h3>
+                                            <p>Identificar que se desea monitorear.</p>
+                                            <p>Por medio de indicadores, medidores, gráficos y barras. Podemos identificar de forma sencilla y rápida cuando algo está como debería.</p>
+                                            <p>Una cartera vencida muy prominente, una baja de ventas en relación al periodo anterior, un vendedor con comportamiento anormal, una proyección de flujo negativo....<p>
+
+                                            <a href="https://es.wikipedia.org/wiki/Cuadro_de_mando_integral" class="mt-3 d-flex align-items-center"  target="blank">Investiga mas
+                                                <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+
+
+<!--pricing section end-->
+  <section class="client-section ptb-100 gradient-overlay" style="padding-top: 15px;padding-bottom: 35px;">
+        <div class="container">
+            <!--clients logo start-->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="section-heading text-center mb-5">
+                        <p class="lead text-white">
+                            NUESTROS CLIENTES
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;">
+                    <div class="overlay-opacity-gradient"></div>
+                    <div class="owl-carousel owl-theme clients-carousel dot-indicator" style="background: white;">
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo1.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo2.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo3.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo4.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo5.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo6.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo7.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo8.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo9.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                        <div class="item single-client">
+                            <img src="/static/img/logos/logo10.png" alt="client logo" class="img-fluid client-img" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--clients logo end-->
+        </div>
+    </section>
+
+<!--faq section start-->
+<div id="Preguntas" class="ptb-100" style="padding-top: 15px;padding-bottom: 15px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9 col-lg-8">
+                <div class="section-heading mb-5">
+                    <h2>Preguntas Frecuentes</h2>  
+                    <p>Si no está tu respuesta abajo, escribe un mensaje o envíanos un correo a info@cerocodigo.com</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <div id="accordion" class="accordion">
+                    <div class="card mb-0">
+                        <a class="card-header collapsed" data-toggle="collapse" href="#collapse1">
+                            <h6 class="mb-0 d-inline-block">¿Es personalizable? <i class="fa fa-fw fa-commenting"></i></h6>
+                        </a>
+                        <div id="collapse1" class="collapse show" data-parent="#accordion" style="">
+                            <div class="card-body">
+                                <p>Sí, cada módulo, proceso, reporte, PDF y/o cualquier opción, funcionalidad puede ser ajustada a lo que necesitas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-0">
+                        <a class="card-header collapsed" data-toggle="collapse" href="#collapse2">
+                            <h6 class="mb-0 d-inline-block">¿Cero Sopresas? <i class="fa fa-fw fa-commenting"></i>
+                            </h6>
+                        </a>
+                        <div id="collapse2" class="collapse" data-parent="#accordion" style="">
+                            <div class="card-body">
+                                <p>Sí, cuando tienes tu presupuesto nos mantenemos a eso. No existen costos adicionales , sorpresas o de salida.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-0">
+                        <a class="card-header collapsed" data-toggle="collapse" href="#collapse3">
+                            <h6 class="mb-0 d-inline-block">¿Servidores y Seguridad? <i class="fa fa-fw fa-commenting"></i>
+                            </h6>
+                        </a>
+                        <div id="collapse3" class="collapse" data-parent="#accordion" style="">
+                            <div class="card-body">
+
+
+                                <ul class="list-unstyled footer-nav-list mt-3" style="margin-left: 30px;">
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Nuestos servidores se encuentran en USA, con uno de los proveedores más grande de servicios CLOUD en el  mundo</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Nuestra base de datos es encriptada</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Control de acceso para los usuarios</li>
+                                    <li><i class="fa fa-fw fa-check-square-o"></i> Soporte 24/7 de los servidores</li>
+                                </ul>
+
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="card mb-0">
+                        <a class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
+                            <h6 class="mb-0 d-inline-block">Tengo un caso específico<i class="fa fa-fw fa-commenting"></i>
+                            </h6>
+                        </a>
+                        <div id="collapseFour" class="collapse" data-parent="#accordion" style="">
+                            <div class="card-body">
+                                <p>Escríbenos y podemos ayudarte a procesar y vincular tu necesidad e información./p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-0">
+                        <a class="card-header collapsed" data-toggle="collapse" href="#collapseFive">
+                            <h6 class="mb-0 d-inline-block">¿Puedo conocer el sistema? <i class="fa fa-fw fa-commenting"></i>
+                            </h6>
+                        </a>
+                        <div id="collapseFive" class="collapse" data-parent="#accordion" style="">
+                            <div class="card-body">
+                                <p>Puedes usar el <a href="https://www.cerocodigo.com/demo" target="blank" class="page-scroll btn outline-white-btn animated-btn" style="color: mediumpurple;">DEMO</a>,y conocer la versión estándar del sistema. Si requieres mayor personalización del sistema, podemos crear procesos, módulos, formularios y/o reportes según tu necesidad. Crecemos contigo!!</p>
+                            </div>
+                        </div>
+                    </div>  
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--faq section end-->
+
+    <!--client section start
+    <section class="client-section ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="section-heading text-center mb-5">
+                        <h2>Trusted by Companies</h2>
+                        <p class="lead">
+                            Rapidiously morph transparent internal or "organic" sources whereas resource sucking
+                            e-business. Conveniently innovate compelling internal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <div class="owl-carousel owl-theme clients-carousel dot-indicator">
+                        <div class="item single-client">
+                            <img src="img/clients-logo-01.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-02.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-03.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-04.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-05.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-06.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-07.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-08.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+    <!--client section start-->
+
+    <!--contact us section start-->
+    <section id="conctacto" class="contact-us-section ptb-100" style="background: #f7f7f7;padding-top: 15px;padding-bottom: 15px;">
+        <div class="container">
+            <div class="row justify-content-around">
+                <div class="row">
+                    <div class="contact-us-form gray-light-bg rounded p-5">
+                        <h4>Más información</h4>
+                        <div class="form-row">
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="c_name" name="name" placeholder="Nombre" required="required">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="c_email" name="email" placeholder="Email" required="required">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="c_telefono" name="telefono" placeholder="Telefono" required="required">
+                                </div>
+                            </div>
+                            <!--<div class="col-3">
+                                <div class="form-group">
+                                    <input type="date" class="form-control" id="c_fecha" name="fecha" placeholder="Fecha" required="required">
+                                </div>
+                            </div> -->
+                           <!-- <div class="col-3">
+                                <div class="form-group">
+                                    <select class="form-control" id="c_franja" name="hora" placeholder="Hora" required="required">
+                                        <option selected>09 am</option>
+                                        <option>10 am</option>
+                                        <option>11 am</option>
+                                        <option>12 am</option>
+                                        <option>02 pm</option>
+                                        <option>03 pm</option>
+                                        <option>04 pm</option>
+                                        <option>05 pm</option>
+                                        <option>06 pm</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                            <div class="col-12">
+                                <div class="form-group">
+
+                                    <textarea name="message" id="c_message" class="form-control" rows="7" cols="25" placeholder="Describe tu situación empresarial, que te gustaría controlar, en que concentras más tu tiempo, cuál es tu problema más recurrente."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                               <div class="form-group" style="text-align: center;">
+                                    <button type="submit" class="btn solid-btn" id="btn_envio_mensaje" onclick="enviar_mensaje()" style="/* margin-right: 35px; */">Enviar</button> <br><input id="c_mens_h" name="c_mens_h" type="checkbox" checked="" style="padding-left: 35px;"> Listo para Enviar
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 mt-3"  style="text-align: center;">
+                               
+                                <div id="div_mensaje"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <!--contact us section end-->
+
+    </div>
+    <!--body content wrap end-->
+
+    <!--footer section start-->
+    <footer class="footer-section">
+        <!--footer top start-->
+        <div class="footer-top gradient-bg"  style="padding-top: 25px;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                        <div class="footer-nav-wrap text-white mb-0 mb-md-4 mb-lg-0" style="text-align: justify;">
+                            <img src="/static/img/logos_blanco.png" width="160" alt="logo" class="img-fluid" style="width: 140px;"/>
+                            <br>
+                            <span>Somos una empresa apasionada por los negocios y la tecnología, ofrecemos soluciones estratégicas de gestión y control para empresas y negocios en crecimiento que les permitan ser competitivos en un mercado digital.</span>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-2" style=" text-align: center;">
+                        <div class="footer-nav-wrap text-white" style="padding-top: 25px;">
+                            
+                            <ul class="list-unstyled social-list mb-0" style="padding-top: 25px;">
+                                <li class="list-inline-item" style="margin-right: 0px;margin-bottom: 15px;">
+                                    <a href="https://www.facebook.com/cerocodigo.Ec" class="rounded" target="_blank"><span class="ti-facebook white-bg color-2 shadow rounded-circle"></span></a>
+                                </li>
+                                <li class="list-inline-item"><a href="https://www.instagram.com/cerocodigoec/" class="rounded" target="_blank"><span class="ti-instagram white-bg color-2 shadow rounded-circle"></span></a></li>      
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-4">
+                        <div class="footer-nav-wrap text-white" style="padding-top: 25px;">
+                           
+                            <h5 class="text-white" style="text-align: center;">Nosotros</h5>
+                            <ul class="list-unstyled footer-nav-list mt-3">
+                                <li><span class="ti-angle-double-right"></span> <a href="https://wa.me/593993236641" class="rounded" target="_blank">+593 993236641</a>, <a href="https://wa.me/593987202912" class="rounded" target="_blank">+593 987202912</a></li>
+                                <li><span class="ti-angle-double-right"></span> info@cerocodigo.com</li>
+                                <li><span class="ti-angle-double-right"></span> Victor Emilio Estrada 1021,  Guayaquil - Ecuador</li>
+                            </ul>
+                        </div>
+                    </div>
+
+           
+
+                     
+                </div>
+            </div>
+        </div>
+<!--footer top end-->
+<div class="modal fade" id="modal-default_imagen1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="width: 142.4%; margin-left: -20%;">
+        <button type="button" id="cerrar_rap_imagen" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <div id="intwait"> 
+            <div class="box box-info" >
+              <div class="box-body">
+                <img src="static/img/collage1.png" style="max-width: none; width: 100%;"alt="feature" class="img-fluid rounded">
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+    
+
+<div class="modal fade" id="modal-default_imagen2">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="width: 142.4%; margin-left: -20%;">
+        <button type="button" id="cerrar_rap_imagen" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <div id="intwait"> 
+            <div class="box box-info">
+              <div class="box-body">
+                <img src="static/img/collage2.png" style="max-width: none; width: 100%;"alt="feature" class="img-fluid rounded">
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-default_imagen3">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="width: 142.4%; margin-left: -20%;">
+        <button type="button" id="cerrar_rap_imagen" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <div id="intwait"> 
+            <div class="box box-info">
+              <div class="box-body">
+                <img src="static/img/collage3.png" style="max-width: none; width: 100%;" alt="feature" class="img-fluid rounded">
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-default_imagen4">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="width: 142.4%; margin-left: -20%;">
+        <button type="button" id="cerrar_rap_imagen" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <div id="intwait"> 
+            <div class="box box-info">
+              <div class="box-body">
+                <img src="static/img/collage4.png" style="max-width: none; width: 100%;" alt="feature" class="img-fluid rounded">
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-default_imagen5">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="width: 142.4%; margin-left: -20%;">
+        <button type="button" id="cerrar_rap_imagen" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <div id="intwait"> 
+            <div class="box box-info">
+              <div class="box-body">
+                <img src="static/img/collage5.png" style="max-width: none; width: 100%;" alt="feature" class="img-fluid rounded">
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!--footer copyright start-->
+<div class="footer-bottom gray-light-bg py-3">
+    <div class="container">
+        <div class="row text-center justify-content-center">
+            <div class="col-md-6 col-lg-5"><p class="copyright-text pb-0 mb-0">Copyrights © CERO CODIGO SAS</p>
+        </div>
+    </div>
+</div>
+</div>
+<!--footer copyright end-->
+</footer>
+<!--footer section end-->
+
+<!--bottom to top button start-->
+<button class="scroll-top scroll-to-target" data-target="html">
+    <span class="ti-angle-up"></span>
+</button>
+<!--bottom to top button end-->
+
+ <script src="/static/a/bower_components/jquery/dist/jquery.min.js"></script>
+ <!-- jQuery UI 1.11.4 -->
+ <script src="/static/a/bower_components/jquery-ui/jquery-ui.min.js"></script>
+<!--jQuery-->
+<script src="/static/AppBeats/js/jquery-3.4.1.min.js"></script>
+<!--Popper js-->
+<script src="/static/AppBeats/js/popper.min.js"></script>
+<!--Bootstrap js-->
+<script src="/static/AppBeats/js/bootstrap.min.js"></script>
+<!--Magnific popup js-->
+<script src="/static/AppBeats/js/jquery.magnific-popup.min.js"></script>
+<!--jquery easing js-->
+<script src="/static/AppBeats/js/jquery.easing.min.js"></script>
+<!--jquery ytplayer js-->
+<script src="/static/AppBeats/js/jquery.mb.YTPlayer.min.js"></script>
+<!--wow js-->
+<script src="/static/AppBeats/js/wow.min.js"></script>
+<!--owl carousel js-->
+<script src="/static/AppBeats/js/owl.carousel.min.js"></script>
+<!--countdown js-->
+<script src="/static/AppBeats/js/jquery.countdown.min.js"></script>
+<!--custom js-->
+<script src="/static/AppBeats/js/scripts.js"></script>
+<script src="/static/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="/static/vendors/DateJS/build/date.js"></script>
+
+</body>
+</html>

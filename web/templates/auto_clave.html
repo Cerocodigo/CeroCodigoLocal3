@@ -1,0 +1,128 @@
+<html lang="en"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Crear Cliente base </title>
+    <link rel="icon" href="/static/assets/img/logo_negro.ico">
+
+    <!-- Bootstrap -->
+    <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="/static/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link href="/static/vendors/animate.css/animate.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="/static/build/css/custom.min.css" rel="stylesheet">
+  </head>
+
+  <body class="login">
+    <div>
+      <a class="hiddenanchor" id="signup"></a>
+      <a class="hiddenanchor" id="signin"></a>
+
+
+
+
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            <form method="post">
+            {% csrf_token %}
+            <fieldset>
+              <div class="row">
+              <h1>datos</h1>
+                <div class="col-sm-3">
+                  <label class="control-label" for="Id" style="font-size: 12px;font-weight: bold;">Id</label>
+                  <input type="text" id="Id" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+
+                <div class="col-sm-3">
+                  <label class="control-label" for="NomSocial" style="font-size: 12px;font-weight: bold;">Razon Social</label>
+                  <input type="text" id="NomSocial" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="NomComercial" style="font-size: 12px;font-weight: bold;">Nombre Comercial</label>
+                  <input type="text" id="NomComercial" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="Direccion" style="font-size: 12px;font-weight: bold;">Direccion</label>
+                  <input type="text" id="Direccion" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="EsContribuyenteEspecial" style="font-size: 12px;font-weight: bold;">Es Contribuyente Especial</label>
+                  <input type="text" id="EsContribuyenteEspecial" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="NumContribuyenteEspecial" style="font-size: 12px;font-weight: bold;">Numero Contribuyente Especial</label>
+                  <input type="text" id="NumContribuyenteEspecial" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="Regimen" style="font-size: 12px;font-weight: bold;">Regimen</label>
+                  <input type="text" id="Regimen" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="AgenteRetencion" style="font-size: 12px;font-weight: bold;">AgenteRetencion</label>
+                  <input type="text" id="AgenteRetencion" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="firmap12" style="font-size: 12px;font-weight: bold;">Archivo P.12 firma Electronica</label>
+                  <input type="file" id="firmap12" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                  <button class="btn btn-default submit">buscar</button>
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="ClaveFirma" style="font-size: 12px;font-weight: bold;">Clave de firma Electronica</label>
+                  <input type="text" id="ClaveFirma" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="CorreoReceptor" style="font-size: 12px;font-weight: bold;">Correo Receptor Facturas</label>
+                  <input type="text" id="CorreoReceptor" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+                <div class="col-sm-3">
+                  <label class="control-label" for="ClaveAdmin" style="font-size: 12px;font-weight: bold;">Clave magica</label>
+                  <input type="text" id="ClaveAdmin" class="form-control col-sm-3" value="0" style="height: 25px;font-size: 11px;">
+                </div>
+              </div>
+
+
+  
+              <div>
+                <p style="color: red;">{{msg}}</p>
+              </div>
+
+
+              <div>
+                <button class="btn btn-default submit">Enviar</button>
+
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                
+
+                <div class="clearfix"></div>
+                <br>
+
+                <div>
+                  <h1><i class="fa fa-bar-chart"></i> CeroCodigo</h1>
+                  <p>©2016 All Rights Reserved.</p>
+                </div>
+              </div>
+              
+          </fieldset>
+          </form>
+          </section>
+        </div>
+
+      
+      </div>
+    </div>
+  
+
+</body></html>

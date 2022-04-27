@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1"
+http-equiv="content-type">
+<title></title>
+</head>
+<body style="border-style: none;">views demo <br>
+
+       	<table class="table table-bordered" style="background: white;">
+            <thead>
+              <tr><th>Fecha</th><th>Nombres</th><th>Telefono</th><th>Email</th><th>Tipo</th><th>Tamano</th></tr>
+            </thead>
+            <tbody>
+	  	{% for views in viewss %}
+  			<tr>
+  				<td>{{views.Fecha}}</td><td>{{views.Nombres}}</td><td>{{views.Telefono}}</td><td>{{views.Email}}</td><td>{{views.Tipo}}</td><td>{{views.Tamano}}</td>
+  			</tr>
+    	{% endfor %}
+            </tbody>
+        </table>
+	
+</body></html>

@@ -1,0 +1,596 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="M_Adnan" />
+<!-- Document Title -->
+<title>{{negocio}}</title>
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+
+<!-- SLIDER REVOLUTION 4.x CSS SETTINGS -->
+<link rel="stylesheet" type="text/css" href="/static/eshop/rs-plugin/css/settings.css" media="screen" />
+
+<!-- StyleSheets -->
+<link rel="stylesheet" href="/static/eshop/css/ionicons.min.css">
+<link rel="stylesheet" href="/static/eshop/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/eshop/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/eshop/css/main.css">
+<link rel="stylesheet" href="/static/eshop/css/style.css">
+<link rel="stylesheet" href="/static/eshop/css/responsive.css">
+
+<!-- Fonts Online -->
+<link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+
+<!-- JavaScripts -->
+<script src="/static/eshop/js/vendors/modernizr.js"></script>
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+  function buscar_bruto(){
+  v_cat = document.getElementById("eshop_v_cat")
+  v_busca = document.getElementById("eshop_v_busca")
+
+  if(v_cat.value == 'Todas Categorias'){
+    window.location.href = "eshop/todas/" + v_busca.value;
+  }else{
+    window.location.href = "eshop/"+v_cat.value+"/" + v_busca.value;
+  }
+
+
+  }
+
+
+function Subcribete(){
+    var e_Email = document.getElementById('subs_emial').value
+    var dd = document.getElementById('btn_email')
+    if(dd.innerHTML != 'Subscrito'){ 
+    if(e_Email.length >5 ){
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/Subcribete/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Email':e_Email},
+    success: function(Response){
+      if(Response['respuesta'] == 'ok'){
+        var dd = document.getElementById('btn_email')
+          dd.innerHTML = 'Subscrito'
+          dd.style.backgroundColor = 'green'
+        }
+      }
+    });
+    }
+  }
+}
+
+
+function ir_chckout(){
+  window.open("eshop/checkout/", '_blank');
+}
+
+function cantidad_carrito(d_e_Cantidad,d_item_cod){
+
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/eshop_mod_cod/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Cantidad':d_e_Cantidad, 'item_cod':d_item_cod},
+    success: function(Response){
+
+      if(Response['respuesta'] == 1){
+        var div_cant = document.getElementById('dat_itema')
+
+        div_cant.innerHTML = parseFloat(parseFloat(div_cant.innerHTML) + parseFloat(d_e_Cantidad))   
+
+
+
+       
+        if(Response['listita']['Cantidad'] > 0){
+          var div_lista = document.getElementById('prod_cant_'+d_item_cod)
+          div_lista.innerHTML = '<span>' + Response['listita']['Precio'] + ' x ' + Response['listita']['Cantidad'] + '</span> '
+   
+        }else{
+          var div_lista = document.getElementById('prod_list_'+d_item_cod)
+          div_lista.remove();
+
+        }
+      }else{
+        if(Response['respuesta'] == 2){
+          var div_lista = document.getElementById('prod_list_'+d_item_cod)
+          div_lista.remove();
+        }
+
+      }
+     
+   
+    }
+  }); 
+}
+
+function agregar_carrito(d_e_Imagen,d_e_Cantidad,d_e_Precio,d_e_Producto,d_item_cod){
+
+
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/eshop_add_cod/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Imagen':d_e_Imagen,'e_Cantidad':d_e_Cantidad,'e_Precio':d_e_Precio,'e_Producto':d_e_Producto,'item_cod':d_item_cod},
+    success: function(Response){
+
+      if(Response['respuesta'] == 1){
+        var div_cant = document.getElementById('dat_itema')
+
+        div_cant.innerHTML = parseFloat(parseFloat(div_cant.innerHTML) + parseFloat(d_e_Cantidad))   
+
+        var div_lista = document.getElementById('lista_productos')
+
+
+        html_new = '<div class="media-left"> <a class="thumb"> <img src="/media/archivos/{{negocio}}/'+d_e_Imagen+'" class="img-responsive" alt="" > </a> </div><div class="media-body"> <a href="/{{negocio}}/eshop/codigo/'+d_item_cod+'" class="tittle">'+d_e_Producto+'</a> <span id="prod_cant"> '+d_e_Precio+' x '+d_e_Cantidad+'</span>'
+        //html_new = html_new + '<button onclick="cantidad_carrito(1,'d_item_cod')" class="btn-round" style="background: {{datos_contactos.Color1}}; margin-left: 5px; width: 25px; text-align: center;"> + </button>'  
+        //html_new = html_new + '<button tag="{{item.Codigo}}" onclick="cantidad_carrito(-1,'')" class="btn-round" style="background: {{datos_contactos.Color1}}; margin-left: 5px; width: 25px; text-align: center;"> - </button>'  
+
+        html_new = html_new + '</div>'  
+
+        div_lista.innerHTML =div_lista.innerHTML + html_new
+
+            
+              
+
+
+      }else{alert('valio')}
+     
+   
+    }
+  }); 
+}
+</script>
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="wrap" class="layout-1"> 
+  
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="container">
+      <p>Bienvenido a {{negocio}}</p>
+      <div class="right-sec">
+        <div class="social-top"> <a href="{{datos_contactos.datos_fab}}" target="_blank"><i class="fa fa-facebook"></i></a> <a href="{{datos_contactos.datos_tuiter}}" target="_blank"><i class="fa fa-twitter"></i></a>  <a href="{{datos_contactos.datos_inst}}" target="_blank"><i class="fa fa-instagram"></i></a> </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo"> <a href="/{{negocio}}/eshop"><img src="/media/archivos/{{negocio}}/logo.png" alt="" style="width: 160px;height: 60px;"></a> </div>
+      <div class="search-cate">
+        <select class="selectpicker" id="eshop_v_cat">
+          <option>Todas Categorias</option>
+          {% for cat in cat_princi %}<option>{{ cat.nombre }}</option>{% endfor %}                               
+        </select>
+        <input id="eshop_v_busca" type="search" placeholder="Buscar..." onchange="buscar_bruto()">
+        <button class="submit" onclick="buscar_bruto()"><i class="icon-magnifier"></i></button>
+      </div>
+      
+      <!-- Cart Part -->
+      <ul class="nav navbar-right cart-pop">
+        <li class="dropdown"> 
+          <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="itm-cont" style="background: {{datos_contactos.Color1}};">
+            <p id="dat_itema" style="color: white;">{{lista_cant}}</p></span> 
+            <i class="flaticon-shopping-bag"></i> 
+            <!--<a href="/{{negocio}}/eshop/checkout/" class="btn-round" style="background: {{datos_contactos.Color1}};"></a> -->
+            <div class="col-sm-7" style="padding-left: 0px;padding-right: 0px;"> 
+              <span> Productos(s)</span> 
+            </div>
+            <div class="input-group input-group-sm" style="padding-top: 5px;"> 
+              <button onclick="ir_chckout()" class="btn-round" style="background: {{datos_contactos.Color1}};margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> Pago y Envio </button>
+   
+            </div>
+          </a>
+          
+         <ul class="dropdown-menu">
+
+
+            <li id="lista_productos">
+              
+            {% for item in lista %}
+              <div class="row" id="prod_list_{{item.Codigo}}">
+
+              <div class="media-left"> 
+                <a class="thumb"> 
+                  <img src="/media/archivos/{{negocio}}/{{item.Imagen}}" class="img-responsive" alt="" > </a> 
+              </div>
+              <div class="media-body"> 
+                <span><a href="/{{negocio}}/eshop/codigo/{{item.Codigo}}" class="tittle">{{item.Producto}}</a> </span>
+
+
+                <div class="col-sm-7" id="prod_cant_{{item.Codigo}}" style="padding-left: 0px;padding-right: 0px;">  <span> {{item.Precio}} x {{item.Cantidad}}   </span> 
+                 </div>
+                <div class="input-group input-group-sm" style="padding-top: 5px;"> 
+                  <button onclick="cantidad_carrito(1,'{{item.Codigo}}')" class="btn-round" style="background: {{datos_contactos.Color1}};margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> + </button>
+                  <button onclick="cantidad_carrito(-1,'{{item.Codigo}}')" class="btn-round" style="background: {{datos_contactos.Color1}}; margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> - </button>
+                </div>
+
+          
+             
+              </div>
+            </div>
+            {% endfor %} 
+    
+              
+            </li>
+            <li class="btn-cart"> <a href="/{{negocio}}/eshop/checkout/" class="btn-round" style="background: {{datos_contactos.Color1}};">Pago y Envio </a> </li>
+
+          </ul>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Nav -->
+    <nav class="navbar ownmenu" style="background: {{datos_contactos.Color2}};">
+      <div class="container"> 
+        
+        <!-- Categories -->
+        <div class="cate-lst"> <a  data-toggle="collapse" class="cate-style" href="#cater" style="background: {{datos_contactos.Color1}};"><i class="fa fa-list-ul"></i>Categorias</a>
+          <div class="cate-bar-in">
+            <div id="cater" class="collapse">
+              <ul>
+                 <li class="sub-menu"><a href="/{{negocio}}/eshop/todas">Todas</a></li>
+
+                 {% for cat in cat_princi %}
+                <li class="sub-menu"><a href="/{{negocio}}/eshop/{{ cat.nombre }}">{{ cat.nombre }}</a></li>
+                {% endfor %}                             
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navbar Header -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-open-btn" aria-expanded="false"> <span><i class="fa fa-navicon"></i></span> </button>
+        </div>
+        <div class="nav-right"> <span class="call-mun"><i class="fa fa-phone"></i> <strong>Telefono: </strong>  {{datos_contactos.datos_telf}}</span> </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Slid Sec -->
+  <section class="slid-sec">
+    <div class="container">
+      <div class="container-fluid">
+        <div class="row"> 
+          
+          <!-- Main Slider  -->
+          <div class="col-md-9 no-padding"> 
+            
+            <!-- Main Slider Start -->
+            <div class="tp-banner-container">
+              <div class="tp-banner">
+                <ul>
+                 {% for display in main_display %}
+                  <!-- SLIDE  -->
+                  <li data-transition="random" data-slotamount="7" data-masterspeed="300"  data-saveperformance="off" > 
+                    <!-- MAIN IMAGE --> 
+                    <img src="/media/archivos/{{negocio}}/{{display.imgen}}"  alt="slider"  data-bgposition="center bottom" data-bgfit="contain" data-bgrepeat="no-repeat" background-size: "contain";> 
+      
+                    <!-- LAYER NR. 1 -->
+                    <div class="tp-caption sfl tp-resizeme" 
+                                     data-x="left" data-hoffset="60" 
+                                     data-y="center" data-voffset="-110" 
+                                     data-speed="800" 
+                                     data-start="800" 
+                                     data-easing="Power3.easeInOut" 
+                                     data-splitin="chars" 
+                                     data-splitout="none" 
+                                     data-elementdelay="0.03" 
+                                     data-endelementdelay="0.4" 
+                                     data-endspeed="300"
+                                     style="z-index: 5; font-size:30px; font-weight:500; color: {{datos_contactos.Color2}};  max-width: auto; max-height: auto; white-space: nowrap; ">{{display.titulo1}}</div>
+                    
+                    <!-- LAYER NR. 2 -->
+                    <div class="tp-caption sfr tp-resizeme" 
+                                     data-x="left" data-hoffset="60" 
+                                     data-y="center" data-voffset="-60" 
+                                     data-speed="800" 
+                                     data-start="1000" 
+                                     data-easing="Power3.easeInOut" 
+                                     data-splitin="chars" 
+                                     data-splitout="none" 
+                                     data-elementdelay="0.03" 
+                                     data-endelementdelay="0.1" 
+                                     data-endspeed="300" 
+                                     style="z-index: 6; font-size:50px; font-weight:800; white-space: nowrap; color: {{datos_contactos.Color1}};">{{display.titulo2}}</div>
+                    
+                    <!-- LAYER NR. 3 -->
+                    <div class="tp-caption sfl tp-resizeme" 
+                                     data-x="left" data-hoffset="60" 
+                                     data-y="center" data-voffset="0" 
+                                     data-speed="800" 
+                                     data-start="1200" 
+                                     data-easing="Power3.easeInOut" 
+                                     data-splitin="none" 
+                                     data-splitout="none" 
+                                     data-elementdelay="0.1" 
+                                     data-endelementdelay="0.1" 
+                                     data-endspeed="300" 
+                                     style="z-index: 7;  font-size:24px; color: {{datos_contactos.Color2}}; font-weight:500; max-width: auto; max-height: auto; white-space: nowrap;">{{display.titulo3}}</div>
+                    
+                    <!-- LAYER NR. 1 -->
+                    <div class="tp-caption sfr tp-resizeme" 
+                                     data-x="left" data-hoffset="240" 
+                                     data-y="center" data-voffset=" -5" 
+                                     data-speed="800" 
+                                     data-start="1300" 
+                                     data-easing="Power3.easeInOut" 
+                                     data-splitin="chars" 
+                                     data-splitout="none" 
+                                     data-elementdelay="0.03" 
+                                     data-endelementdelay="0.4" 
+                                     data-endspeed="300"
+                                     style="z-index: 5; font-size:36px; font-weight:800; color: {{datos_contactos.Color1}};;  max-width: auto; max-height: auto; white-space: nowrap;">{{display.precio}}</div>
+                    
+                    <!-- LAYER NR. 4 -->
+                    <div class="tp-caption lfb tp-resizeme scroll" 
+                                      data-x="left" data-hoffset="60" 
+                                     data-y="center" data-voffset="80"
+                                     data-speed="800" 
+                                     data-start="1300"
+                                     data-easing="Power3.easeInOut" 
+                                     data-elementdelay="0.1" 
+                                     data-endelementdelay="0.1" 
+                                     data-endspeed="300" 
+                                     data-scrolloffset="0"
+                                     style="z-index: 8;color: {{datos_contactos.Color1}};"><a href="{{display.linkurl}}" class="btn-round big" style="background: {{datos_contactos.Color1}};">{{display.link}}</a> </div>
+                  </li>
+
+          {% endfor %}  
+
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Main Slider  -->
+          <div class="col-md-3 no-padding" > 
+            <!-- New line required  -->
+            <div class="product">
+              <div class="like-bnr" style="background-image: url(/media/archivos/{{negocio}}/{{datos_contactos.promo1_img}});">
+                <div class="position-center-center">
+                  <h5>{{datos_contactos.promo1_t1}}</h5>
+                  <h4 style="color: {{datos_contactos.Color1}};">{{datos_contactos.promo1_t2}}</h4>
+                  <span class="price">{{datos_contactos.promo1_t3}}</span> </div>
+              </div>
+            </div>
+            
+            <!-- Weekly Slaes  -->
+            <div class="week-sale-bnr" style="background-image: url(/media/archivos/{{negocio}}/{{datos_contactos.promo2_img}});"> 
+              <h4>{{datos_contactos.promo2_t1}}</h4>
+              <p>{{datos_contactos.promo2_t2}}</p>
+              <a href="" class="btn-round" style="background: {{datos_contactos.Color1}};">{{datos_contactos.promo2_t3}}</a> </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div id="content"> 
+    
+      <!-- Shipping Info -->
+    <section class="shipping-info" style="padding-top: 25px;padding-bottom: 25px;">
+      <div class="container">
+        <ul>
+          
+          <!-- Free Shipping -->
+          {% for bloque in bloques %}
+            <li>
+              <div class="media-left"> <i class="{{bloque.icono}}" style="color: {{datos_contactos.Color1}};"></i> </div>
+              <div class="media-body">
+                <h5>{{bloque.titulo}}</h5>
+                <span>{{bloque.texto}}</span></div>
+            </li>
+          {% endfor %}  
+        
+        </ul>
+      </div>
+    </section>    
+   
+       <!-- Top Selling Week -->
+    <section class="padding-bottom-30" style="padding-top: 25px;padding-bottom: 25px;">
+      <div class="container"> 
+        
+    
+        <div class="row">
+          <div class="col-md-6"> 
+            
+            <!-- Items -->
+            <div class="item-col-2"> 
+                        <h4>Ofertas</h4>
+
+            {% for item in list_Ofertas %}
+              <!-- Product -->
+              <div class="product">
+                <article> <img class="img-responsive" src="/media/archivos/{{negocio}}/{{item.Imagen}}" alt="" >
+                  
+                  <!-- Content --> 
+                  <span class="tag">{{item.Subcategoria}}</span> <a href="/{{negocio}}/eshop/codigo/{{item.Codigo}}" class="tittle">{{item.Nombre}}</a> 
+                  <!-- Reviews -->
+                <div class="col-sm-7" style="padding-left: 0px;padding-right: 0px;">
+                  <div class="price">${{item.Pvp}}</div>
+
+
+                </div>
+                
+                <div class="input-group input-group-sm" style="padding-top: 5px;"> 
+                  <a href="/{{negocio}}/eshop/codigo/{{item.Codigo}}" class="btn-round" style="background: #cc1c1c;">Ver</a>
+                
+                </div>
+
+                </article>
+
+              </div>
+
+            {% endfor %} 
+            </div>
+          </div>
+          <div class="col-md-6"> 
+            
+            <!-- Items -->
+            <div class="item-col-2"> 
+                        <h4>Nuevas</h4>
+
+
+            {% for item in list_Nuevos %}
+              <!-- Product -->
+              <div class="product">
+                <article> <img class="img-responsive" src="/media/archivos/{{negocio}}/{{item.Imagen}}" alt="" >
+                  <!-- Content --> 
+                  <span class="tag">{{item.Subcategoria}}</span> <a href="/{{negocio}}/eshop/codigo/{{item.Codigo}}" class="tittle">{{item.Nombre}}</a> 
+                  <!-- Reviews -->
+                <div class="col-sm-7" style="padding-left: 0px;padding-right: 0px;">
+                  <div class="price">${{item.Pvp}}</div>
+
+
+                </div>
+                <div class="input-group input-group-sm" style="padding-top: 5px;"> 
+                  <a href="/{{negocio}}/eshop/codigo/{{item.Codigo}}" class="btn-round" style="background: #cc1c1c;">Ver</a>
+                
+                </div>
+
+                </article>
+              </div>
+
+
+            {% endfor %} 
+
+ 
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+          <!-- Banner 
+    <section class="disply-sec slid-sec margin-bottom-0" style="padding-top: 25px;padding-bottom: 25px;">
+      <div class="container">
+        <div class="row"> 
+          
+          <div class="col-md-4">
+            <div class="product">
+              <div class="like-bnr">
+                <div class="position-center-center">
+                  <h5>New line required</h5>
+                  <h4>Smartphone s7</h4>
+                  <span class="price">$259.99</span> </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="week-sale-bnr">
+              <h4>Weekly <span>Sale!</span></h4>
+              <p>Saving up to 50% off all online
+                store items this week.</p>
+              <a href="#." class="btn-round">Shop now</a> </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="product">
+              <div class="like-bnr watch">
+                <div class="position-center-center">
+                  <h5>No restocking fee<br>
+                    ($35 savings)</h5>
+                  <h4>Sport Watch</h4>
+                  <span class="price">$259.99</span> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>-->
+  
+
+    <!-- Newslatter -->
+    <section class="newslatter" style="background: {{datos_contactos.Color2}};">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Subcribete<span> para <strong>Descuentos y Promociones</strong></span></h3>
+          </div>
+          <div class="col-md-6">
+              <input type="email" id="subs_emial" placeholder="Tu email aqui...">
+              <button id="btn_email" onclick="Subcribete()" style="background: {{datos_contactos.Color1}};">Subcribete!</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <!-- End Content --> 
+  
+  <!-- Footer -->
+  <footer>
+    <div class="container"> 
+      
+      <!-- Footer Upside Links -->
+      
+      <div class="row" style="padding-top: 20px;">           
+        <!-- Contact -->
+        <div class="col-md-6">
+          <h3>Datos de contacto</h3>
+          <p>{{datos_contactos.datos_dir}}</p>
+          <p>Telefono: {{datos_contactos.datos_telf}}</p>
+          <p>Email: {{datos_contactos.email}}</p>
+          <div class="social-links"> <a href="{{datos_contactos.datos_fab}}"><i class="fa fa-facebook"></i></a> <a href="{{datos_contactos.datos_tuiter}}"><i class="fa fa-twitter"></i></a><a href="{{datos_contactos.datos_inst}}"><i class="fa fa-instagram"></i></a></div>
+        </div>
+        <div class="col-md-6">
+          <iframe src="{{datos_contactos.mapa}}" width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+        </div>
+        
+        
+        <!-- Categories -->
+        
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Rights -->
+  <div class="rights">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <p>Desarrollado en <a href="http://www.cerocodigo.com/" class="ri-li"> CeroCodigo.com </a></p>
+        </div>
+        <div class="col-sm-6 text-right"> <img src="images/card-icon.png" alt=""> </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- End Footer --> 
+  
+  <!-- GO TO TOP  --> 
+  <a href="#" class="cd-top"><i class="fa fa-angle-up"></i></a> 
+  <!-- GO TO TOP End --> 
+</div>
+<!-- End Page Wrapper --> 
+
+<!-- JavaScripts --> 
+<script src="/static/eshop/js/vendors/jquery/jquery.min.js"></script> 
+<script src="/static/eshop/js/vendors/wow.min.js"></script> 
+<script src="/static/eshop/js/vendors/bootstrap.min.js"></script> 
+<script src="/static/eshop/js/vendors/own-menu.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.sticky.js"></script> 
+<script src="/static/eshop/js/vendors/owl.carousel.min.js"></script> 
+
+<!-- SLIDER REVOLUTION 4.x SCRIPTS  --> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.t.min.js"></script> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.min.js"></script> 
+<script src="/static/eshop/js/main.js"></script>
+</body>
+</html>

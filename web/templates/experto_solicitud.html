@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#333">
+    <title>experto_solicitud</title>
+    <meta name="description" content="Material Style Theme">
+    <link rel="shortcut icon" href="/static/assets2/img/favicon.png?v=3">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/static/assets2/css/preload.min.css" />
+    <link rel="stylesheet" href="/static/assets2/css/plugins.min.css" />
+    <link rel="stylesheet" href="/static/assets2/css/style.light-blue-500.min.css" />
+    <!--[if lt IE 9]>
+        <script src="/static/assets2/js/html5shiv.min.js"></script>
+        <script src="/static/assets2/js/respond.min.js"></script>
+    <![endif]-->
+
+<script type="text/javascript">
+function expert_envio() {
+
+var inputName = document.getElementById("inputName").value
+var inputPais = document.getElementById("inputPais").value
+var inputEmail = document.getElementById("inputEmail").value
+var inputCiudad = document.getElementById("inputCiudad").value
+var textArea = document.getElementById("textArea").value
+
+
+if (inputName === ""){
+    $("#div_conctacto").html("Falta Nombre");
+    return
+}
+if (inputPais === ""){
+    $("#div_conctacto").html("Falta Pais");
+    return
+}
+if (inputEmail === ""){
+    $("#div_conctacto").html("Falta Correo");
+    return
+}
+if (textArea === ""){
+    $("#div_conctacto").html("Falta Experiencia");
+    return
+}
+if (inputCiudad === ""){
+    $("#div_conctacto").html("Falta Cuidad");
+    return
+}
+if (document.getElementById('humano').checked) {
+        } else {
+    $("#div_conctacto").html("Eres humano???");
+    return
+}
+
+$.ajax({
+        type: 'POST',
+        url: 'experto_solicitud',
+        data: {'inputName': document.getElementById("inputName").value, 'inputPais':document.getElementById("inputPais").value, 'inputEmail':document.getElementById("inputEmail").value, 'inputCiudad':document.getElementById("inputCiudad").value, 'textArea':document.getElementById("textArea").value},
+        beforeSend: function () {
+                        $("#div_conctacto").html("Procesando, espere por favor...");
+                },
+        success: function(response){
+            $("#div_conctacto").html(response);
+            document.getElementById('humano').checked = false;
+        }
+    });  
+}
+
+</script>
+  </head>
+
+  <body>
+    <div id="ms-preload" class="ms-preload">
+      <div id="status">
+        <div class="spinner">
+          <div class="dot1"></div>
+          <div class="dot2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sb-site-container">
+      <!-- Modal -->
+      <div class="modal modal-primary" id="ms-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog animated zoomIn animated-3x" role="document">
+          <div class="modal-content">
+            <div class="modal-header shadow-2dp no-pb">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">
+                  <i class="zmdi zmdi-close"></i>
+                </span>
+              </button>
+              <div class="modal-title text-center">
+              
+                                 <img src="/static/assets/img/site-header-logo.png" alt="">
+
+              </div>
+             
+            </div>
+         
+          
+          
+          </div>
+        
+        
+        </div>
+      </div>
+      <header class="ms-header ms-header-primary">
+        <div class="container container-full">
+          <div class="ms-title">
+            <a href="index.html">
+              <!-- <img src="/static/assets2/img/demo/logo-header.png" alt=""> -->
+             
+           <div class="navbar-brand-wrap">
+                <a class="navbar-brand" href="/">
+                  <img src="/static/assets/img/site-header-logo.png" alt="" style="height: 40px;">
+                </a>
+              </div>
+            </a>
+          </div>
+          </div>
+      </header>
+    
+    <div>
+      <br>
+      <br>
+      <br>      <br>
+    </div>
+    
+       <div class="container">
+        <div class="row">
+        
+          <div class="col-md-9">
+             
+              <div class="card card-hero animated fadeInUp animation-delay-7">
+                <div class="card-block">
+                  <form class="form-horizontal">
+                    <fieldset>
+                      <div class="form-group is-empty">
+                        <label for="inputName" class="col-md-2 control-label">Nombre</label>
+                        <div class="col-md-9">
+                          <input type="text" class="form-control" id="inputName" placeholder="Nombre"> </div>
+                      </div>
+                      <div class="form-group is-empty">
+                        <label for="inputEmail" class="col-md-2 control-label">Email</label>
+                        <div class="col-md-9">
+                          <input type="email" class="form-control" id="inputEmail" placeholder="Email"> </div>
+                      </div>
+                      <div class="form-group is-empty">
+                        <label for="inputSubject" class="col-md-2 control-label">Pais</label>
+                        <div class="col-md-9">
+                          <input type="text" class="form-control" id="inputPais" placeholder="Pais"> </div>
+                      </div>
+
+                      <div class="form-group is-empty">
+                        <label for="inputSubject" class="col-md-2 control-label">Ciudad</label>
+                        <div class="col-md-9">
+                          <input type="text" class="form-control" id="inputCiudad" placeholder="Cuidad"> </div>
+                      </div>
+                      <div class="form-group is-empty">
+                        <label for="textArea" class="col-md-2 control-label">Experiencia</label>
+                        <div class="col-md-9">
+                          <textarea class="form-control" rows="5" id="textArea" placeholder="Cuentanos un poco de que proyectos has realizado"></textarea>
+                        </div>
+                      </div>
+                      <div id="div_conctacto"></div>
+                      <div class="form-group">
+                        <div class="col-md-9 col-md-offset-2">
+                            <a class="btn btn-success m-y-5 waves-effect waves-light" style="width: 200px;" onclick="expert_envio();">Enviar</a>
+                            <a class="btn btn-warning m-y-5 waves-effect waves-light" style="width: 200px;" href="/">Regresar</a>
+                  <input id="humano" name="humano" type="checkbox"/> Eres humano?
+
+                        </div>
+
+                      </div>
+                    </fieldset>
+                  </form>
+                </div>
+              </div>
+
+
+          </div>
+        </div>
+      </div>
+      <!-- container -->
+  
+ 
+      <footer class="ms-footer">
+        <div class="container">
+          <p>Copyright &copy; CeroCódigo 2014</p>
+        </div>
+      </footer>
+      
+    </div>
+    <!-- sb-site-container -->
+    <script src="/static/assets2/js/plugins.min.js"></script>
+    <script src="/static/assets2/js/app.min.js"></script>
+    <script src="/static/assets2/js/portfolio.js"></script>
+  </body>
+</html>

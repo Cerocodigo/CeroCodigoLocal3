@@ -1,0 +1,897 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="M_Adnan" />
+<!-- Document Title -->
+<title>{{negocio}}</title>
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+
+<!-- SLIDER REVOLUTION 4.x CSS SETTINGS -->
+<link rel="stylesheet" type="text/css" href="/static/eshop/rs-plugin/css/settings.css" media="screen" />
+
+<!-- StyleSheets -->
+<link rel="stylesheet" href="/static/eshop/css/ionicons.min.css">
+<link rel="stylesheet" href="/static/eshop/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/eshop/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/eshop/css/main.css">
+<link rel="stylesheet" href="/static/eshop/css/style.css">
+<link rel="stylesheet" href="/static/eshop/css/responsive.css">
+
+<script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Lato:100i,300,400,700,900" rel="stylesheet">
+
+
+
+  <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  <link href="https://cdn.paymentez.com/ccapi/sdk/payment_stable.min.css" rel="stylesheet" type="text/css"/>
+  <script src="https://cdn.paymentez.com/ccapi/sdk/payment_stable.min.js"></script>
+
+
+<!-- Fonts Online -->
+<link href="https://fonts.googleapis.com/css?family=Lato:100i,300,400,700,900" rel="stylesheet">
+
+<!-- JavaScripts -->
+<script src="/static/eshop/js/vendors/modernizr.js"></script>
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+ 
+<script type="text/javascript">
+
+
+
+
+  function devolver_ciudades(){
+    var provvii = document.getElementById('esho_Env_Pro').value
+    var ciudadi = document.getElementById('esho_Env_Cui')
+    var txt_cu = ''
+
+    {% for ciudad in lista_ciudades %}
+      if(provvii == '{{ciudad.Provincia}}'){txt_cu = txt_cu + ' <option value="{{ciudad.Valor}}">{{ciudad.Ciudad}}</option>'}
+    {% endfor %} 
+
+  
+
+    ciudadi.innerHTML = txt_cu
+
+ 
+  }
+
+
+
+
+  function procesar_pago(){
+    var d1 = document.getElementById("e_3")
+    d1.className = "col-sm-3"
+
+    var d2 = document.getElementById("e_4")
+    d2.className = "col-sm-3 current"
+    pagar()
+
+
+
+    var t_codigo = document.getElementById('promo_cod')
+
+    $.ajax({
+      type: 'POST',
+      url: '/{{negocio}}/chek_out_confimr/',
+      data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}', 't_promo_cod':t_codigo.value},
+      success: function(Response){
+        if(Response['ok']==1){
+        window.open("/{{negocio}}/eshop/pedido/"+Response["data"]['Web'][0]['PkWeb']+"/");
+
+        }
+
+        if(Response['ok']==1){
+
+
+
+          var d_total = document.getElementById("tabla_int")
+          html_data = ''
+          html_data_env = ''
+          html_data_fact = ''
+          
+          for (q = 0; q < Response["data"]['Web'].length; q++) {
+            for (y = 0; y < Object.keys(Response["data"]['Web'][q]).length; y++){
+
+              if( Object.keys(Response["data"]['Web'][q])[y] !='PkWeb'){
+                if( Object.keys(Response["data"]['Web'][q])[y].substring(0,3) == 'Cli'){
+                  html_data_fact = html_data_fact + '<div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">' + Object.keys(Response["data"]['Web'][q])[y] + '</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="' + Response["data"]['Web'][q][Object.keys(Response["data"]['Web'][q])[y]] + '" readonly="readonly" style="height: 25px;font-size: 11px;"></div>'
+
+                }
+                if( Object.keys(Response["data"]['Web'][q])[y].substring(0,3) == 'Env'){
+                  html_data_env = html_data_env + '<div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">' + Object.keys(Response["data"]['Web'][q])[y] + '</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="' + Response["data"]['Web'][q][Object.keys(Response["data"]['Web'][q])[y]] + '" readonly="readonly" style="height: 25px;font-size: 11px;"></div>'
+
+                }
+                if( Object.keys(Response["data"]['Web'][q])[y] == 'Observacion'){
+                  html_data_env = html_data_env + '<div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">' + Object.keys(Response["data"]['Web'][q])[y] + '</label><textarea type="text" class="form-control" readonly="readonly" style="height: 45px;font-size: 11px;">' + Response["data"]['Web'][q][Object.keys(Response["data"]['Web'][q])[y]] + '</textarea></div>'
+                } 
+                if( Object.keys(Response["data"]['Web'][q])[y] == 'Fecha'){
+                  html_data_fact = html_data_fact + '<div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">' + Object.keys(Response["data"]['Web'][q])[y] + '</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="' + Response["data"]['Web'][q][Object.keys(Response["data"]['Web'][q])[y]] + '" readonly="readonly" style="height: 25px;font-size: 11px;"></div>'
+                }   
+
+
+                               //html_data = html_data + '<div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">' + Object.keys(Response["data"]['Web'][q])[y] + '</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="' + Response["data"]['Web'][q][Object.keys(Response["data"]['Web'][q])[y]] + '" readonly="readonly" style="height: 25px;font-size: 11px;"></div>'
+
+              }else{
+                html_data_fact = html_data_fact + '<div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Numero Pedido</label><input type="text" class="form-control col-sm-8" value="' + Response["data"]['Web'][q][Object.keys(Response["data"]['Web'][q])[y]] + '" readonly="readonly" style="height: 25px;font-size: 11px;"></div>'
+              }
+            }
+            html_data = html_data +'<div class="col-sm-6"><h3> Datos Factura</h3>'
+
+            html_data = html_data + html_data_fact
+            html_data = html_data + '<div class="pro-btn"><button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick=""><span class="fa fa-file-pdf-o" aria-hidden="true"></span>PDF</button><button class="btn-round" style="background: green; margin-top: 15px;" onclick="">'+Response["data"]['Web'][q]['Estado'] +'</button> </div>'
+
+
+            html_data = html_data +''
+
+            html_data = html_data +'</div>'
+
+            html_data = html_data +'<div class="col-sm-6"><h3> Datos Envio</h3>'
+            html_data = html_data + html_data_env
+            html_data = html_data +'</div>'
+          }
+
+
+
+
+          html_data = html_data +'<div class="col-sm-12"><h3> Items </h3>'
+
+          html_data = html_data + ' <table class="table"><thead><tr>'
+
+       
+
+
+          html_data = html_data + '<th class="text-center">Codigo</th>'
+          html_data = html_data + '<th class="text-center">Producto</th>'
+          html_data = html_data + '<th class="text-center">Cantidad</th>'
+          html_data = html_data + '<th class="text-center">Precio</th>'
+          html_data = html_data + '<th class="text-center">Subtotal</th>'
+          html_data = html_data + '<th class="text-center">Iva</th>'
+          html_data = html_data + '<th class="text-center">Total</th>'
+          html_data = html_data + '<th class="text-center">Imagen</th>'
+
+
+          html_data = html_data + '</tr></thead><tbody>'
+
+          for (q = 0; q < Response["data"]['WebDetalle'].length; q++) {
+            html_data = html_data + '<tr>'
+
+
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Codigo'] + '</td>'
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Producto'] + '</td>'
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Cantidad'] + '</td>'
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Precio'] + '</td>'
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Subtotal'] + '</td>'
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Iva'] + '</td>'
+            html_data = html_data + '<td class="text-center">' + Response["data"]['WebDetalle'][q]['Total'] + '</td>'
+
+            html_data = html_data + '<td class="text-center"><div class="media-left"> <a href="#."> <img class="img-responsive" src="/media/archivos/{{negocio}}/' + Response["data"]['WebDetalle'][q]['Imagen'] + '" alt="" > </a> </div></td>'
+
+
+
+            html_data = html_data + '</tr>'
+
+
+
+          }
+
+            html_data = html_data + '<tr>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Subtotal</td>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">'+         Response['total'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>' 
+              html_data = html_data + '</tr>'
+              html_data = html_data + '<tr>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="3">Codigo Promo</td>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="3"><input type="text" id="promo_cod" class="form-control col-sm-8" value="0" style="height: 25px;font-size: 11px;"></td>'
+
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;"><input type="text" readonly="readonly" id="promo_val" class="form-control col-sm-8" value="0" style="height: 25px;font-size: 11px;"></td>'
+              html_data = html_data + '</tr>'
+
+              html_data = html_data + '<tr>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Transporte</td>'
+
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">'+parseFloat(Response["data"]['Web'][0]['Transporte']).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              html_data = html_data + '</tr>'
+
+              html_data = html_data + '<tr>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Total</td>'
+              html_data = html_data + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">'+parseFloat(parseFloat(Response["data"]['Web'][0]['Transporte']) + parseFloat(Response["total"])).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              html_data = html_data + '</tr>'
+          html_data = html_data + ' </tbody></table>'
+          html_data = html_data +'</div>'
+
+          var d_total = document.getElementById("tabla_int")
+          d_total.innerHTML =html_data
+        }else{
+          var d_total = document.getElementById("tabla_int")
+          d_total.innerHTML =Response['respu']
+        }
+
+       
+      }
+    }); 
+  }
+
+function pagar(){
+  window.open("/{{negocio}}/chek_out_pago/", '_blank');
+
+}
+  
+function activar_promo(){
+  var t_codigo = document.getElementById('promo_cod')
+
+
+    $.ajax({
+      type: 'POST',
+      url: '/{{negocio}}/eshop_promo/',
+      data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}', 't_promo_cod':t_codigo.value},
+      success: function(Response){
+        if(Response['ok']==1){
+          var t_codigo = document.getElementById('promo_cod')
+          //t_codigo.readOnly = true
+          var t_codigo_val = document.getElementById('promo_val')
+          var t_sub = document.getElementById('td_sub')
+          var t_trans = document.getElementById('td_trans')
+
+
+          var t_td = document.getElementById('td_pedido')
+          var t_btn = document.getElementById('btn_pedido')
+
+          var valor = parseFloat(t_sub.innerText.replace(',','')) + parseFloat(t_trans.innerText.replace(',',''))
+
+          if(Response['promo'][0]['Tipo'] =='Valor'){
+            t_codigo_val.innerText = Response['promo'][0]['Valor']
+
+            t_td.innerText = parseFloat(valor) - parseFloat(Response['promo'][0]['Valor'])
+            t_btn.innerText = 'Poner Pedido por: ' + (parseFloat(valor) - parseFloat(Response['promo'][0]['Valor'])).toString()
+
+
+          }
+          if(Response['promo'][0]['Tipo'] =='Porcentaje'){
+            t_codigo_val.innerText =  Response['promo'][0]['Valor'] + " %"
+
+
+            t_td.innerText =  parseFloat(valor) - (parseFloat(valor) * parseFloat(Response['promo'][0]['Valor']) * 0.01)
+            t_btn.innerText = 'Poner Pedido por: ' + (parseFloat(valor) - 
+              (parseFloat(valor) * parseFloat(Response['promo'][0]['Valor']) * 0.01)).toString()
+            
+
+
+          } 
+
+        }
+      }
+    });
+
+}
+
+  function pago_previo(){
+    var d1 = document.getElementById("e_2")
+    d1.className = "col-sm-3"
+
+    var d2 = document.getElementById("e_3")
+    d2.className = "col-sm-3 current"
+
+
+
+
+    $.ajax({
+      type: 'POST',
+      url: '/{{negocio}}/eshop_checkout_final/',
+      data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}'},
+      success: function(Response){
+
+        if(Response['respuesta'] == 1){
+
+          var d_total = document.getElementById("tabla_int")
+
+          htmlnew = ''
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Facturacion</h3>'
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" readonly="readonly" id="esho_Fact_Id" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Id']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Razon Social</label><input type="text" readonly="readonly" id="esho_Fact_Nom" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Razon']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" readonly="readonly" id="esho_Fact_Email" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Email']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Telefono</label><input type="text" readonly="readonly" id="esho_Fact_Telf" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Telefono']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" readonly="readonly" id="esho_Fact_Dir" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Direccion']+'" style="height: 25px;font-size: 11px;"></div>'    
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Observaciones</label><input type="text" readonly="readonly" id="esho_Fact_Obs" class="form-control col-sm-8" value="'+Response['eshop_datos']['Observacion']+'" style="height: 25px;font-size: 11px;"></div>'
+
+          htmlnew = htmlnew + '</div>'
+
+
+
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Envio</h3>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" readonly="readonly" id="esho_Env_Id" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Id']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Nombre</label><input type="text" readonly="readonly" id="esho_Env_Nom" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Nombre']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" readonly="readonly" id="esho_Env_Email" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Email']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" readonly="readonly" id="esho_Env_Dir" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Direccion']+'" style="height: 25px;font-size: 11px;"></div>'
+          
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Provincia</label><input type="text" readonly="readonly" id="esho_Env_Pro" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Provincia']+'" style="height: 25px;font-size: 11px;"></div>'
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Ciudad</label><input type="text" readonly="readonly" id="esho_Env_Cui" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Ciudad']+'" style="height: 25px;font-size: 11px;"></div>'
+
+
+          htmlnew = htmlnew + '</div>'
+
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Productos</h3>'
+
+
+          htmlnew = htmlnew + '<table class="table"><thead><tr><th>Productos</th><th class="text-center">Precio</th><th class="text-center">Cantidad</th><th class="text-center">Subtotal</th><th class="text-center">Iva</th><th class="text-center">Total</th></tr></thead><tbody>'
+
+            for (x = 0; x < Response["lista"].length; x++) { 
+              htmlnew = htmlnew + '<tr>'
+              
+              htmlnew = htmlnew + '<td><div class="media"><div class="media-left"> <a><img class="img-responsive" src="/media/archivos/{{negocio}}/'+Response["lista"][x]['Imagen']+'" alt="" > </a> </div><div class="media-body"><p>'+Response["lista"][x]['Producto']+'</p></div></div></td>'              
+                                    
+              htmlnew = htmlnew + '<td class="text-center padding-top-60">$'+Response["lista"][x]['Precio'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'{{item.}}</td>'
+              htmlnew = htmlnew + '<td class="text-center padding-top-60">'+Response["lista"][x]['Cantidad'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'{{item.}}</td>'
+              htmlnew = htmlnew + '<td class="text-center padding-top-60">$'+Response["lista"][x]['Subtotal'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              htmlnew = htmlnew + '<td class="text-center padding-top-60">$'+Response["lista"][x]['Iva'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              htmlnew = htmlnew + '<td class="text-center padding-top-60">$'+Response["lista"][x]['Total'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              htmlnew = htmlnew + '</tr>'
+            }
+              htmlnew = htmlnew + '<tr>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="5">Subtotal</td>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" id="td_sub">'+Response['total'].toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>' 
+              htmlnew = htmlnew + '</tr>'
+
+              htmlnew = htmlnew + '<tr>'
+              htmlnew = htmlnew + '<td class="text-right" style="padding-top: 5px; padding-bottom: 5px;" colspan="3">Codigo Promo</td>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="2"><input type="text" id="promo_cod" onchange="activar_promo()" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></td>'
+
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" id="promo_val">0</td>'
+              htmlnew = htmlnew + '</tr>'
+
+
+              htmlnew = htmlnew + '<tr>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="5">Transporte</td>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" id="td_trans">'+parseFloat(Response['eshop_datos']['Transporte']).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              htmlnew = htmlnew + '</tr>'
+
+
+              htmlnew = htmlnew + '<tr>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="5">Total</td>'
+              htmlnew = htmlnew + '<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;"  id="td_pedido">'+parseFloat(parseFloat(Response['eshop_datos']['Transporte']) + parseFloat(Response['total'])).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</td>'
+              htmlnew = htmlnew + '</tr>'
+
+              htmlnew = htmlnew + '</tbody></table>'
+
+
+
+
+        
+          
+          htmlnew = htmlnew + ' </div>'
+
+
+          htmlnew = htmlnew + '<div class="pro-btn"><button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick="procesar_pago()" id="btn_pedido">Poner Pedido por: '+parseFloat(parseFloat(Response['eshop_datos']['Transporte']) + parseFloat(Response['total'])).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'</button> </div>'
+          
+          d_total.innerHTML = htmlnew
+
+        }else{alert('valio')}
+       
+     
+      }
+    }); 
+
+
+
+
+
+  }
+
+    
+  function t_envio_grabar(){
+    var d_Fact_Id = document.getElementById('esho_Fact_Id').value
+    var d_Fact_Nom = document.getElementById('esho_Fact_Nom').value
+    var d_Fact_Email = document.getElementById('esho_Fact_Email').value
+    var d_Fact_Telf = document.getElementById('esho_Fact_Telf').value
+    var d_Fact_Dir = document.getElementById('esho_Fact_Dir').value
+    var d_Observacion = document.getElementById('esho_Fact_Obs').value
+
+    var d_Env_Id = document.getElementById('esho_Env_Id').value
+    var d_Env_Nom = document.getElementById('esho_Env_Nom').value
+    var d_Env_Email = document.getElementById('esho_Env_Email').value
+    var d_Env_Dir = document.getElementById('esho_Env_Dir').value
+    var d_Env_Pro = document.getElementById('esho_Env_Pro').value
+    var d_Env_Cui = document.getElementById('esho_Env_Cui').selectedOptions[0].innerText
+    var d_Env_Trans = document.getElementById('esho_Env_Cui').selectedOptions[0].value
+   
+
+
+    $.ajax({
+      type: 'POST',
+      url: '/{{negocio}}/chek_out_data/',
+      data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}', 'etapa':'B', 'd_Fact_Id':d_Fact_Id, 'd_Fact_Nom':d_Fact_Nom, 'd_Fact_Email':d_Fact_Email, 'd_Fact_Telf':d_Fact_Telf, 'd_Fact_Dir':d_Fact_Dir, 'd_Env_Nom':d_Env_Nom,'d_Env_Email':d_Env_Email, 'd_Env_Dir':d_Env_Dir, 'd_Env_Pro':d_Env_Pro, 'd_Env_Cui':d_Env_Cui, 'd_Env_Id':d_Env_Id, 'd_Observacion':d_Observacion, 'd_Env_Trans':d_Env_Trans},
+      success: function(Response){
+
+        if(Response['respuesta'] == 1){  
+          var d_total = document.getElementById("tabla_int")
+           htmlnew = ''
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Facturacion</h3>'
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Id']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Razon Social</label><input type="text" id="esho_Fact_Nom" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Razon']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" id="esho_Fact_Email" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Email']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Telefono</label><input type="text" id="esho_Fact_Telf" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Telefono']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" id="esho_Fact_Dir" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Direccion']+'" style="height: 25px;font-size: 11px;"></div>'    
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Observaciones</label><input type="text" id="esho_Fact_Obs" class="form-control col-sm-8" value="'+Response['eshop_datos']['Observacion']+'" style="height: 25px;font-size: 11px;"></div>'
+
+          htmlnew = htmlnew + '</div>'
+
+
+
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Envio</h3>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" id="esho_Env_Id" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Id']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Nombre</label><input type="text" id="esho_Env_Nom" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Nombre']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" id="esho_Env_Email" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Email']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" id="esho_Env_Dir" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Direccion']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Provincia</label>'
+
+
+          htmlnew = htmlnew + ' <select  id="esho_Env_Pro" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Provincia']+'" style="height: 30px;font-size: 10px;" onchange="devolver_ciudades()">'
+          htmlnew = htmlnew + '<option value="'+Response['eshop_datos']['Envio_Provincia']+'">'+Response['eshop_datos']['Envio_Provincia']+'</option>' 
+
+
+          {% for provincia in lista_provincia %}htmlnew = htmlnew + ' <option value="{{provincia.Provincia}}">{{provincia.Provincia}}</option>'    
+          {% endfor %} 
+
+          htmlnew = htmlnew + '</select>'
+          htmlnew = htmlnew + '</div>'
+
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Ciudad</label>'
+          htmlnew = htmlnew + ' <select  id="esho_Env_Cui" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Ciudad']+'" style="height: 30px;font-size: 10px;">'
+          htmlnew = htmlnew + '<option value="'+Response['eshop_datos']['Transporte']+'">'+Response['eshop_datos']['Envio_Ciudad']+'</option>' 
+          htmlnew = htmlnew + '</select>'
+
+          
+
+
+
+
+          htmlnew = htmlnew + '</div>'
+
+
+          htmlnew = htmlnew + '</div>'
+          htmlnew = htmlnew + '<div class="pro-btn"><button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick="t_envio_grabar()">Actualizar</button>'
+          htmlnew = htmlnew + '<button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick="pago_previo()">Verificar Pedido</button> </div>'
+
+          
+
+          d_total.innerHTML = htmlnew
+
+        }else{alert('valio')}
+       
+     
+      }
+    }); 
+  }
+
+  function t_envio(){
+
+    var d1 = document.getElementById("e_1")
+    d1.className = "col-sm-3"
+
+    var d2 = document.getElementById("e_2")
+    d2.className = "col-sm-3 current"
+    window.scrollTo(0, 0);
+
+    var d_total = document.getElementById("tabla_int")
+    htmlnew = ''
+    htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Facturacion</h3>'
+
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="9999999999999" style="height: 25px;font-size: 11px;"></div>'
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Razon Social</label><input type="text" id="esho_Fact_Nom" class="form-control col-sm-8" value="Consumidor Final" style="height: 25px;font-size: 11px;"></div>'
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" id="esho_Fact_Email" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></div>'
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Telefono</label><input type="text" id="esho_Fact_Telf" class="form-control col-sm-8" value="Sin Datos" style="height: 25px;font-size: 11px;"></div>'
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" id="esho_Fact_Dir" class="form-control col-sm-8" value="Sin Datos" style="height: 25px;font-size: 11px;"></div>'  
+
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Observaciones</label><input type="text" id="esho_Fact_Obs" class="form-control col-sm-8" value="Sin Datos" style="height: 25px;font-size: 11px;"></div>'
+
+    htmlnew = htmlnew + '</div>'
+
+
+
+    htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Envio</h3>'
+
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" id="esho_Env_Id" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></div>'
+
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Nombre</label><input type="text" id="esho_Env_Nom" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></div>'
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" id="esho_Env_Email" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></div>'
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" id="esho_Env_Dir" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></div>'
+
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Provincia</label>'
+
+
+    htmlnew = htmlnew + ' <select  id="esho_Env_Pro" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;" onchange="devolver_ciudades()">'
+
+    {% for provincia in lista_provincia %}htmlnew = htmlnew + ' <option value="{{provincia.Provincia}}">{{provincia.Provincia}}</option>'    
+    {% endfor %} 
+
+
+
+    htmlnew = htmlnew + ' </select>'
+
+    htmlnew = htmlnew + '</div>'
+
+    htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Ciudad</label>'
+    htmlnew = htmlnew + ' <select  id="esho_Env_Cui" class="form-control col-sm-8" value="" style="height: 25px;font-size: 11px;"></select>'
+
+    htmlnew = htmlnew + '</div>'
+
+    htmlnew = htmlnew + '</div>'
+    htmlnew = htmlnew + '<div class="pro-btn"><button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick="t_envio_grabar()">Actualizar</button> </div>'
+
+          
+
+    d_total.innerHTML = htmlnew
+
+    $.ajax({
+      type: 'POST',
+      url: '/{{negocio}}/chek_out_data',
+      data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}', 'etapa':'A'},
+      success: function(Response){
+
+        if(Response['respuesta'] == 1){  
+          var d_total = document.getElementById("tabla_int")
+          htmlnew = ''
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Facturacion</h3>'
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Id']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Razon Social</label><input type="text" id="esho_Fact_Nom" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Razon']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" id="esho_Fact_Email" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Email']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Telefono</label><input type="text" id="esho_Fact_Telf" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Telefono']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" id="esho_Fact_Dir" class="form-control col-sm-8" value="'+Response['eshop_datos']['Cliente_Direccion']+'" style="height: 25px;font-size: 11px;"></div>'          
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Observaciones</label><input type="text" id="esho_Fact_Obs" class="form-control col-sm-8" value="'+Response['eshop_datos']['Observacion']+'" style="height: 25px;font-size: 11px;"></div>'
+
+          htmlnew = htmlnew + '</div>'
+
+
+
+          htmlnew = htmlnew + '<div class="col-sm-6"><h3>Datos Envio</h3>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Id</label><input type="text" id="esho_Env_Id" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Id']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Nombre</label><input type="text" id="esho_Env_Nom" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Nombre']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Email</label><input type="text" id="esho_Env_Email" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Email']+'" style="height: 25px;font-size: 11px;"></div>'
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Direccion</label><input type="text" id="esho_Env_Dir" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Direccion']+'" style="height: 25px;font-size: 11px;"></div>'
+
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Provincia</label>'
+
+
+          htmlnew = htmlnew + ' <select  id="esho_Env_Pro" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Provincia']+'" style="height: 30px;font-size: 10px;" onchange="devolver_ciudades()">'
+          htmlnew = htmlnew + '<option value="'+Response['eshop_datos']['Envio_Provincia']+'">'+Response['eshop_datos']['Envio_Provincia']+'</option>' 
+
+          {% for provincia in lista_provincia %}htmlnew = htmlnew + ' <option value="{{provincia.Provincia}}">{{provincia.Provincia}}</option>'    
+          {% endfor %} 
+
+          htmlnew = htmlnew + '</select>'
+          htmlnew = htmlnew + '</div>'
+
+
+          htmlnew = htmlnew + '  <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Ciudad</label>'
+          htmlnew = htmlnew + ' <select  id="esho_Env_Cui" class="form-control col-sm-8" value="'+Response['eshop_datos']['Envio_Ciudad']+'" style="height: 30px;font-size: 10px;">'
+
+          htmlnew = htmlnew + '<option value="'+Response['eshop_datos']['Transporte']+'">'+Response['eshop_datos']['Envio_Ciudad']+'</option>' 
+
+          htmlnew = htmlnew + '</select>'
+
+          htmlnew = htmlnew + '</div>'
+
+
+          htmlnew = htmlnew + '</div>'
+
+          //htmlnew = htmlnew + '<div class="pro-btn" ><button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick="pago_previo()">Pago</button> </div>'
+          htmlnew = htmlnew + '<div class="pro-btn"><button class="btn-round" style="background: {{datos_contactos.Color1}}; margin-top: 15px;" onclick="t_envio_grabar()">Validar</button> </div>'
+
+          d_total.innerHTML = htmlnew
+
+        }else{alert('valio')}
+       
+     
+      }
+    }); 
+  }
+
+
+    
+  function buscar_bruto(){
+    v_cat = document.getElementById("eshop_v_cat")
+    v_busca = document.getElementById("eshop_v_busca")
+
+    if(v_cat.value == 'Todas Categorias'){
+      window.location.href = "/{{negocio}}/eshop/todas/" + v_busca.value;
+    }else{
+      window.location.href = "/{{negocio}}/eshop/"+v_cat.value+"/" + v_busca.value;
+    }
+  }
+
+  function remueve_carrito_arr(id_div){
+    v_codigo = id_div.split('_')
+    
+
+    $.ajax({
+      type: 'POST',
+      url: '/{{negocio}}/eshop_borrar_cod/',
+      data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}', 'v_codigo':v_codigo[1]},
+      success: function(Response){
+
+        if(Response['respuesta'] == 1){
+
+
+          var trr = document.getElementById(id_div)
+          var d_total = document.getElementById("spn_total")
+          d_total.innerText =  parseFloat(d_total.innerText.substring(1).replace(',','.')) - parseFloat(trr.children[5].innerText.substring(1).replace(',','.'))
+
+
+          trr.remove();
+
+        }else{alert('valio')}
+       
+     
+      }
+    }); 
+  }
+
+</script>
+
+
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="wrap"> 
+  
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="container">
+      <p>Bienvenido a {{negocio}}</p>
+      <div class="right-sec">
+        
+        <div class="social-top"> <a href="{{datos_contactos.datos_fab}}" target="_blank"><i class="fa fa-facebook"></i></a> <a href="{{datos_contactos.datos_tuiter}}" target="_blank"><i class="fa fa-twitter"></i></a>  <a href="{{datos_contactos.datos_inst}}" target="_blank"><i class="fa fa-instagram"></i></a> </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo"> <a href="/{{negocio}}/eshop"><img src="/media/archivos/{{negocio}}/logo.png" alt="" style="width: 160px;height: 60px;"></a> </div>
+      <div class="search-cate">
+        <select class="selectpicker" id="eshop_v_cat">
+          <option>Todas Categorias</option>
+          {% for cat in cat_princi %}<option>{{ cat.nombre }}</option>{% endfor %}                               
+        </select>
+        <input id="eshop_v_busca" type="search" placeholder="Buscar..." onchange="buscar_bruto()">
+        <button class="submit" onclick="buscar_bruto()"><i class="icon-magnifier"></i></button>
+      </div>
+      
+      <!-- Cart Part -->
+    
+    </div>
+    
+    <!-- Nav -->
+    <nav class="navbar ownmenu" style="background: {{datos_contactos.Color2}};">
+      <div class="container"> 
+        
+        <!-- Categories -->
+        <div class="cate-lst"> <a  data-toggle="collapse" class="cate-style" href="#cater" style="background: {{datos_contactos.Color1}};"><i class="fa fa-list-ul"></i>Categorias</a>
+          <div class="cate-bar-in">
+            <div id="cater" class="collapse">
+              <ul>
+                 <li class="sub-menu"><a href="/{{negocio}}/eshop/todas">Todas</a></li>
+
+                 {% for cat in cat_princi %}
+                <li class="sub-menu"><a href="/{{negocio}}/eshop/{{ cat.nombre }}">{{ cat.nombre }}</a></li>
+                {% endfor %}                             
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navbar Header -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-open-btn" aria-expanded="false"> <span><i class="fa fa-navicon"></i></span> </button>
+        </div>
+        <div class="nav-right"> <span class="call-mun"><i class="fa fa-phone"></i> <strong>Telefono: </strong>  {{datos_contactos.datos_telf}}</span> </div>
+      </div>
+    </nav>
+  </header>
+  
+  <!-- Content -->
+  <div id="content"> 
+    
+    <!-- Ship Process -->
+    <div class="ship-process padding-top-30 padding-bottom-30">
+      <div class="container">
+        <ul class="row">
+          
+          <!-- Step 1 -->
+          <li id="e_1" class="col-sm-3 current">
+            <div class="media-left"> <i class="flaticon-shopping"></i> </div>
+            <div class="media-body"> <span>Paso 1</span>
+              <h6>Revisar Pedido</h6>
+            </div>
+          </li>
+          
+          <!-- Step 2 -->
+          <li id="e_2" class="col-sm-3">
+            <div class="media-left"> <i class="flaticon-delivery-truck"></i> </div>
+            <div class="media-body"> <span>Paso 2</span>
+              <h6>Datos Cliente</h6>
+            </div>
+          </li>
+
+          <!-- Step 4 -->
+          <li id="e_3" class="col-sm-3">
+            <div class="media-left"> <i class="fa fa-check"></i> </div>
+            <div class="media-body"> <span>Paso 3</span>
+              <h6>Confirmacion</h6>
+            </div>
+          </li>
+          <!-- Step 3 -->
+          <li id="e_4" class="col-sm-3">
+            <div class="media-left"> <i class="flaticon-business"></i> </div>
+            <div class="media-body"> <span>Paso 4</span>
+              <h6>Estado</h6>
+            </div>
+          </li>
+          
+
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Shopping Cart -->
+    <section class="shopping-cart padding-bottom-60">
+      <div class="container" id="tabla_int">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Productos</th>
+              <th class="text-center">Precio</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-center">Subtotal</th>
+              <th class="text-center">Iva</th>              
+              <th class="text-center">Total</th>
+              <th>&nbsp; </th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <!-- Item Cart -->
+            
+            {% for item in lista %}
+            <tr id="list_{{item.Codigo}}">
+              <td><div class="media">
+                  <div class="media-left"> <a href="#."> <img class="img-responsive" src="/media/archivos/{{negocio}}/{{item.Imagen}}" alt="" > </a> </div>
+                  <div class="media-body">
+                    <p>{{item.Producto}}</p>
+                  </div>
+                </div></td>
+              <td class="text-center padding-top-60">${{item.Precio}}</td>
+              <td class="text-center padding-top-60">{{item.Cantidad}}</td>
+                <!--<div class="quinty padding-top-20"><input type="number" value="{{item.}}"></div></td>-->
+              <td class="text-center padding-top-60">${{item.Subtotal}}</td>
+              <td class="text-center padding-top-60">${{item.Iva}}</td>
+              <td class="text-center padding-top-60">${{item.Total}}</td>
+                        
+              <td class="text-center padding-top-60"><button onclick="remueve_carrito_arr('list_{{item.Codigo}}')" class="btn-round" style="background: {{datos_contactos.Color1}}; margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> x </button></td>
+            </tr>
+
+            {% endfor %} 
+          </tbody>
+        </table>
+        
+        <!-- Promotion -->
+        <div class="promo">
+          <div class="coupen">
+            <!--<label> Codigos Promocion
+              <input type="text" placeholder="Your code here">
+              <button type="submit"><i class="fa fa-arrow-circle-right"></i></button>
+            </label> -->
+          </div>
+          
+          <!-- Grand total -->
+          <div class="g-totel">
+            <h5>Total: <span id="spn_total">${{total}}</span></h5>
+          </div>
+        </div>
+        
+        <!-- Button -->
+        <div class="pro-btn"> 
+          <a href="/{{negocio}}/eshop" class="btn-round btn-light">Volver</a> 
+          <button class="btn-round" style="background: {{datos_contactos.Color1}};" onclick="t_envio()">Datos Envio</button> 
+
+        </div>
+      </div>
+    </section>
+    
+    <!-- Clients img -->
+   
+
+  </div>
+  <!-- End Content --> 
+  
+  <!-- Footer -->
+  <footer>
+  
+  </footer>
+  
+  <!-- Rights -->
+  <div class="rights">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <p>Copyright © 2017 <a href="#." class="ri-li"> SmartTech </a>HTML5 template. All rights reserved</p>
+        </div>
+        <div class="col-sm-6 text-right"> <img src="images/card-icon.png" alt=""> </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- End Footer --> 
+  
+  <!-- GO TO TOP  --> 
+  <a href="#" class="cd-top"><i class="fa fa-angle-up"></i></a> 
+  <!-- GO TO TOP End --> 
+</div>
+<!-- End Page Wrapper --> 
+
+<!-- JavaScripts --> 
+<script src="/static/eshop/js/vendors/jquery/jquery.min.js"></script> 
+<script src="/static/eshop/js/vendors/wow.min.js"></script> 
+<script src="/static/eshop/js/vendors/bootstrap.min.js"></script> 
+<script src="/static/eshop/js/vendors/own-menu.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.sticky.js"></script> 
+<script src="/static/eshop/js/vendors/owl.carousel.min.js"></script> 
+
+<!-- SLIDER REVOLUTION 4.x SCRIPTS  --> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.t.min.js"></script> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.min.js"></script> 
+<script src="/static/eshop/js/main.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.nouislider.min.js"></script> 
+<script>
+jQuery(document).ready(function($) {
+ 
+  //  Price Filter ( noUiSlider Plugin)
+    $("#price-range").noUiSlider({
+    range: {
+      'min': [ 0 ],
+      'max': [ 1000 ]
+    },
+    start: [40, 940],
+        connect:true,
+        serialization:{
+            lower: [
+        $.Link({
+          target: $("#price-min")
+        })
+      ],
+      upper: [
+        $.Link({
+          target: $("#price-max")
+        })
+      ],
+      format: {
+      // Set formatting
+        decimals: 2,
+        prefix: '$'
+      }
+        }
+  })
+})
+
+</script>
+
+</body>
+</html>

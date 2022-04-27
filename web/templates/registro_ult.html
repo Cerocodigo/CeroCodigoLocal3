@@ -1,0 +1,91 @@
+
+
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <button type="button" onclick="cerrar_elemento(--pestalla--)" class="btn btn-success"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">Grabar</span></button>
+                <button type="button" onclick="grabar_elemento(--pestalla--)" class="btn btn-warning"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">Validar</span></button>
+                <button type="button" onclick="cerrar_elemento(--pestalla--)" class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">Cancelar</span></button>
+                <button type="button" onclick="cerrar_elemento(--pestalla--)" class="btn btn-primary"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">Nuevo</span></button>
+                <button type="button" onclick="cerrar_elemento(--pestalla--)" class="btn btn-primary"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">Correo</span></button>
+                <button type="button" onclick="cerrar_elemento(--pestalla--)" class="btn btn-primary"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">PDF</span></button>
+                <button type="button" onclick="cerrar_elemento(--pestalla--)" class="btn btn-primary"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true">Excell</span></button>
+            </div>
+        </div>
+    </div>
+
+ <br>
+
+<div class="card-block text-left" style="overflow: auto;">
+                <div class="row">   
+
+                {% for campos in campos_cab %}
+                    {% if campos.Visible == 'Y' %}
+                        <div class="form-group">
+                            <label class="control-label col-md-1" for="{{campos.Nombre}}">{{campos.Descripcion}}</label>
+                            <div class="col-xs-{{campos.largoweb}}">
+                                <input type="text" id="p{{pestalla}}{{campos.Nombre}}" class="form-control col-sm-{{campos.largoweb}}">
+                            </div>
+                        </div>
+                    {% else %}
+                            <input type="hidden" id="p{{pestalla}}{{campos.Nombre}}">
+                    {% endif %}  
+                {% endfor %}
+
+                </div>
+                    
+     
+            
+
+{% if campos_det != 0 %}
+
+
+   
+
+
+<div id="tabla{{pestalla}}"> 
+        <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th class="col-sm-1"> 
+                    
+                </th>
+                {% for campos in campos_det %}
+                {% if campos.Visible == 'Y' %}
+                <th class="col-md-{{campos.largoweb}}">{{ campos.Descripcion }}</th>
+                {% endif %}  
+                {% endfor %}
+            </tr>
+        </thead>
+                  
+
+        <tbody>
+            <tr id="f{{tabla.0.PkModulo}}-f{{item.0}}" >
+                <td>
+                    <div class="row"> 
+                    <button type="button" onclick="mas(--pestalla--)" class="btn btn-success">+</button>
+                    <button type="button" onclick="menos(--pestalla--)" class="btn btn-danger">-</button>
+                    </div>
+                </td>
+            {% for campos in campos_det %}
+            {% if campos.Visible == 'Y' %}
+            <td><input type="text" id="pd0-{{pestalla}}{{campos.Nombre}}" style="width: 100%;"></td>
+            {% endif %}  
+            {% endfor %}                               
+
+            </tr>    
+           
+{% endif %}                                  
+                                
+                                   
+                               
+
+       </tbody>                               
+</table>
+</div>
+           
+                 

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  
+    <title>Cero Codigo Edocs</title>
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+
+    <!-- MetisMenu CSS -->
+    <link href="/static/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="/static/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="/static/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+<script type="text/javascript">
+
+
+function filtrar() {
+    var valor = document.getElementById("filtro_valor").value
+    var tipo = document.getElementById("filtro_tipo").value
+    var flujo = document.getElementById("filtro_flujo").value
+
+    if (tipo === ""){
+        $("#div_intro").html("Seleccione un tipo de Documento primero");
+        return
+    }
+    if (flujo === ""){
+        $("#div_intro").html("Seleccione un tipo de Documento primero");
+        return
+    }
+    if (valor === ""){
+        $("#div_intro").html("Valor de filtro Vacio");
+        return
+    }
+
+    $.ajax({
+            type: 'POST',
+            url: 'carga_docs',
+            data: {'tipo': document.getElementById("filtro_tipo").value, 'user_id':'{{user_id}}','flujo':document.getElementById("filtro_flujo").value, 'num_pag':0, 'limite':100, 'filtro':document.getElementById("filtro").value, 'filtro_valor':document.getElementById("filtro_valor").value },
+            beforeSend: function () {
+                            $("#div_intro").html("Procesando, espere por favor...");
+                    },
+            success: function(response){
+                $("#div_intro").html(response);
+            }
+        });  
+}
+
+
+
+
+
+function docs_recibidas(tipo,num_pag,limite) {
+
+    document.getElementById("filtro_tipo").value = tipo;
+    document.getElementById("filtro_flujo").value = "r_";
+
+    $.ajax({
+            type: 'POST',
+            url: 'carga_docs',
+            data: {'tipo': tipo, 'user_id':'{{user_id}}','flujo':'r_', 'num_pag':num_pag, 'limite':limite },
+            beforeSend: function () {
+                            $("#div_intro").html("Procesando, espere por favor...");
+                    },
+            success: function(response){
+                $("#div_intro").html(response);
+            }
+        });
+
+}
+
+function docs_emitidas(tipo,num_pag,limite) {
+
+    document.getElementById("filtro_tipo").value = tipo;
+    document.getElementById("filtro_flujo").value = "e_";
+
+     $.ajax({
+            type: 'POST',
+            url: 'carga_docs',
+            data: {'tipo': tipo, 'user_id':'{{user_id}}','flujo':'e_', 'num_pag':num_pag, 'limite':limite },
+            beforeSend: function () {
+                            $("#div_intro").html("Procesando, espere por favor...");
+                    },
+            success: function(response){
+                $("#div_intro").html(response);
+            }
+        });
+
+}
+
+
+
+// var uploadButton = $('#subir_archivo');
+
+
+
+
+function subir_archivo() {
+    if (!window.FileReader) {
+        alert('Your browser is not supported');
+        return false;
+    }
+
+var fileInput = $('#files');
+var user_id = '{{user_id}}';
+var input = fileInput.get(0);
+    var reader = new FileReader();
+
+    if (input.files.length) {
+        var textFile = input.files[0];
+        // Read the file
+        reader.readAsText(textFile);
+        // When it's loaded, process it
+        $(reader).on('load', processFile2);
+    } else {
+        alert('Please upload a file before continuing')
+    } 
+
+
+}
+
+function processFileEnvio(t_lista, t_indice ) {
+
+
+    fila = t_lista[t_indice].split("\t");
+    var pasa = false;
+    if (fila[0] === "Factura"){pasa = true;}
+    if (fila[0] === "Comprobante de Retenci?n"){pasa = true;}
+    if (fila[0] === "Notas de cr?dito"){pasa = true;}
+    if (fila[0] === "Notas de d?bito"){pasa = true;}
+    if (fila[0] === "Gu?as de remisi?n"){pasa = true;}
+
+    if (pasa === true){
+        $.ajax({
+            type: 'POST',
+            url: 'xmlload',
+            data: {'results': t_lista[t_indice], 'user_id':'{{user_id}}' },
+            beforeSend: function () {
+                $("#div_update").html("Procesando " + t_indice + " de " + t_lista.length +  " documentos");
+            },
+            success: function(response){
+                if (t_lista.length > t_indice){
+                      $("#div_update").html("Procesando " + t_indice + " de " + t_lista.length +  " documentos");
+                        processFileEnvio(t_lista, (t_indice + 1))
+                }else{
+                    $("#div_update").html("Terminado");
+                }
+            }                    
+        });
+    }else{
+         if (t_lista.length > t_indice){
+                processFileEnvio(t_lista, (t_indice + 1))
+            }else{
+                $("#div_update").html("Terminado");
+            }
+    }
+}
+
+function processFile2(e) {
+    var file = e.target.result,
+        results;
+    if (file && file.length) {
+        results = file.split("\n");
+        processFileEnvio(results, 0)
+        
+
+    }
+}
+
+
+
+function processFile(e) {
+    var file = e.target.result,
+        results;
+    if (file && file.length) {
+        results = file.split("\n");
+    $.ajax({
+        type: 'POST',
+        url: 'xmlload',
+        data: {'results': file, 'user_id':'{{user_id}}' },
+        beforeSend: function () {
+                        $("#div_update").html("Procesando " + results.length +  " documentos, no cierre la paguina. Puede seguir trabajando");
+                },
+        success: function(response){
+            $("#div_update").html("Actualizado!");
+        }
+    });
+
+    }
+}
+
+
+
+</script>
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+               
+            </div>
+            <!-- /.navbar-header -->
+
+
+               <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                      <div class="alert alert-info" role="alert">
+                         <div style="text-align: center;">
+                    <h4>Actualizar XML</h4>
+                    <input type="file" id="files" name="files[]" multiple />
+                    <button onclick="subir_archivo();" type="button" class="btn btn-primary">Enviar</button>
+<div id="div_update" > </div>
+                </div>
+</div>
+                 <h4>Recibidas</h4>
+                 <li onclick="docs_recibidas('factura',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_recibidas('factura',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Facturas</a>
+                        </li>
+                      <li onclick="docs_recibidas('retencion',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_recibidas('retencion',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Retenciones</a>
+                        </li>
+                        <li onclick="docs_recibidas('credito',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_recibidas('credito',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Notas Credito</a>
+                        </li>
+                    <li onclick="docs_recibidas('debito',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_recibidas('debito',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Notas Debito</a>
+                                           
+                        </li>                   
+                  <li onclick="docs_recibidas('remision',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_recibidas('remision',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Guias</a>               
+                        </li>
+                      
+                              <h4>Emitidas</h4>
+                       
+                        
+                 <li onclick="docs_emitidas('factura',0,100);" style="color: #03a9f4;">
+                           <a><i class="glyphicon glyphicon-triangle-right"></i>Facturas</a>
+                
+                        </li>
+          
+                    
+                  
+                      <li onclick="docs_emitidas('retencion',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_emitidas('retencion',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Retenciones</a>
+                
+                        </li>
+                      
+            
+                    
+                
+                        <li onclick="docs_emitidas('credito',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_emitidas('credito',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Notas Credito</a>
+                
+                        </li>
+                       
+        
+                    
+                    <li onclick="docs_emitidas('debito',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_emitidas('debito',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Notas Debito</a>
+                                           
+                        </li>
+             
+                  <li onclick="docs_emitidas('remision',0,100);" style="color: #03a9f4;">
+                           <a onclick="docs_emitidas('remision',0,100);"><i class="glyphicon glyphicon-triangle-right"></i>Guias</a>
+                                           
+                        
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+                
+            </div>
+
+            <!-- /.navbar-static-side -->
+        </nav>
+
+
+        <div id="page-wrapper">
+            Filtros
+            <select name="filtro" id= "filtro">
+
+    <option value="estab">Establecimiento</option>
+    <option value="punto">Punto de Venta</option>
+    <option value="numero">Numero Documento</option>
+    <option value="emisor_id">Id Emisor</option>
+    <option value="emisor_razon">Razon Social</option>
+    <option value="estado">Estado</option>
+    <option value="fecha">Fecha Emision</option>
+    <option value="clave">Clave</option>
+  </select>
+ <input type="text" id="filtro_valor" clase="tipo" style="width: 400px;">
+ <input type="hidden" id="filtro_tipo" clase="tipo" style="width: 400px;">
+ <input type="hidden" id="filtro_flujo" clase="tipo"  style="width: 400px;">
+
+
+  <a onclick="filtrar()">filtrar<i class="glyphicon glyphicon-search"></i></a>
+
+            <div id="div_intro" class="row">
+                <!-- /.col-lg-12 -->
+            </div>
+      
+              
+                 <a href="http://www.cerocodigo.com" target="_blank"> <h3 class="ms-footbar-title text-center mb-2">www.cerocodigo.com</h3></a>
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="/static/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="/static/jquery.dataTables.min.js"></script> 
+    <script src="/static/dataTables.bootstrap.min.js"></script>
+    <script src="/static/dataTables.responsive.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/static/sb-admin-2.js"></script>
+
+<script type="text/javascript">
+$("#filtro_valor").keyup(function(event){
+    if(event.keyCode == 13){
+        filtrar()
+    }
+});   
+</script>
+
+</body>
+
+</html>

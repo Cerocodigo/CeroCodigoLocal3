@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  
+    <title>Cero Codigo Edocs</title>
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+
+    <!-- MetisMenu CSS -->
+    <link href="/static/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="/static/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="/static/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+<!--<link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<script>
+function myFunction(x) {
+    
+      // alert(document.getElementById("dataTables-example").rows[x.rowIndex].cells[0].innerHTML);
+        document.getElementById("vfinal").value = document.getElementById("dataTables-example").rows[x.rowIndex].cells[0].innerHTML.trim();
+}
+
+function CloseMySelf(sender) {
+    try {
+        window.opener.HandlePopupResult(sender.getAttribute("result"), document.getElementById("vfinal").value );
+    }
+    catch (err) {}
+    window.close();
+    return false;
+}
+
+function submitexcell()
+{
+  document.excell.submit();
+}
+
+function submitexcell_det()
+{
+  document.excell_det.submit();
+}
+
+function submitpdf()
+{
+  document.pdf.submit();
+}
+function submitpdf_det()
+{
+  document.pdf_det.submit();
+}
+
+                                       
+                            
+</script>
+
+
+
+</head>
+
+<body>
+
+ 
+               
+                 
+     <div id="wrapper">
+
+        <!-- Navigation -->
+      
+
+        <div id="page-wrapper" style="margin-left: 0;">
+            <div class="row">
+                  
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" id="demo">
+                       {{nombre}}
+                        </div>
+                        
+                        
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                                
+                                 <form name="filtros" method="post">
+                                              {% csrf_token %}    
+                                        <fieldset>
+                                                <select class="form-control" name="campo">
+                                                {% for cabecera in names %}
+                                                 
+                                                 {% if  cabecera.0.0 == "$" %}
+                                                 
+                                                   {% else %}
+                                               <option>{{ cabecera.0 }}</option>
+                                                {% endif %}
+                                                
+                                                {% endfor %}
+                                        </select>
+                                        <input class="form-control" name= "valor" placeholder="Escriba para filtrar">
+                                                
+                                                
+                                        <input type="hidden" id="Tipo"  name="Medio" value="Filtro_Reporte">
+                                        <input type="hidden" id="sentencia"  name="sentencia" value="{{sentencia}}">
+                                        <input type="hidden" id="nombre"  name="nombre" value="{{nombre}}">
+                                        <input type="hidden" id="pkrepor"  name="pkrepor" value="{{pkrepor}}">
+
+                     
+                                        </fieldset>
+                                        </form>
+                                 
+                                 <br>
+                                
+                                <div>
+                                        <div class="panel panel-info">
+                        <div class="panel-heading">
+                          Totales
+                        </div>
+                        <div class="panel-body">
+                           
+                                
+                          <table data-toggle="table" width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+
+                                
+                                   
+                                <thead>
+                                    <tr>
+                                        {% for item in totales_names %}
+                                                                              
+                                                <th>{{ item.0 }}</th>
+                                                                              
+                                         {% endfor %}
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {% for item in totales_dictlist %}
+                                                {% for rr in item %}
+                                                                              
+                                                        <td>{{ rr }}</td>
+                                                                              
+                                                {% endfor %}
+                                                                             
+                                         {% endfor %}
+                                       
+  <!--  <ul>-->
+                                               
+        
+ <!--   </ul>-->
+                                        
+                                  
+                                </tbody>
+                                       
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+                        <div class="row">
+                                <p>
+                                     
+
+                                <button class="btn btn-primary" type="submit" onclick="submitexcell();">Excell</button>
+                 <!--   <button class="btn btn-primary" type="submit" onclick="submitexcell_det();">Excell Con detalle</button> -->
+                                <button class="btn btn-primary" type="submit" onclick="submitpdf();">PDF</button>
+                 <!--   <button class="btn btn-primary" type="submit" onclick="submitpdf_det();">PDF Con detalle</button> -->
+                        
+                            <form name="excell" method="post" target="_blank">
+                                              {% csrf_token %}    
+                                        <fieldset>
+                                                                    
+                                        <input type="hidden" id="Medio"  name="Medio" value="Excell">
+                                        <input type="hidden" id="Nombre"  name="Nombre" value="Excell">
+                                        <input type="hidden" id="wait"  name="wait" value="Excell">
+
+                                        <input type="hidden" id="sentencia"  name="sentencia" value="{{sentencia}}">
+                                        <input type="hidden" id="nombre"  name="nombre" value="{{nombre}}">
+                                        <input type="hidden" id="pkrepor"  name="pkrepor" value="{{pkrepor}}">
+
+                                        </fieldset>
+                                        </form>
+                            
+                            <form name="excell_det" method="post" target="_blank">
+                                              {% csrf_token %}    
+                                        <fieldset>
+                                          
+                                        <input type="hidden" id="Medio"  name="Medio" value="Excell_det">
+                                        <input type="hidden" id="Nombre"  name="Nombre" value="Excell_det">
+                                        <input type="hidden" id="wait"  name="wait" value="Excell_det">
+                                        <input type="hidden" id="sentencia"  name="sentencia" value="{{sentencia}}">
+                                        <input type="hidden" id="nombre"  name="nombre" value="{{nombre}}">
+                                        <input type="hidden" id="pkrepor"  name="pkrepor" value="{{pkrepor}}">
+
+                     
+                                        </fieldset>
+                                        </form>
+                            
+                            <form name="pdf" method="post" target="_blank">
+                                              {% csrf_token %}    
+                                        <fieldset>
+                                            
+                                        <input type="hidden" id="Tipo"  name="Tipo" value="PDF">
+                                        <input type="hidden" id="Nombre"  name="Tipo" value="PDF">
+                                        
+                                        <input type="hidden" id="sentencia"  name="sentencia" value="{{sentencia}}">
+                                        <input type="hidden" id="nombre"  name="nombre" value="{{nombre}}">
+                                        <input type="hidden" id="pkrepor"  name="pkrepor" value="{{pkrepor}}">
+
+                     
+                                        </fieldset>
+                                        </form>
+                            
+                            <!--
+                            <form name="pdf_det" method="post" target="_blank">
+                                              {% csrf_token %}    
+                                        <fieldset>
+                                      
+                                        <input type="hidden" id="Tipo"  name="Tipo" value="PDF_det">
+                                        <input type="hidden" id="Nombre"  name="Tipo" value="PDF_det">
+                                        
+                                        <input type="hidden" id="sentencia"  name="sentencia" value="{{sentencia}}">
+                                        <input type="hidden" id="nombre"  name="nombre" value="{{nombre}}">
+                                        <input type="hidden" id="pkrepor"  name="pkrepor" value="{{pkrepor}}">
+
+                     
+                                        </fieldset>
+                                        </form>  -->
+                            
+                                </p>
+                        </div>
+                    </div>
+                        </div>                  
+                                       
+                                        
+                                </div>
+                                     Detalle:
+                            <table data-toggle="table" width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+
+                                
+                                   
+                                <thead>
+                                    <tr>
+                                        {% for cabecera in names %}
+                                        
+                                        
+                                        {% if  cabecera.0.0 == "$" %}
+                                                <th data-visible="false">{{ cabecera.0 }}</th>
+                                                   {% else %}
+                                                <th>{{ cabecera.0 }}</th>
+                                        {% endif %}
+                                                
+                                         {% endfor %}
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        
+                                       
+  <!--  <ul>-->
+                                                {% for fila in dictlist %}
+                                                <tr class="odd gradeX" onclick="myFunction(this)">
+                                                        {% for item in fila %}
+                                                        
+                                                                <td>
+                                                                {{ item }}                                                        
+                                                                </td>
+                                                        {% endfor %}  
+                                                </tr>
+                                                {% endfor %}
+        
+ <!--   </ul>-->
+                                        
+                                  
+                                </tbody>
+                                       
+                            </table>
+                                       
+                            <!-- /.table-responsive -->
+                           
+                        </div>
+                        
+                        
+                                   
+                               
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+              
+            
+      
+        <!-- /#page-wrapper -->
+  </div>
+    </div>
+  
+
+
+    </div>
+    <!-- jQuery -->
+    <!-- jQuery -->
+    <script src="/static/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="/static/jquery.dataTables.min.js"></script>
+    <script src="/static/dataTables.bootstrap.min.js"></script>
+    <script src="/static/dataTables.responsive.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/static/sb-admin-2.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            responsive: true,
+        });
+    });
+    </script>
+
+ 
+
+</body>
+
+</html>

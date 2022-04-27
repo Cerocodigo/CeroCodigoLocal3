@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Cero Codigo Edocs</title>
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  <link rel="shortcut icon" href="http://nlubkov.com/web2/versiones/icono_cero_nego.png">
+     
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/static/preload.min.css" />
+    <link rel="stylesheet" href="/static/plugins.min.css" />
+    <link rel="stylesheet" href="/static/style.light-blue-500.min.css" />
+
+
+    <!-- MetisMenu CSS -->
+    <link href="/static/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="/static/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="/static/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+               <a class="navbar-brand" href="http://www.cerocodigo.com/"  target="_blank" >
+                   <img class="img-responsive" src="http://nlubkov.com/web2/versiones/cero_codigo_logo_largo.png" alt="">
+                 </a>
+            </div>
+            <!-- /.navbar-header -->
+
+            
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                      <div class="alert alert-info" role="alert">
+                        <br>
+</div>
+                 <h4 style="color: black;">Recibidas</h4>
+                <form name="Facturas" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                 <li onclick="Facturas.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Facturas</a>
+                
+                        </li>
+             <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Factura">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+          </fieldset>             
+        </form>
+                      <form name="Retenciones" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                  
+                      <li onclick="Retenciones.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Retenciones</a>
+                
+                        </li>
+                      
+              <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Retenciones">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+          </fieldset>             
+        </form>
+                      <form name="Credito" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                
+                        <li onclick="Credito.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Notas Credito</a>
+                
+                        </li>
+                       
+         <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Credito">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+          </fieldset>             
+        </form>
+                      <form name="Debito" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                    <li onclick="Debito.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Notas Debito</a>
+                                           
+                        </li>
+              <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Debito">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+              
+          </fieldset>             
+        </form>
+                      <form name="Guia" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                  <li onclick="Guia.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Guias</a>
+                                           
+                        
+                        </li>
+<input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Guia">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+              </fieldset>             
+        </form>
+                      
+                       <h4 style="color: black;">Emitidas</h4>
+                       
+                           <form name="Facturas_E" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                 <li onclick="Facturas_E.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Facturas</a>
+                
+                        </li>
+             <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Factura_E">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+          </fieldset>             
+        </form>
+                      <form name="Retenciones_E" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                  
+                      <li onclick="Retenciones_E.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Retenciones</a>
+                
+                        </li>
+                      
+              <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Retenciones_E">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+          </fieldset>             
+        </form>
+                      <form name="Credito_E" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                
+                        <li onclick="Credito_E.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Notas Credito</a>
+                
+                        </li>
+                       
+         <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Credito_E">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+          </fieldset>             
+        </form>
+                      <form name="Debito_E" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                    <li onclick="Debito_E.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Notas Debito</a>
+                                           
+                        </li>
+              <input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Debito_E">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+              
+          </fieldset>             
+        </form>
+                      <form name="Guia_E" method="post">
+                          {% csrf_token %}
+              <fieldset>
+                  <li onclick="Guia_E.submit();" style="color: #03a9f4;">
+                           <a onclick="myForm.submit();"><i class="glyphicon glyphicon-triangle-right"></i>Guias</a>
+                                           
+                        
+                        </li>
+<input type="hidden" id="Tipo"  name="Tipo" value="Menu">
+             <input type="hidden" id="Doc"  name="Doc" value="Guia_E">
+              <input type="hidden" id="Tipo"  name="id_del_receptor" value="{{ Receptor.receptor_id }}">
+              </fieldset>             
+        </form>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ Receptor.receptor_nom }}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div>
+                
+                     
+        <div id="carousel-header" class="carousel carousel-header slide" data-ride="carousel" data-interval="8000">
+          <!-- Indicators -->
+          <!-- Wrapper for slides -->
+          <div class="carousel-inner" role="listbox">
+            
+            
+            
+             <div class="container">
+                   <div class="text-center ms-margin">
+<h3>Simplificamos el ERP para la mediana y pequeña industria    </h3>            
+            </div>
+   
+                <div class="row">
+    
+          <div class="col-md-6">
+           
+              <br>
+               <!-- <span class="color-primary typed-class"> </span>-->
+            </h1>
+            <!--  <p class="lead lead-sm animated fadeInLeft animation-delay-7 color-light">Contabilidad, centros de costos, ventas, compras, inventario, cartera, lotes, bancos, producción, nomina, punto de venta, sucursales.</p>-->
+
+            <ul class="ms-list-arrow">
+              <li class="animated fadeInUp animation-delay-7">Documentos Electrónicos, SRI y Dinardap.</li>
+              <li class="animated fadeInUp animation-delay-10">Soportamos procesos productivos de toda industria.</li>
+              <li class="animated fadeInUp animation-delay-13">Implementación Eficiente en 3 meses.</li>
+              <li class="animated fadeInUp animation-delay-16">Hasta 6 meses de cambios incluidos.</li>
+            </ul>
+            <div class="text-center">
+              <a href="http://www.cerocodigo.com/#team" class="btn btn-raised btn-lg btn-white color-primary animated flipInX animation-delay-10">
+                <i class="zmdi zmdi-airplane"></i>Nuestra Experiencia</a>
+        
+            </div>
+          </div>
+        <div class="col-md-6 text-center mt-4">
+<iframe width="600" height="315" src="https://www.youtube.com/embed/Mmr6OLc6Nhk">
+</iframe>
+          </div>
+          <div class="col-md-12">
+            
+         <div class="text-center ms-margin">
+                <br>
+                  
+              <a href="http://www.cerocodigo.com/#about" class="btn btn-primary btn-raised btn-app flipInX animation-delay-2">
+                <div class="btn-container">
+                  <i class="mr-1 zmdi zmdi-file-text zmdi-hc-fw"></i>
+                  <span>Reportes</span>
+                  <br>
+                  <strong>Tabla Dinámica</strong>
+                </div>
+              <div class="ripple-container"></div></a>
+              <a href="" target="_blank" class="btn btn-primary btn-raised btn-app flipInX animation-delay-2">
+                <div class="btn-container">
+                  <i class="mr-1 zmdi zmdi-cloud-download zmdi-hc-fw"></i>
+                  <span>Web Documentos</span>
+                  <br>
+                  <strong>Electrónicos</strong>
+                </div>
+              <div class="ripple-container"></div></a>
+              <a href="http://www.cerocodigo.com/#about" class="btn btn-primary btn-raised btn-app flipInX animation-delay-2">
+                <div class="btn-container">
+                  <i class="mr-1 zmdi zmdi-notifications-active zmdi-hc-fw"></i>
+                    <span>Alertas</span>
+                    <br>
+                    <strong>Automáticas</strong>
+                </div>
+              <div class="ripple-container"></div></a>
+              <a href="http://www.cerocodigo.com/#about" class="btn btn-primary btn-raised btn-app flipInX animation-delay-2">
+                <div class="btn-container">
+                  <i class="mr-1 zmdi zmdi-help-outline zmdi-hc-fw"></i>
+                  <span>Helpdesk</span>
+                  <br>
+                  <strong>Externo</strong>
+                </div>
+              <div class="ripple-container"></div></a>
+              
+            </div>
+     
+     
+   
+              <div class="text-center ms-margin">
+          <a href="http://www.cerocodigo.com/" target="_blank"> <h3 class="ms-footbar-title text-center mb-2">www.cerocodigo.com</h3></a>
+   
+            </div>
+    
+   
+          </div>
+        
+     
+                   
+                </div>
+                <br><br><br>
+              </div>
+          
+            </div>
+         
+          </div>
+          <!-- Controls -->
+        
+        </div>
+        
+     
+    
+      
+      </div>
+           
+            
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="/static/query.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="/static/jquery.dataTables.min.js"></script>
+    <script src="/static/dataTables.bootstrap.min.js"></script>
+    <script src="/static/dataTables.responsive.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/static/sb-admin-2.js"></script>
+ <script src="/static/plugins.min.js"></script>
+    <script src="/static/app.min.js"></script>
+    <script src="/static/portfolio.js"></script>
+<script src="/static/lead.js"></script>
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            responsive: true
+        });
+    });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="lib">
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibCrypt-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibOCSP-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/commons-httpclient-3.0.1.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/commons-lang-2.4.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/commons-logging-1.1.1.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/xmlsec-1.4.2-ADSI-1.0.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/bctsp-jdk16-1.45.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/bcmail-jdk16-1.45.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/commons-codec-1.2.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibCert-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibTrust-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibTSA-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/xml-apis-1.3.04.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibAPI-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/bcprov-jdk16-1.45.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibXADES-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/MITyCLibPolicy-1.1.7.jar" />
+    <archive path="C:/Comprobantes/sri-master/lib/xmlsec-1.4.2-ADSI-1.1.jar" />
+  </library>
+</eclipse-userlibraries>
+

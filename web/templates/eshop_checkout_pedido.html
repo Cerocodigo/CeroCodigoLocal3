@@ -1,0 +1,918 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="M_Adnan" />
+<!-- Document Title -->
+<title>{{negocio}}</title>
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+
+<!-- SLIDER REVOLUTION 4.x CSS SETTINGS -->
+<link rel="stylesheet" type="text/css" href="/static/eshop/rs-plugin/css/settings.css" media="screen" />
+
+<!-- StyleSheets -->
+<link rel="stylesheet" href="/static/eshop/css/ionicons.min.css">
+<link rel="stylesheet" href="/static/eshop/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/eshop/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/eshop/css/main.css">
+<link rel="stylesheet" href="/static/eshop/css/style.css">
+<link rel="stylesheet" href="/static/eshop/css/responsive.css">
+
+<script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Lato:100i,300,400,700,900" rel="stylesheet">
+
+
+  <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  <link href="https://cdn.paymentez.com/ccapi/sdk/payment_stable.min.css" rel="stylesheet" type="text/css"/>
+  <script src="https://cdn.paymentez.com/ccapi/sdk/payment_stable.min.js"></script>
+
+
+<!-- Fonts Online -->
+<link href="https://fonts.googleapis.com/css?family=Lato:100i,300,400,700,900" rel="stylesheet">
+
+<script src="/static/jspdf.debug.js"></script>
+<script src="/static/eshop/js/vendors/modernizr.js"></script>
+<script src="/static/moment.min.js"></script>
+ 
+<script type="text/javascript">
+
+var dict_pestalla = {}
+
+
+$(window).load(function() {
+   // executes when complete page is fully loaded, including all frames, objects and images
+        //traer_alertas()
+        cargar_pdf()
+
+});
+
+  function getBase64Image(img, t_w, t_h) {
+    // Create an empty canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = t_w;
+    canvas.height = t_h;
+    //canvas.width = img.width;
+    //canvas.height = img.height;
+
+    // Copy the image contents to the canvas
+    var ctx = canvas.getContext("2d");
+    //ctx.drawImage(img, 0, 0);
+
+    try {
+      ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight,0,0,canvas.width,canvas.height);
+            // Get the data-URL formatted image
+        // Firefox supports PNG and JPEG. You could check img.src to
+        // guess the original format, but be aware the using "image/jpg"
+        // will re-encode the image.
+        var dataURL = canvas.toDataURL("image/png");
+        return dataURL
+        //return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+      }
+      catch(error) {
+        console.error(error);
+        return 0
+      // expected output: ReferenceError: nonExistentFunction is not defined
+      // Note - error messages will vary depending on browser
+    }
+
+
+  }
+
+
+  function devolver_valor_imp( valor, tipo, ext){
+    switch(tipo) {
+      case "Color":
+      return valor.toString()
+      case "Imagen":
+      return valor.toString()
+      case "Normal":
+      return valor.toString()
+      case "Fecha":
+      var date = new Date(valor)
+      switch(ext){
+        case "Dia":
+        return date.format('d')
+        case "Mes":
+        return date.format('m')
+        case "Anio":
+        return date.format('Y')
+        case "Letras_larga":
+        switch(date.format('m')) {
+          case '01':
+          return date.format('d') + " de Enero del " + date.format('Y')
+          case '02':
+          return date.format('d') + " de Febrero del " + date.format('Y')
+          case '03':
+          return date.format('d') + " de Marzo del " + date.format('Y')
+          case '04':
+          return date.format('d') + " de Abril del " + date.format('Y')
+          case '05':
+          return date.format('d') + " de Mayo del " + date.format('Y')
+          case '06':
+          return date.format('d') + " de Junio del " + date.format('Y')
+          case '07':
+          return date.format('d') + " de Julio del " + date.format('Y')
+          case '08':
+          return date.format('d') + " de Agosto del " + date.format('Y')
+          case '09':
+          return date.format('d') + " de Septiembre del " + date.format('Y')
+          case '10':
+          return date.format('d') + " de Octubre del " + date.format('Y')
+          case '11':
+          return date.format('d') + " de Noviembre del " + date.format('Y')
+          case '12':
+          return date.format('d') + " de Diciembre del " + date.format('Y')
+        }
+        case "Letras":
+        switch(date.format('m')) {
+          case '01':
+          return date.format('Y') + " Enero " + date.format('d')
+          case '02':
+          return date.format('Y') + " Febrero " + date.format('d')
+          case '03':
+          return date.format('Y') + " Marzo " + date.format('d')
+          case '04':
+          return date.format('Y') + " Abril " + date.format('d')
+          case '05':
+          return date.format('Y') + " Mayo " + date.format('d')
+          case '06':
+          return date.format('Y') + " Junio " + date.format('d')
+          case '07':
+          return date.format('Y') + " Julio " + date.format('d')
+          case '08':
+          return date.format('Y') + " Agosto " + date.format('d')
+          case '09':
+          return date.format('Y') + " Septiembre " + date.format('d')
+          case '10':
+          return date.format('Y') + " Octubre " + date.format('d')
+          case '11':
+          return date.format('Y') + " Noviembre " + date.format('d')
+          case '12':
+          return date.format('Y') + " Diciembre " + date.format('d')
+        }
+        case "Normal":
+        return valor.toString()
+        case "DDMMAAAA":
+        return date.format('d') + date.format('m') + date.format('Y')
+        case "LetrasMayusculas":
+        switch(date.format('m')) {
+          case 1:
+          return date.format('Y') + " ENERO " + date.format('d')
+          case 2:
+          return date.format('Y') + " FEBRERO " + date.format('d')
+          case 3:
+          return date.format('Y') + " MARZO " + date.format('d')
+          case 4:
+          return date.format('Y') + " ABRIL " + date.format('d')
+          case 5:
+          return date.format('Y') + " MAYO " + date.format('d')
+          case 6:
+          return date.format('Y') + " JUNIO " + date.format('d')
+          case 7:
+          return date.format('Y') + " JULIO " + date.format('d')
+          case 8:
+          return date.format('Y') + " AGOSTO " + date.format('d')
+          case 9:
+          return date.format('Y') + " SEPTIEMBRE " + date.format('d')
+          case 10:
+          return date.format('Y') + " OCTUBRE " + date.format('d')
+          case 11:
+          return date.format('Y') + " NOVIEMBRE " + date.format('d')
+          case 12:
+          return date.format('Y') + " DICIEMBRE " + date.format('d')
+        }
+        case "Cheque":
+        return date.format('d') + "/" +  date.format('m') + "/" +  date.format('Y')
+        default:
+        return valor.toString()
+      }
+      case "Derecha":
+      var num = parseFloat(valor)
+      switch(ext){  
+        case "Letras":
+        return valor.toString()
+        case "Normal":
+        return num.toString()
+        case "Numero":
+        return num.toString()
+        case "Miles":
+        return formatMoney(num, ",", ".");
+        case "Dolar":
+        return '$ '+ formatMoney(num, ",", ".");
+        case "Euro":
+        return '€ '+ formatMoney(num, ".", ",");
+        case "Porcentaje":
+        return  (num /100) + '%'
+        case "Porcentaje_full":
+        return  (num) + '%'
+        default:
+        return num.toString()
+      }
+      case "Numero":
+      var num = parseFloat(valor)
+      switch(ext){  
+        case "Numero":
+        return num.toString()
+        case "Miles":  
+        return formatMoney(num, ",", ".");
+        case "Dolar":
+        return '$ '+ formatMoney(num, ",", ".");
+        case "Euro":
+        return '€ '+ formatMoney(num, ".", ",");
+        case "Porcentaje":
+        return  (num /100) + '%'
+        case "Porcentaje_full":
+        return  (num) + '%'
+
+        default:
+        return num.toString()
+      }
+      case "CerosFijos":
+      return valor.toString()
+      default:
+    }
+  }
+
+  function formatMoney(n, c, d, t) {
+    var c = isNaN(c = Math.abs(c)) ? 2 : c,
+    d = d == undefined ? "." : d,
+    t = t == undefined ? "," : t,
+    s = n < 0 ? "-" : "",
+    i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+    j = (j = i.length) > 3 ? j % 3 : 0;
+
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+  }
+
+function cargar_pdf(){
+
+          $.ajax({
+            type: 'POST',
+            url: '/esp/consulta',
+            data: {'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': '{{ csrf_token }}', 'Id_empresa':'{{negocio}}', 'usuario':'web_externo', 'idioma':'esp', 'pkmodulo':'{{datos_contactos.prod_pkmodulo}}', 'pestalla':0,'pkregistro':'{{datos_pedido.0.PkWeb}}', 'tipo':'consulta' },
+            success: function(Response){
+              dict_pestalla['pdf'] = Response
+            }    
+          });
+}
+
+function pdf_elemento(){
+pestana_int = 0
+indiexx = 0
+  Response = dict_pestalla['pdf']
+
+  if(Response["plantilla_pdf"]["plantillasMain"].length == 0){
+    ind_pla = indiexx
+
+  }else{
+    if(Response["plantilla_pdf"]["plantillasMain"].length == 1){
+      ind_pla = indiexx
+    }
+    ind_pla = indiexx
+    if(parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Ancho"]) > parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"])){
+      var doc = new jsPDF('l', 'cm', [parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]), parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Ancho"])]);
+    }else{
+      var doc = new jsPDF('p', 'cm', [parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]), parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Ancho"])]);
+    }
+
+
+
+    
+
+    doc.setFontSize(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Letra"]);
+    doc.setFont("helvetica");
+  }
+  
+  var Vpkplantilla = Response["plantilla_pdf"]["plantillasMain"][ind_pla]["PkPlantilla"]
+
+
+  for (z = 0; z < Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla].length; z++){ 
+    if(Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla][z]["Tipo"] == "Cabecera"){
+      seg_cab = Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla][z]
+    }    
+    if(Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla][z]["Tipo"] == "Detalle"){
+      seg_det = Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla][z]
+    }    
+    if(Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla][z]["Tipo"] == "Pie"){
+      seg_pie = Response["plantilla_pdf"]["plantillassegmentos"][Vpkplantilla][z]
+    }    
+  }
+  
+
+    //cab
+    //etiquetas
+    var altura_ini = seg_cab["AlturaInicial"]
+
+    for (z = 0; z < Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]].length; z++) {
+      if(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["TipoLetra"] == "Logo"){
+
+
+        imagen = document.getElementById("logo_cia")
+        tipo = imagen.attributes["value"]["value"].split('.')
+        tamano = Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Tamano"].split(',')
+        var imgData = getBase64Image(imagen,tamano[0] * 37,tamano[1] * 37)
+        try {
+          doc.addImage(imgData, tipo[1].toUpperCase(), parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Y"]), parseFloat(tamano[0]) , parseFloat(tamano[1]) )                }
+          catch(error) {
+            console.error(error);
+                  // expected output: ReferenceError: nonExistentFunction is not defined
+                  // Note - error messages will vary depending on browser
+                }
+
+
+              }else{
+                if(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["TipoLetra"] == "grafico"){
+
+                  tamano = Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Tamano"].split(',')
+                  datos  = Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Nombre"].split(',')
+                  
+                  if (datos[0]=="cuadrado"){
+
+
+                    doc.setDrawColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+                    doc.setFillColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+
+                    p_x=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["X"])
+                    p_y=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Y"])
+
+                    doc.rect(p_x ,p_y ,  parseFloat(tamano[1]) , parseFloat(tamano[0]) , 'F')
+
+                  }
+                  if (datos[0]=="cuadrado_cir"){
+
+                    doc.setDrawColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+                    doc.setFillColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+
+                    p_x=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["X"])
+                    p_y=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Y"])
+
+                    
+                    doc.roundedRect(p_x ,p_y ,  parseFloat(tamano[1]) , parseFloat(tamano[0]) ,0.3,0.3, 'FD')
+
+                  }
+                  
+                  doc.setDrawColor(0, 0, 0)
+                  doc.setFillColor(0, 0, 0)
+
+
+                }else{
+
+                  doc.setFontSize(parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Tamano"]))
+                  doc.setFont("helvetica");
+                  doc.setFontStyle(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["TipoLetra"]);
+
+                  doc.text(parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Y"]) + parseFloat(altura_ini), Response["plantilla_pdf"]["plantillasetiquetas"][seg_cab["PkSegmento"]][z]["Nombre"]);
+                }
+              }
+            }  
+            for (z = 0; z < Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]].length; z++) { 
+              doc.setFontSize(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Tamano"]);
+
+              var valor = Response["valores_cab"][0][Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Campo"]].toString()
+
+              if(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Tipo"] == 'Barras'){
+
+                var vsg_ele = document.createElement("SVG");
+
+                JsBarcode(vsg_ele, valor);
+
+                var svg2 = vsg_ele.outerHTML;
+
+
+                if (svg2)
+                  svg2 = svg2.replace(/\r?\n|\r/g, '').trim();
+
+                var canvas = document.createElement('canvas');
+                canvg(canvas, svg2);
+
+                var imgData = canvas.toDataURL('image/png');
+                limite = Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["limite"].split(',')
+                // Generate PDF
+                doc.addImage(imgData, 'PNG', parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Y"]) + parseFloat(altura_ini), parseInt(limite[0]), parseInt(limite[1]) );
+
+
+              }else{
+                valor = devolver_valor_imp(valor, Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Tipo"], Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Ext"])
+
+                if(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Tipo"] == 'Derecha'){
+                  doc.text(parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Y"]) + parseFloat(altura_ini), valor.toString() , 'right');
+                }else{
+                  if(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Tipo"] == 'Color'){
+                    datos_forma = Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Ext"].split(',')
+                    doc.setTextColor(parseFloat(datos_forma[0]), parseFloat(datos_forma[1]), parseFloat(datos_forma[2]));
+                    doc.setFontSize(parseFloat(datos_forma[3]))
+
+                    doc.text(parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Y"]) + parseFloat(altura_ini), valor.toString() );
+
+                    doc.setTextColor(0, 0, 0);
+
+
+                    }else{
+                    doc.setFontStyle("normal");
+                    limite = Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["limite"].split(',')
+                    var lines = doc.splitTextToSize(valor.toString(), (parseFloat(limite[0])*0.2));
+                    var new_lines = []
+                    if (limite[1] =='0'){
+                      limite[1] = lines.length
+                    }else{
+                      if (limite[1] > lines.length){
+                        limite[1] = lines.length
+                      }
+                    }
+                    for (cv = 0; cv < limite[1]; cv++) {
+                      if(lines[cv] != ''){
+                        new_lines.push(lines[cv])
+                      } 
+                    }
+                    doc.text(parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_cab["PkSegmento"]][z]["Y"]) + parseFloat(altura_ini), new_lines );
+                  }
+                }
+              }
+              
+ 
+            }  
+
+
+
+
+
+    var linea = parseFloat(seg_det["AlturaInicial"])
+
+    //detallecab
+
+    doc.setDrawColor(0, 0, 0)
+
+    for (z = 0; z < Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]].length; z++) { 
+      doc.setFontSize(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tamano"]);
+
+      doc.setFontStyle("bold");
+      if(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tipo"] == 'Derecha'){
+        doc.text(parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]), linea, Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Cabecera"], 'right')
+      }else{
+        doc.text(parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]), linea, Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Cabecera"])
+      }
+    }
+    doc.setFillColor(0, 0, 0)
+
+    doc.setFont("helvetica");
+    doc.setFontStyle("normal");
+      //doc.setFontSize(9);
+
+    //detalle datos
+    var line_add = 0
+    for (z2 = 0; z2 < Response["valores_det"].length; z2++) { 
+      linea = linea + 1 + line_add 
+      line_add =0
+
+      if(linea > ( parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]) - 3)){
+        doc.addPage('p', 'cm', [parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]), parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Ancho"])]);
+        linea = 2
+      }
+      for (z = 0; z < Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]].length; z++) { 
+        doc.setFontSize(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tamano"]);
+
+        var txt = Response["valores_det"][z2][Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Campo"]]
+
+        var valor =  txt.toString()   
+        valor = devolver_valor_imp(valor, Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tipo"], Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"])
+
+        if(valor.length > parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Limite"]) && Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tipo"] != 'Imagen'){
+
+
+          var lines =doc.splitTextToSize(valor, (parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Limite"])*0.2));
+            //var lines =doc.splitTextToSize(valor, 2);
+            doc.text(parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]), linea , lines)
+
+            if(lines.length * 0.4 > line_add){
+              line_add = (lines.length * 0.4)
+            }
+
+
+
+          }else{
+
+
+            if(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tipo"] == 'Derecha'){
+
+              //doc.text(parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]) + (parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Limite"]) * 0.02), linea, valor, 'right')
+
+              if(parseFloat(seg_det["Alturafinal"]) == 0){
+              doc.text(parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]) + (parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Limite"]) * 0.02), linea, valor, 'right')
+
+              }else{
+                var xy = Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"].split(',')
+                doc.text(parseFloat(xy[0]), parseFloat(xy[1]) + linea, valor, 'right')
+
+
+              }
+            }else{
+              if(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Tipo"] == 'Imagen'){
+
+                var tag = 'pd'+pestana_int+'fff'+ z2 +'ccc'+ Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Campo"] +'_img'
+                imagen = document.getElementById(tag)
+
+                tipo = imagen.attributes["value"]["value"].split('.')
+
+                var imgData = getBase64Image(imagen,parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"]) * 37,parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"]) * 37)
+                
+
+                try {
+                  doc.addImage(imgData, tipo[1].toUpperCase(), parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]), parseFloat(linea-0.5), parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"]), parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"]) )
+                }
+                catch(error) {
+                  console.error(error);
+                  // expected output: ReferenceError: nonExistentFunction is not defined
+                  // Note - error messages will vary depending on browser
+                }
+
+
+                if(line_add < parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"]) ){
+
+                line_add = parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["Ext"]  )  //2
+              }
+            }else{
+              if(parseFloat(seg_det["Alturafinal"]) == 0){
+                doc.text(parseFloat(Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"]), linea, valor)
+
+              }else{
+                var xy = Response["plantilla_pdf"]["plantillascampos"][seg_det["PkSegmento"]][z]["X"].split(',')
+                doc.text(parseFloat(xy[0]), parseFloat(xy[1]) + linea, valor)
+
+
+              }
+
+            }
+          }
+        }
+      }
+            linea = linea +  parseFloat(seg_det["Alturafinal"])
+    }
+
+    linea = linea + 1 + line_add 
+
+
+    //pie
+    if(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["AutoImpreso"] == 'Si'){
+      ultima_y = 0
+      for (z = 0; z < Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]].length; z++) {
+        if(ultima_y < parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Y"])){
+          ultima_y = parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Y"])
+        }
+      }
+
+      if((linea + ultima_y ) > parseInt(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]) ){
+        doc.addPage('p', 'cm', [parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]), parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Ancho"])]);
+        linea = 2
+      }
+    }else{    
+      if(linea >= parseFloat(seg_pie["AlturaInicial"])){
+        doc.addPage('p', 'cm', [parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Largo"]), parseFloat(Response["plantilla_pdf"]["plantillasMain"][ind_pla]["Ancho"])]);
+      }
+      linea = parseFloat(seg_pie["AlturaInicial"])
+    }
+
+
+
+
+    for (z = 0; z < Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]].length; z++) { 
+      //doc.text(parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea), Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Nombre"]);
+      
+
+      if(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["TipoLetra"] == "grafico"){
+
+        tamano = Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Tamano"].split(',')
+        datos  = Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Nombre"].split(',')
+        
+        if (datos[0]=="cuadrado"){
+
+          doc.setDrawColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+          doc.setFillColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+
+          p_x=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["X"])
+          p_y=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea)
+
+          doc.rect(p_x ,p_y ,  parseFloat(tamano[1]) , parseFloat(tamano[0]) , 'F')
+
+        }
+        if (datos[0]=="cuadrado_cir"){
+
+          doc.setDrawColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+          doc.setFillColor(parseFloat(datos[1]), parseFloat(datos[2]), parseFloat(datos[3]))
+
+          p_x=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["X"])
+          p_y=parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea)
+
+          
+          doc.roundedRect(p_x ,p_y ,  parseFloat(tamano[1]) , parseFloat(tamano[0]) ,0.3,0.3, 'FD')
+
+        }
+        
+        doc.setDrawColor(0, 0, 0)
+        doc.setFillColor(0, 0, 0)
+
+
+      }else{
+        doc.setFontSize(parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Tamano"]))
+        doc.setFont("helvetica");
+        doc.setFontStyle(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["TipoLetra"]);
+
+        doc.text(parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea), Response["plantilla_pdf"]["plantillasetiquetas"][seg_pie["PkSegmento"]][z]["Nombre"]);
+      }
+
+      
+    }  
+
+    for (z = 0; z < Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]].length; z++) { 
+
+      var valor = Response["valores_cab"][0][Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Campo"]].toString()
+      
+      valor = devolver_valor_imp(valor, Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Tipo"], Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Ext"])
+
+      if(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Tipo"] == 'Derecha'){
+        doc.text(parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea), valor.toString() , 'right');
+      }else{
+
+       if(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Tipo"] == 'Imagen'){
+        var tag = 'pd'+pestana_int+'fff'+ z +'ccc'+ Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Campo"] +'_img'
+        var imgData = getBase64Image(document.getElementById(tag), document.getElementById(tag).width, document.getElementById(tag).height )
+
+        try {
+          doc.addImage(imgData, 'JPEG', parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea), Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Ext"], Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Ext"])
+        }
+        catch(error) {
+          console.error(error);
+            // expected output: ReferenceError: nonExistentFunction is not defined
+            // Note - error messages will vary depending on browser
+          }
+
+
+
+
+        }else{
+          if(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Ext"] == 'center'){
+            doc.text(parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea), valor.toString() , 'center');
+          }else{
+            doc.text(parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["X"]), parseFloat(Response["plantilla_pdf"]["plantillascamposcabecera"][seg_pie["PkSegmento"]][z]["Y"]) + parseFloat(linea), valor.toString() );
+          }
+          
+        }
+      }
+    }  
+
+
+
+    var date = new Date()
+
+    doc.save(Response["tabla_cab"]["Descripcion"] + '_' + date.toLocaleDateString() + " " + date.toLocaleTimeString() + '.pdf');
+
+  }
+
+
+
+</script>
+
+
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="wrap"> 
+  
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="container">
+      <p>Bienvenido a {{negocio}}</p>
+      <div class="right-sec">
+        
+        <div class="social-top"> <a href="{{datos_contactos.datos_fab}}" target="_blank"><i class="fa fa-facebook"></i></a> <a href="{{datos_contactos.datos_tuiter}}" target="_blank"><i class="fa fa-twitter"></i></a>  <a href="{{datos_contactos.datos_inst}}" target="_blank"><i class="fa fa-instagram"></i></a> </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo"> <a href="/{{negocio}}/eshop"><img src="/media/archivos/{{negocio}}/logo.png" alt="" style="width: 160px;height: 60px;" ></a> 
+          </div>
+      <div class="logo" style="display: none;">  
+          <img style="display: none;" id="logo_cia" src="/media/archivos/{{negocio}}/logo.png" alt="image"  value="logo.png"></div>
+      <div class="search-cate">
+        <select class="selectpicker" id="eshop_v_cat">
+          <option>Todas Categorias</option>
+          {% for cat in cat_princi %}<option>{{ cat.nombre }}</option>{% endfor %}                               
+        </select>
+        <input id="eshop_v_busca" type="search" placeholder="Buscar..." onchange="buscar_bruto()">
+        <button class="submit" onclick="buscar_bruto()"><i class="icon-magnifier"></i></button>
+      </div>
+      
+      <!-- Cart Part -->
+    
+    </div>
+    
+    <!-- Nav -->
+    <nav class="navbar ownmenu" style="background: {{datos_contactos.Color2}};">
+      <div class="container"> 
+        
+        <!-- Categories -->
+        <div class="cate-lst"> <a  data-toggle="collapse" class="cate-style" href="#cater" style="background: {{datos_contactos.Color1}};"><i class="fa fa-list-ul"></i>Categorias</a>
+          <div class="cate-bar-in">
+            <div id="cater" class="collapse">
+              <ul>
+                 <li class="sub-menu"><a href="/{{negocio}}/eshop/todas">Todas</a></li>
+
+                 {% for cat in cat_princi %}
+                <li class="sub-menu"><a href="/{{negocio}}/eshop/{{ cat.nombre }}">{{ cat.nombre }}</a></li>
+                {% endfor %}                             
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navbar Header -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-open-btn" aria-expanded="false"> <span><i class="fa fa-navicon"></i></span> </button>
+        </div>
+        <div class="nav-right"> <span class="call-mun"><i class="fa fa-phone"></i> <strong>Telefono: </strong>  {{datos_contactos.datos_telf}}</span> </div>
+      </div>
+    </nav>
+  </header>
+  
+  <!-- Content -->
+  <div id="content"> 
+    
+    <!-- Ship Process -->
+    <div class="ship-process padding-top-30 padding-bottom-30">
+      <div class="container">
+        <ul class="row">
+          
+          <!-- Step 1 -->
+          <li id="e_1" class="col-sm-3">
+            <div class="media-left"> <i class="flaticon-shopping"></i> </div>
+            <div class="media-body"> <span>Paso 1</span>
+              <h6>Revisar Pedido</h6>
+            </div>
+          </li>
+          
+          <!-- Step 2 -->
+          <li id="e_2" class="col-sm-3">
+            <div class="media-left"> <i class="flaticon-delivery-truck"></i> </div>
+            <div class="media-body"> <span>Paso 2</span>
+              <h6>Datos Cliente</h6>
+            </div>
+          </li>
+
+          <!-- Step 4 -->
+          <li id="e_3" class="col-sm-3">
+            <div class="media-left"> <i class="fa fa-check"></i> </div>
+            <div class="media-body"> <span>Paso 3</span>
+              <h6>Confirmacion</h6>
+            </div>
+          </li>
+          <!-- Step 3 -->
+          <li id="e_4" class="col-sm-3 current">
+            <div class="media-left"> <i class="flaticon-business"></i> </div>
+            <div class="media-body"> <span>Paso 4</span>
+              <h6>Estado</h6>
+            </div>
+          </li>
+          
+
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Shopping Cart -->
+    <section class="shopping-cart padding-bottom-60">
+      <div class="container" id="tabla_int">
+        <div class="col-sm-6"><h3> Datos Factura</h3>
+          <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Numero Pedido</label><input type="text" class="form-control col-sm-8" value="{{datos_pedido.0.PkWeb}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+          <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Cliente_Id</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Cliente_Id}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+          <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Cliente_Razon</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Cliente_Razon}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+          <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Cliente_Telefono</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Cliente_Telefono}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+          <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Cliente_Email</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Cliente_Email}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+          <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Cliente_Direccion</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Cliente_Direccion}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+
+          <div class="pro-btn"><button class="btn-round" style="background: #cc1c1c; margin-top: 15px;" onclick="pdf_elemento()"><span class="fa fa-file-pdf-o" aria-hidden="true"></span>PDF</button> <button class="btn-round" style="background: green; margin-top: 15px;" onclick=""></span>{{datos_pedido.0.Estado}}</button></div></div>
+
+          <div class="col-sm-6"><h3> Datos Envio</h3>
+            <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Envio_Id</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Envio_Id}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+            <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Envio_Nombre</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Envio_Nombre}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+            <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Envio_Email</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Envio_Email}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+            <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Envio_Provincia</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Envio_Provincia}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+            <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Envio_Ciudad</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Envio_Ciudad}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+            <div class="col-sm-6"><label style="font-size: 12px;font-weight: bold;">Envio_Direccion</label><input type="text" id="esho_Fact_Id" class="form-control col-sm-8" value="{{datos_pedido.0.Envio_Direccion}}" readonly="readonly" style="height: 25px;font-size: 11px;"></div>
+            <div class="col-sm-12"><label style="font-size: 12px;font-weight: bold;">Observacion</label><textarea type="text" class="form-control" readonly="readonly" style="height: 45px;font-size: 11px;">{{datos_pedido.0.Observacion}}</textarea></div></div>
+          <div class="col-sm-12"><h3> Items </h3> 
+            <table class="table"><thead><tr>
+              <th class="text-center">Codigo</th><th class="text-center">Producto</th><th class="text-center">Cantidad</th><th class="text-center">Precio</th><th class="text-center">Subtotal</th><th class="text-center">Iva</th><th class="text-center">Total</th><th class="text-center">Imagen</th></tr>
+            </thead><tbody>
+
+              {% for item in datos_pedido_detalle %}
+
+                <tr><td class="text-center">{{item.Codigo}}</td><td class="text-center">{{item.Producto}}</td><td class="text-center">{{item.Cantidad}}</td><td class="text-center">{{item.Precio}}</td><td class="text-center">{{item.Subtotal}}</td><td class="text-center">{{item.Iva}}</td><td class="text-center">{{item.Total}}</td><td class="text-center"><div class="media-left"> <a href="#."> <img class="img-responsive" src="/media/archivos/mega/{{item.Imagen}}" alt=""> </a> </div></td></tr>
+              {% endfor %} 
+
+                <tr>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Subtotal</td>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">{{total}}</td>
+                </tr>
+                <tr>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Transporte</td>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">{{datos_pedido.0.Transporte}}</td>
+                </tr>
+                <tr>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Descuento</td>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">{{promo_valor}}</td>
+                </tr>
+                <tr>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;" colspan="6">Total</td>
+                  <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">{{FINAL}}</td>
+                </tr> 
+              </tbody></table></div></div>
+    </section>
+    
+    <!-- Clients img -->
+   
+
+  </div>
+  <!-- End Content --> 
+  
+  <!-- Footer -->
+  <footer>
+  
+  </footer>
+  
+  <!-- Rights -->
+  <div class="rights">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <p>Copyright © 2017 <a href="#." class="ri-li"> SmartTech </a>HTML5 template. All rights reserved</p>
+        </div>
+        <div class="col-sm-6 text-right"> <img src="images/card-icon.png" alt=""> </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- End Footer --> 
+  
+  <!-- GO TO TOP  --> 
+  <a href="#" class="cd-top"><i class="fa fa-angle-up"></i></a> 
+  <!-- GO TO TOP End --> 
+</div>
+<!-- End Page Wrapper --> 
+
+<!-- JavaScripts --> 
+<script src="/static/eshop/js/vendors/jquery/jquery.min.js"></script> 
+<script src="/static/eshop/js/vendors/wow.min.js"></script> 
+<script src="/static/eshop/js/vendors/bootstrap.min.js"></script> 
+<script src="/static/eshop/js/vendors/own-menu.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.sticky.js"></script> 
+<script src="/static/eshop/js/vendors/owl.carousel.min.js"></script> 
+<script src="/static/a/bower_components/moment/min/moment.min.js"></script>
+<script src="/static/vendors/DateJS/build/date.js"></script>
+
+<!-- SLIDER REVOLUTION 4.x SCRIPTS  --> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.t.min.js"></script> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.min.js"></script> 
+<script src="/static/eshop/js/main.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.nouislider.min.js"></script> 
+<script>
+jQuery(document).ready(function($) {
+ 
+  //  Price Filter ( noUiSlider Plugin)
+    $("#price-range").noUiSlider({
+    range: {
+      'min': [ 0 ],
+      'max': [ 1000 ]
+    },
+    start: [40, 940],
+        connect:true,
+        serialization:{
+            lower: [
+        $.Link({
+          target: $("#price-min")
+        })
+      ],
+      upper: [
+        $.Link({
+          target: $("#price-max")
+        })
+      ],
+      format: {
+      // Set formatting
+        decimals: 2,
+        prefix: '$'
+      }
+        }
+  })
+})
+
+</script>
+
+</body>
+</html>

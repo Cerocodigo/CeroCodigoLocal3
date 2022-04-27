@@ -1,0 +1,185 @@
+<html lang="en"><head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  
+    <title>Cero Codigo</title>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="apple-touch-icon" href="/static/assets/img/apple-touch-icon.png">
+  <link rel="icon" href="/static/assets/img/logo_negro.ico">
+  <link rel='stylesheet' href='/static/assets/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='/static/assets/css/vendor.css'>
+  <link rel='stylesheet' href='/static/assets/css/style.css'>
+  <link rel='stylesheet' href='/static/assets/css/custom.css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+        <script src='/static/assets/js/vendor/html5shiv.min.js'></script>
+
+    <!-- MetisMenu CSS -->
+    <link href="/static/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="/static/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="/static/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+
+function alphanumeric(inputtxt) 
+{
+            var strValidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for (i = 0; i < inputtxt.length; i++) {
+                var paso = false
+                for (i2 = 0; i2 < strValidChars.length; i2++) {
+                  if(inputtxt.charAt(i) === strValidChars.charAt(i2)){paso = true} 
+                }
+                if(paso === false){return false}
+            }
+            return true;
+}
+
+
+
+function cuenta() {
+
+var userUsuario = document.getElementById("userUsuario").value
+var userClave = document.getElementById("userClave").value
+var userCorreo = document.getElementById("userCorreo").value
+
+if (userUsuario === ""){
+    $("#div_conctacto").html("Falta usuario");
+    return
+}
+if (userClave === ""){
+    $("#div_conctacto").html("Falta Clave");
+    return
+}
+if (userCorreo === ""){
+    $("#div_conctacto").html("Falta Correo");
+    return
+}
+if (alphanumeric(userUsuario) === false){
+    $("#div_conctacto").html("Usuario solo numeros o letras");
+    return
+}
+
+
+$.ajax({
+        type: 'POST',
+        url: 'crearcuenta',
+        data: {'userUsuario': document.getElementById("userUsuario").value, 'userClave':document.getElementById("userClave").value, 'userCorreo':document.getElementById("userCorreo").value, 'userTipo':document.getElementById("userTipo").value, 'userViene':'Pago'},
+        beforeSend: function () {
+                        $("#div_conctacto").html("Procesando, espere por favor...");
+                },
+        success: function(response){
+            $("#div_conctacto").html(response);
+        }
+    });  
+}
+</script>
+</head>
+
+<body>
+
+    
+          
+            <table style="background-color: white; width: 60%; text-align: left;" align="center" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr align="center">
+<td>
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+                          
+  </div>
+  <div class="panel-body">
+
+<div id="contact" class="section block-default" style="padding-top: 20px; padding-bottom: 20px;">
+          <div class="container">
+
+            <div>
+              <div class="section-heading text-center">
+                <h5>Ingresa el id de tu negocio</h5>
+                              
+                <div class="col-sm-6">
+                    <div class="icon-box _left">
+                        <div class="icon-box-media">
+                            <img src="/static/img/user.png" alt="" data-sr="bottom">
+                        </div>
+                        <div class="icon-box-heading">
+                            <h4>Id</h4>
+                        </div>
+                        <div class="icon-box-content font-sub font-italic">
+                            <input class="form-control" id="userUsuario" name="userUsuario" pattern="[A-Za-z0-9]" type="text" name="name">
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-sm-6">
+
+                  
+                    <div id="div_conctacto"></div>
+
+                    <a class="btn btn-success m-y-5 waves-effect waves-light" style="width: 200px;" onclick="cuenta();">Ingresar</a>
+                    </div>
+                </div>
+
+
+           
+
+            </div>
+          </div>
+        </div> <!-- #contact -->
+  </div>
+
+               
+   <a href="http://www.cerocodigo.com" target="_blank"> <h3 class="ms-footbar-title text-center mb-2">www.cerocodigo.com</h3></a>
+
+
+</div>
+                             
+                       
+    <!-- jQuery -->
+    <script src="/static/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="/static/jquery.dataTables.min.js"></script> 
+    <script src="/static/dataTables.bootstrap.min.js"></script>
+    <script src="/static/dataTables.responsive.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/static/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+
+  
+
+
+
+
+</body></html>

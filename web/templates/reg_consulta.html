@@ -1,0 +1,122 @@
+
+
+
+
+
+<div class="row" style="padding-top: 50px;">
+
+<div class="col-md-12">
+{% if  nuevo == "Si" %}
+<button class="btn btn-primary" onclick="registro('{{tabla.0.PkModulo}}',0,'Nuevo', '{{tabla.0.Descripcion}}', {{pestalla}})">{{idioma_html.nuevo}}</span></button> 
+{% endif %}
+**boton_cierre**
+</div>
+
+
+
+<div class="col-md-3">
+
+                            <select class="form-control" id="campo{{pestalla}}" name="campo"style="width: 250px;">
+                               {% for item in names %}
+                                  {% if forloop.counter != 1 %}
+                                                 <option>{{ item.0 }}</option>
+                                        {% endif %}
+
+                                              
+                                         {% endfor %}
+                            </select>
+</div>
+
+
+<div class="col-md-6">
+
+
+{{idioma_html.filtro}}:
+
+<input type="hidden" id="senten{{pestalla}}"  name="senten{{pestalla}}" value="'{{sentencia_inicial}}'">
+
+
+  <input type="text" id="valor{{pestalla}}"  name="valor{{pestalla}}" onkeydown="if(event.keyCode == 13){filtrar({{tabla.0.PkModulo}}, '{{eliminar}}', '{{modifica}}', {{pestalla}})}">
+
+
+
+    <a class="btn btn-primary" onclick="filtrar({{tabla.0.PkModulo}}, '{{eliminar}}', '{{modifica}}', {{pestalla}}, '{{tabla.0.Descripcion}}')"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></span></a>
+
+<input type="number" id="top{{pestalla}}"  name="top{{pestalla}}" value="10" style="width: 40px;" onkeydown="if(event.keyCode == 13){filtrar({{tabla.0.PkModulo}}, '{{eliminar}}', '{{modifica}}, {{pestalla}}')}">
+
+                     
+
+
+</div>
+</div>
+
+<div class="row">
+
+<div class="card-block text-left" style="overflow: auto;">
+                        
+                        <div id="tabla{{pestalla}}"> 
+
+
+
+                            <table id="datatable-checkbox" width="100%" class="table table-striped table-bordered bulk_action" style="overflow-x:auto;" >
+
+                                
+
+                                      
+                                <thead>
+                                    <tr>
+                                      <th>{{idioma_html.Acciones}}</th>
+                                        {% for item in names %}
+
+                                        {% if forloop.counter != 1 %}
+                                                <th>{{ item.0 }}</th>
+                                        {% endif %}
+
+                                         {% endfor %}
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                         {% for item in dictlist %}
+
+                                         <tr id="f{{tabla.0.PkModulo}}-f{{item.0}}">
+                                              <td>
+                                                <div class="row" >
+                                              {% if  modifica == "Si" %} 
+                                              <a class="btn btn-success" onclick="registro('{{tabla.0.PkModulo}}',{{item.0}},'modificar', '{{tabla.0.Descripcion}}', {{pestalla}})" style="padding: 2px 2px; margin-right: 0px; margin-left: 5px;"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> 
+                                              {% endif %}
+                                              {% if eliminar == "Si" %} 
+
+                                              <a class="btn btn-danger" onclick="eliminar({{tabla.0.PkModulo}},{{item.0}})" style="padding: 2px 2px; margin-right: 0px; margin-left: 0px;"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></a>
+
+                                              {% endif %}
+
+                                            
+                                              <a class="btn btn-primary" onclick="registro('{{tabla.0.PkModulo}}',{{item.0}},'consulta', '{{tabla.0.Descripcion}}', {{pestalla}})" style="padding: 2px 2px; margin-right: 0px; margin-left: 0px;"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a> 
+
+                                              
+
+                                            </div>
+                                              </td>
+
+                                                {% for rr in item %}
+                                                  {% if forloop.counter != 1 %}
+                                                    <td>{{ rr }}</td>
+                                                   {% endif %}                        
+                                                {% endfor %}
+                                          </tr>                                
+                                         {% endfor %}
+                                  
+                                </tbody>
+                                       
+                            </table>
+                        </div>
+                     </div>                    
+       </div>             
+
+    
+     
+            
+
+

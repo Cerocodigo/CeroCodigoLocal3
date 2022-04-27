@@ -1,0 +1,556 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="M_Adnan" />
+<!-- Document Title -->
+<title>{{negocio}}</title>
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/static/eshop/images/favicon.ico" type="image/x-icon">
+
+<!-- SLIDER REVOLUTION 4.x CSS SETTINGS -->
+<link rel="stylesheet" type="text/css" href="/static/eshop/rs-plugin/css/settings.css" media="screen" />
+
+<!-- StyleSheets -->
+<link rel="stylesheet" href="/static/eshop/css/ionicons.min.css">
+<link rel="stylesheet" href="/static/eshop/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/eshop/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/eshop/css/main.css">
+<link rel="stylesheet" href="/static/eshop/css/style.css">
+<link rel="stylesheet" href="/static/eshop/css/responsive.css">
+<script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+
+<!-- Fonts Online -->
+<link href="https://fonts.googleapis.com/css?family=Lato:100i,300,400,700,900" rel="stylesheet">
+
+<!-- JavaScripts -->
+<script src="/static/eshop/js/vendors/modernizr.js"></script>
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/javascript">
+
+listado_items = {}
+pagina_actual = 1
+max_pag = 1
+ultim_cat= ''
+ultim_nivel = '' 
+por_pag = 10
+
+$(document).ready(function(){
+
+  $(window).load(function() {
+   // executes when complete page is fully loaded, including all frames, objects and images
+  });
+
+});
+function ir_chckout(){
+  window.open("/{{negocio}}/eshop/checkout/", '_blank');
+}
+function Subcribete(){
+    var e_Email = document.getElementById('subs_emial').value
+    var dd = document.getElementById('btn_email')
+    if(dd.innerHTML != 'Subscrito'){ 
+    if(e_Email.length >5 ){
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/Subcribete/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Email':e_Email},
+    success: function(Response){
+      if(Response['respuesta'] == 'ok'){
+        var dd = document.getElementById('btn_email')
+          dd.innerHTML = 'Subscrito'
+          dd.style.backgroundColor = 'green'
+        }
+      }
+    });
+    }
+  }
+}
+
+
+function cantidad_carrito_arr(d_e_Cantidad, index){
+    var d_item_cod = document.getElementById('f_arr_'+index).value
+
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/eshop_mod_cod/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Cantidad':d_e_Cantidad, 'item_cod':d_item_cod},
+    success: function(Response){
+
+      if(Response['respuesta'] == 1){
+        var div_cant = document.getElementById('dat_itema')
+
+        div_cant.innerHTML = parseFloat(parseFloat(div_cant.innerHTML) + parseFloat(d_e_Cantidad))   
+
+
+
+       
+        if(Response['listita']['Cantidad'] > 0){
+          var div_lista = document.getElementById('prod_cant_'+d_item_cod)
+          div_lista.innerHTML = '<span>' + Response['listita']['Precio'] + ' x ' + Response['listita']['Cantidad'] + '</span> '
+   
+        }else{
+          var div_lista = document.getElementById('prod_list_'+d_item_cod)
+          div_lista.remove();
+
+        }
+      }else{
+        if(Response['respuesta'] == 2){
+          var div_lista = document.getElementById('prod_list_'+d_item_cod)
+          div_lista.remove();
+        }
+
+      }
+     
+   
+    }
+  }); 
+}
+
+function cantidad_carrito(d_e_Cantidad,d_item_cod){
+
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/eshop_mod_cod/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Cantidad':d_e_Cantidad, 'item_cod':d_item_cod},
+    success: function(Response){
+
+      if(Response['respuesta'] == 1){
+        var div_cant = document.getElementById('dat_itema')
+
+        div_cant.innerHTML = parseFloat(parseFloat(div_cant.innerHTML) + parseFloat(d_e_Cantidad))   
+
+
+
+       
+        if(Response['listita']['Cantidad'] > 0){
+          var div_lista = document.getElementById('prod_cant_'+d_item_cod)
+          div_lista.innerHTML = '<span>' + Response['listita']['Precio'] + ' x ' + Response['listita']['Cantidad'] + '</span> '
+   
+        }else{
+          var div_lista = document.getElementById('prod_list_'+d_item_cod)
+          div_lista.remove();
+
+        }
+      }else{
+        if(Response['respuesta'] == 2){
+          var div_lista = document.getElementById('prod_list_'+d_item_cod)
+          div_lista.remove();
+        }
+
+      }
+     
+   
+    }
+  }); 
+}
+function borrar_carrito(){
+      $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/eshop_borrar_cod/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}'},
+    success: function(Response){
+
+      if(Response['respuesta'] == 1){
+
+        var div_cant = document.getElementById('dat_itema')
+
+        div_cant.innerHTML = 0
+       
+
+          
+
+        var div_lista = document.getElementById('lista_productos')
+        div_lista.innerHTML = ''  
+
+      }else{alert('valio')}
+     
+   
+    }
+  }); 
+}
+
+
+function agregar_carrito(pk_div){
+
+    var d_e_Imagen = document.getElementById('t_e_Imagen').value
+    var d_e_Cantidad = document.getElementById('t_cantidad').value
+    var d_e_Precio = document.getElementById('t_e_Precio').value.replace(',','.')
+    var d_e_Producto = document.getElementById('t_e_Producto').value
+    var d_item_cod = document.getElementById('t_item_cod').value
+
+
+    $.ajax({
+    type: 'POST',
+    url: '/{{negocio}}/eshop_add_cod/',
+    data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 't_negocio':'{{negocio}}','e_Imagen':d_e_Imagen,'e_Cantidad':d_e_Cantidad,'e_Precio':d_e_Precio,'e_Producto':d_e_Producto,'item_cod':d_item_cod},
+    success: function(Response){
+
+      if(Response['respuesta'] == 1){
+        var div_cant = document.getElementById('dat_itema')
+
+        div_cant.innerHTML = Response['lista_cant']  
+          
+        html_div = ''
+        for (qw = 0; qw < Response['lista'].length; qw++) {
+          html_div =  html_div + '<div class="row" id="prod_list_'+Response['lista'][qw]['Codigo']+'"><div class="media-left"><a class="thumb"> <img src="/media/archivos/{{negocio}}/'+Response['lista'][qw]['Imagen']+'" class="img-responsive" alt="" > </a></div> '
+          html_div =  html_div + '<div class="media-body"> <span><a href="/{{negocio}}/eshop/codigo/'+Response['lista'][qw]['Codigo']+'" class="tittle">'+Response['lista'][qw]['Producto']+'</a> </span>'
+          html_div =  html_div + '<div class="col-sm-7" id="prod_cant_'+Response['lista'][qw]['Codigo']+'" style="padding-left: 0px;padding-right: 0px;">  <span> '+Response['lista'][qw]['Precio']+' x '+Response['lista'][qw]['Cantidad']+'  </span></div>'
+          html_div =  html_div + '<div class="input-group input-group-sm" style="padding-top: 5px;">'
+          html_div =  html_div + '<button onclick="cantidad_carrito_arr(1,'+qw+')" class="btn-round" style="background: {{datos_contactos.Color1}};margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> + </button>'
+          html_div =  html_div + '<button onclick="cantidad_carrito_arr(-1,'+qw+')" class="btn-round" style="background: {{datos_contactos.Color1}}; margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> - </button>'
+          html_div = html_div + '<input type="hidden" id="f_arr_'+qw+'" value="'+Response['lista'][qw]['Codigo']+'" readonly="readonly">'
+          html_div =  html_div + '</div></div></div>'
+        }
+        var div_prod = document.getElementById('lista_productos')
+        div_prod.innerHTML =  html_div
+
+        var btn_prod = document.getElementById('btn_agregar')
+        btn_prod.innerHTML = '<i class="icon-basket-loaded margin-right-5"></i> Agregado'
+        btn_prod.style.backgroundColor = 'green'
+
+
+      }else{alert('valio')}
+     
+   
+    }
+  }); 
+}
+function buscar_bruto(){
+  v_cat = document.getElementById("eshop_v_cat")
+  v_busca = document.getElementById("eshop_v_busca")
+
+  if(v_cat.value == 'Todas Categorias'){
+    window.location.href = "/{{negocio}}/eshop/todas/" + v_busca.value;
+  }else{
+    window.location.href = "/{{negocio}}/eshop/"+v_cat.value+"/" + v_busca.value;
+  }
+
+
+}
+
+
+</script>
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="wrap"> 
+  
+  <!-- Top bar -->
+    <div class="top-bar">
+      <div class="container">
+        <p>Bienvenido a {{negocio}}</p>
+        <div class="right-sec">
+          <div class="social-top"> <a href="{{datos_contactos.datos_fab}}"><i class="fa fa-facebook"></i></a> <a href="{{datos_contactos.datos_tuiter}}"><i class="fa fa-twitter"></i></a>  <a href="{{datos_contactos.datos_inst}}"><i class="fa fa-instagram"></i></a> </div>
+        
+          </div>
+      </div>
+    </div>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo"> <a href="/{{negocio}}/eshop"><img src="/media/archivos/{{negocio}}/logo.png" alt="" style="width: 160px;height: 60px;"></a> </div>
+      <div class="search-cate">
+        <select class="selectpicker" id="eshop_v_cat">
+          <option>Todas Categorias</option>
+          {% for cat in cat_princi %}<option>{{ cat.nombre }}</option>{% endfor %}                               
+        </select>
+        <input id="eshop_v_busca" type="search" placeholder="Buscar..." onchange="buscar_bruto()">
+        <button class="submit" onclick="buscar_bruto()"><i class="icon-magnifier"></i></button>
+      </div>
+      
+      <!-- Cart Part -->
+      <ul class="nav navbar-right cart-pop">
+        <li class="dropdown"> <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="itm-cont" style="background: {{datos_contactos.Color1}};"><p id="dat_itema" style="color: white;">{{lista_cant}}</p></span> <i class="flaticon-shopping-bag"></i>
+          
+
+            <div class="col-sm-7" style="padding-left: 0px;padding-right: 0px;"> 
+              <span> Productos(s)</span> 
+            </div>
+            <div class="input-group input-group-sm" style="padding-top: 5px;"> 
+              <button onclick="ir_chckout()" class="btn-round" style="background: {{datos_contactos.Color1}};margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> Pago y Envio </button>
+   
+            </div>
+
+
+
+        </a> 
+          <span> 
+          <ul class="dropdown-menu">
+
+
+            <li id="lista_productos">
+              
+            {% for item in lista %}
+              <div class="row" id="prod_list_{{item.Codigo}}">
+
+              <div class="media-left"> 
+                <a class="thumb"> 
+                  <img src="/media/archivos/{{negocio}}/{{item.Imagen}}" class="img-responsive" alt="" > </a> 
+              </div>
+              <div class="media-body"> 
+                <span><a href="/{{negocio}}/eshop/codigo/{{item.Codigo}}" class="tittle">{{item.Producto}}</a> </span>
+
+
+                <div class="col-sm-7" id="prod_cant_{{item.Codigo}}" style="padding-left: 0px;padding-right: 0px;">  <span> {{item.Precio}} x {{item.Cantidad}}   </span> 
+                 </div>
+                <div class="input-group input-group-sm" style="padding-top: 5px;"> 
+                  <button onclick="cantidad_carrito(1,'{{item.Codigo}}')" class="btn-round" style="background: {{datos_contactos.Color1}};margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> + </button>
+                  <button onclick="cantidad_carrito(-1,'{{item.Codigo}}')" class="btn-round" style="background: {{datos_contactos.Color1}}; margin-left: 5px;padding-bottom: 2px;padding-top: 2px;padding-left: 5px;padding-right: 5px;"> - </button>
+                </div>
+
+          
+             
+              </div>
+            </div>
+            {% endfor %} 
+
+              
+            </li>
+            <li class="btn-cart"> <a href="/{{negocio}}/eshop/checkout/" class="btn-round" style="background: {{datos_contactos.Color1}};">Pago y Envio </a> </li>
+
+          </ul>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Nav -->
+    <nav class="navbar ownmenu" style="background: {{datos_contactos.Color2}};">
+      <div class="container"> 
+        
+        <!-- Categories -->
+        <div class="cate-lst"> <a  data-toggle="collapse" id="cat_main" class="cate-style" href="#cater" style="background: {{datos_contactos.Color1}};"><i class="fa fa-list-ul"></i>Categorias</a>
+          <div class="cate-bar-in">
+            <div id="cater" class="collapse">
+              <ul>
+                <li class="sub-menu"><a href="/{{negocio}}/eshop/todas">Todas</a></li>
+
+                 {% for cat in cat_princi %}
+                <li class="sub-menu"><a href="/{{negocio}}/eshop/{{ cat.nombre }}">{{ cat.nombre }}</a></li>
+                {% endfor %} 
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navbar Header -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-open-btn" aria-expanded="false"> <span><i class="fa fa-navicon"></i></span> </button>
+        </div>
+        <div class="nav-right"> <span class="call-mun"><i class="fa fa-phone"></i> <strong>Telefono: </strong>  {{datos_contactos.datos_telf}}</span> </div>
+      </div>
+    </nav>
+  </header>
+ 
+  
+  <!-- Content -->
+  <div id="content"> 
+    
+    <!-- Products -->
+    <section class="padding-top-40 padding-bottom-60">
+      <div class="container">
+        <div class="row"> 
+          
+   
+          <!-- Products -->
+          <div class="col-md-12"> 
+            
+            <!-- Short List -->
+            <div class="short-lst">
+              <h2>{{item.0.cat}} - {{item.0.cat2}}</h2>
+            </div>
+            
+            <!-- Items -->
+            <div class="col-list" id="Div_productos"> 
+              <!-- Product -->
+
+              <div class="col-md-12">
+            <div class="product-detail">
+              <div class="product">
+                <div class="row"> 
+                  <!-- Slider Thumb -->
+                  <div class="col-xs-5">
+                    <article class="slider-item on-nav">
+                      <div class="thumb-slider">
+                        <ul class="slides">
+                          {% if item.0.Imagen1 != None %}
+                            <li data-thumb="/media/archivos/{{negocio}}/{{item.0.Imagen1}}"> <img src="/media/archivos/{{negocio}}/{{item.0.Imagen1}}" alt="" > </li>
+                          {% endif %}
+
+                          {% if item.0.Imagen2 !=  None %}                         
+                            <li data-thumb="/media/archivos/{{negocio}}/{{item.0.Imagen2}}"> <img src="/media/archivos/{{negocio}}/{{item.0.Imagen2}}" alt="" > </li>
+                           {% endif %}
+
+                          {% if item.0.Imagen3 !=  None %}                          
+                            <li data-thumb="/media/archivos/{{negocio}}/{{item.0.Imagen3}}"> <img src="/media/archivos/{{negocio}}/{{item.0.Imagen3}}" alt="" > </li>
+                          {% endif %}
+
+
+
+
+                        </ul>
+                      </div>
+                    </article>
+                  </div>
+                  <!-- Item Content -->
+                  <div class="col-xs-7"> <span class="tags"></span>
+                    <h5>{{item.0.Nombre}}</h5>
+                    <p>{{item.0.Descripcion}}</p>
+                    <div class="row">
+                      <div class="col-sm-6"><span class="price">{{item.0.Pvp}}</span></div>
+                      <div class="col-sm-6">
+                        <p>Disponibles: <span class="in-stock">{{item.0.stock}}</span></p>
+                      </div>
+                    </div>
+                   
+       
+                    
+                    <!-- Quinty -->
+                    <div class="quinty">
+                      <input type="number" id="t_cantidad" value="01">
+                    </div>
+                    <button class="btn-round" style="background: {{datos_contactos.Color1}};" onclick="agregar_carrito()" id="btn_agregar"><i class="icon-basket-loaded margin-right-5"></i> Agregar </button> </div>
+                      <input type="hidden" id="t_e_Imagen" value="{{item.0.Imagen1}}" readonly="readonly">
+                      <input type="hidden" id="t_e_Precio" value="{{item.0.Pvp}}" readonly="readonly">
+                      <input type="hidden" id="t_e_Producto" value="{{item.0.Nombre}}" readonly="readonly">
+                      <input type="hidden" id="t_item_cod" value="{{item.0.Codigo}}" readonly="readonly">
+                </div>
+              </div>
+    
+            </div>
+          </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+   
+    
+    
+    
+    <!-- Newslatter -->
+    <section class="newslatter" style="background: {{datos_contactos.Color2}};">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Subcribete<span> para <strong>Descuentos y Promociones</strong></span></h3>
+          </div>
+          <div class="col-md-6">
+              <input type="email" id="subs_emial" placeholder="Tu email aqui...">
+              <button id="btn_email" onclick="Subcribete()" style="background: {{datos_contactos.Color1}};">Subcribete!</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <!-- End Content --> 
+  
+  <!-- Footer -->
+  <footer>
+    <div class="container"> 
+      
+      <!-- Footer Upside Links -->
+      
+      <div class="row" style="padding-top: 20px;">           
+        <!-- Contact -->
+        <div class="col-md-6">
+          <h3>Datos de contacto</h3>
+          <p>{{datos_contactos.datos_dir}}</p>
+          <p>Telefono: {{datos_contactos.datos_telf}}</p>
+          <p>Email: {{datos_contactos.email}}</p>
+          <div class="social-links"> <a href="{{datos_contactos.datos_fab}}"><i class="fa fa-facebook"></i></a> <a href="{{datos_contactos.datos_tuiter}}"><i class="fa fa-twitter"></i></a><a href="{{datos_contactos.datos_inst}}"><i class="fa fa-instagram"></i></a></div>
+        </div>
+        <div class="col-md-6">
+          <iframe src="{{datos_contactos.mapa}}" width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+        </div>
+        
+        
+        <!-- Categories -->
+        
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Rights -->
+  <div class="rights">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <p>Desarrollado en <a href="http://www.cerocodigo.com/" class="ri-li"> CeroCodigo.com </a></p>
+        </div>
+        <div class="col-sm-6 text-right"> <img src="/static/eshop/images/card-icon.png" alt=""> </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- End Footer --> 
+  
+  <!-- GO TO TOP  --> 
+  <a href="#" class="cd-top"><i class="fa fa-angle-up"></i></a> 
+  <!-- GO TO TOP End --> 
+</div>
+<!-- End Page Wrapper --> 
+
+<!-- JavaScripts --> 
+<script src="/static/eshop/js/vendors/jquery/jquery.min.js"></script> 
+<script src="/static/eshop/js/vendors/wow.min.js"></script> 
+<script src="/static/eshop/js/vendors/bootstrap.min.js"></script> 
+<script src="/static/eshop/js/vendors/own-menu.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.sticky.js"></script> 
+<script src="/static/eshop/js/vendors/owl.carousel.min.js"></script> 
+
+<!-- SLIDER REVOLUTION 4.x SCRIPTS  --> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.t.min.js"></script> 
+<script type="text/javascript" src="/static/eshop/rs-plugin/js/jquery.tp.min.js"></script> 
+<script src="/static/eshop/js/main.js"></script> 
+<script src="/static/eshop/js/vendors/jquery.nouislider.min.js"></script> 
+<script>
+
+
+
+jQuery(document).ready(function($) {
+  
+  //  Price Filter ( noUiSlider Plugin)
+    $("#price-range").noUiSlider({
+    range: {
+      'min': [ 0 ],
+      'max': [ 1000 ]
+    },
+    start: [0, 99999],
+        connect:true,
+        serialization:{
+            lower: [
+        $.Link({
+          target: $("#price-min")
+        })
+      ],
+      upper: [
+        $.Link({
+          target: $("#price-max")
+        })
+      ],
+      format: {
+      // Set formatting
+        decimals: 2,
+        prefix: '$'
+      }
+        }
+  })
+})
+
+</script>
+</body>
+</html>
