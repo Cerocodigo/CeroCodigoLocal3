@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- SEO Meta description -->
+    <meta name="description"
+          content="AppBeats app landing page template or product landing page template helps you easily create websites for your app or product,  landing page template form promotion and many more.">
+    <meta name="author" content="ThemeTags">
+
+    <!-- OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+ -->
+    <meta property="og:site_name" content=""/> <!-- website name -->
+    <meta property="og:site" content=""/> <!-- website link -->
+    <meta property="og:title" content=""/> <!-- title shown in the actual shared post -->
+    <meta property="og:description" content=""/> <!-- description shown in the actual shared post -->
+    <meta property="og:image" content=""/> <!-- image link, make sure it's jpg -->
+    <meta property="og:url" content=""/> <!-- where do you want your post to link to -->
+    <meta property="og:type" content="article"/>
+
+    <!--title-->
+    <title>Cero Codigo</title>
+
+    <!--favicon icon-->
+    <link rel="icon" href="img/favicon.png" type="image/png" sizes="16x16">
+
+    <!--google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700%7COpen+Sans&display=swap"
+          rel="stylesheet">
+
+    <!--Bootstrap css-->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!--Magnific popup css-->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!--Themify icon css-->
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!--animated css-->
+    <link rel="stylesheet" href="css/animate.min.css">
+    <!--ytplayer css-->
+    <link rel="stylesheet" href="css/jquery.mb.YTPlayer.min.css">
+    <!--Owl carousel css-->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <!--custom css-->
+    <link rel="stylesheet" href="css/style.css">
+    <!--responsive css-->
+    <link rel="stylesheet" href="css/responsive.css">
+
+
+
+<script>
+
+function registro_cuenta() {
+
+    var userNombre = document.getElementById("userNombre").value
+    var userClave1 = document.getElementById("userClave1").value
+    var userClave2 = document.getElementById("userClave2").value
+    var userCorreo = document.getElementById("userCorreo").value
+    var userTipo = document.getElementById("userTipo").value
+
+
+    if (userNombre === ""){
+        $("#div_conctacto").html("Falta Nombre");
+        return
+    }
+    if (!(userClave1 === userClave2)){
+        $("#div_conctacto").html("Claves no coinciden");
+        return
+    }
+    if (userClave1 === ""){
+        $("#div_conctacto").html("Falta Mensaje");
+        return
+    }
+
+    if (userCorreo === ""){
+        $("#div_conctacto").html("Falta Correo");
+        return
+    }
+    if (userTipo === ""){
+        $("#div_conctacto").html("Falta Tipo");
+        return
+    }
+    if (alphanumeric(userNombre) === false){
+        $("#div_conctacto").html("Usuario solo numeros o letras");
+        return
+    }
+    if (document.getElementById('humano').checked) {
+            } else {
+        $("#div_conctacto").html("Eres humano???");
+        return
+    }
+
+
+    $.ajax({
+            type: 'POST',
+            url: 'crear_usuario',
+            data: {'userNombre': document.getElementById("userNombre").value, 'userClave1':document.getElementById("userClave1").value, 'userCorreo':document.getElementById("userCorreo").value, 'userTipo':document.getElementById("userTipo").value},
+            beforeSend: function () {
+                            $("#div_conctacto").html("Procesando, espere por favor...");
+                    },
+            success: function(response){
+                $("#div_conctacto").html(response);
+            }
+        });  
+}
+
+
+</script>
+
+
+</head>
+<body>
+
+
+<!--loader start-->
+<div id="preloader">
+    <div class="loader1">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+<!--loader end-->
+
+<!--header section start-->
+<header class="header">
+    <!--start navbar-->
+    <nav class="navbar navbar-expand-lg fixed-top bg-transparent">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="img/logo-white.png" width="160" alt="logo" class="img-fluid"/>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="ti-menu"></span>
+            </button>
+            <div class="collapse navbar-collapse h-auto" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto menu">
+                    <li><a href="#" class="dropdown-toggle"> Home</a>
+                        <ul class="sub-menu">
+                            <li><a href="index.html">Home Page 01</a></li>
+                            <li><a href="index-2.html">Home Page 02</a></li>
+                            <li><a href="index-3.html">Home Page 03</a></li>
+                            <li><a href="index-4.html">Home Page 04</a></li>
+                            <li><a href="index-5.html">Home Page 05</a></li>
+                            <li><a href="index-6.html">Home Page 06</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#features" class="page-scroll">Features</a></li>
+                    <li><a href="#how-it-work" class="page-scroll">How It Work</a></li>
+                    <li><a href="#screenshots" class="page-scroll">Screenshots</a></li>
+                    <li><a href="#reviews" class="page-scroll">Reviews</a></li>
+                    <li><a href="#pricing" class="page-scroll">Pricing</a></li>
+                    <li><a href="#faq" class="page-scroll">FAQ</a></li>
+                    <li><a  href="#" class="dropdown-toggle">Pages</a>
+                        <ul class="sub-menu">
+                            <li><a href="basic-login.html">Login Page 1</a></li>
+                            <li><a href="login.html">Login Page 2</a></li>
+                            <li><a href="basic-sign-up.html">Signup Page 1</a></li>
+                            <li><a href="sign-up.html">Signup Page 2</a></li>
+                            <li><a href="password-reset.html">Reset Password</a></li>
+                            <li><a href="change-password.html">Change Password</a></li>
+                            <li><a href="download.html">Download Page</a></li>
+                            <li><a href="review.html">Review Page</a></li>
+                            <li><a href="faq.html">FAQ Page</a></li>
+                            <li><a href="404.html">404 Page</a></li>
+                            <li><a href="coming-soon.html">Coming Soon</a></li>
+                            <li><a href="thank-you.html">Thank You Page</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#contact" class="page-scroll">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<!--header section end-->
+
+
+<!--body content wrap start-->
+<div class="main">
+
+    <!--hero section start-->
+    <section class="hero-equal-height ptb-100 gradient-overlay"
+             style="background: url('img/hero-bg-3.jpg')no-repeat center center / cover">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-md-7 col-lg-6">
+                    <div class="hero-content-left text-white my-lg-0 my-md-5 my-sm-5 my-5">
+                        <h1 class="text-white">Sistemas <br> Facil y Seguro.</h1>
+                        <p class="lead">Analisis de cartera, rotacion de stocks, indicadores financieros lotizacion de inventarios.</p>
+
+                       <div class="action-btns download-btn mt-4">
+                           <a href="https://www.cerocodigo.com/esp/demo" class="page-scroll btn outline-white-btn animated-btn">Demo</a>
+                           <a href="#download" class="page-scroll btn solid-white-btn animated-btn mr-lg-3">Empieza Ya</a>
+                       </div>
+
+                    </div>
+                </div>
+                <div class="col-md-5 col-lg-6">
+                    <div class="video-app-wrap m-sm-auto ml-auto">
+                        <div class="iphone-mask">
+                            <img src="img/iphone-mask.png" alt="app" class="img-fluid mask-img"/>
+                            <div class="video-wrap">
+                                <video autoplay loop muted playsinline width="400" height="300">
+                                    <source src="https://appbeats.themetags.com/img/app-overview.mp4" type="video/mp4" />
+                                    <source src="https://appbeats.themetags.com/img/app-overview.webm" type="video/webm" />
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="shape-bottom">
+            <img src="img/wave-line-bw-long.svg" alt="shape" class="bottom-shape img-fluid">
+        </div>
+    </section>
+    <!--hero section end-->
+
+
+    <div class="trusted-client pt-5 pb-5 d-none d-sm-none d-md-none d-lg-block">
+        <div class="container">
+           <!-- <div class="row">
+                <div class="col-md-7">
+                    <div class="client-section-wrap d-flex flex-row align-items-center">
+                        <p class="lead mr-5 mb-0">Trusted by 5,000 company:</p>
+                        <ul class="list-inline justify-content-between">
+                            <li class="list-inline-item mx-3"><img src="img/clients-logo-01.png" width="85" alt="client" class="img-fluid"></li>
+                            <li class="list-inline-item mx-3"><img src="img/clients-logo-02.png" width="85" alt="client" class="img-fluid"></li>
+                            <li class="list-inline-item mx-3"><img src="img/clients-logo-03.png" width="85" alt="client" class="img-fluid"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+    <!--trusted company end-->
+
+    <!--promo section new start-->
+    <section class="promo-new ptb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading text-center mb-2">
+                        <h2>Modulos y opciones</h2>
+                        <p class="lead">Modulos Integrados Bancos, Facturacion, Compras, Inventarios, Kardex, Contabilidad, SRI, Cobranzas, Produccion, Lotes, Pedidos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-lg-4">
+                    <div class="new-single-promo rounded p-5 border-color-2 mt-4 text-center">
+                        <div class="promo-img-wrap mb-4">
+                            <img src="img/promo-1.svg" width="80" alt="promo" class="img-fluid"/>
+                        </div>
+                        <div class="promo-content-wrap">
+                            <h5>Documentos Electronicos</h5>
+                            <p>Facturacion, Retenciones, Guias de remison, Notas de Credito y Debito </p>
+
+                            <span class="color-1 color-1-bg rounded py-1 px-2 text-uppercase">SRI</span>
+                            <span class="color-2 color-2-bg rounded py-1 px-2 text-uppercase">OffLine</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-4">
+                    <div class="new-single-promo rounded p-5 border-color-3 mt-4 text-center">
+                        <div class="promo-img-wrap mb-4">
+                            <img src="img/promo-2.svg" width="80" alt="promo" class="img-fluid"/>
+                        </div>
+                        <div class="promo-content-wrap">
+                            <h5>Herramientas Adicionales</h5>
+                            <p>Utiliza nuestas herramientas de calendarios, aletas, flujos de procesos en tu negocio..</p>
+
+                            <span class="color-5 color-5-bg rounded py-1 px-2 text-uppercase">Smart</span>
+                            <span class="color-6 color-6-bg rounded py-1 px-2 text-uppercase">Flexible</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-4">
+                    <div class="new-single-promo rounded p-5 border-color-1 mt-4 text-center">
+                        <div class="promo-img-wrap mb-4">
+                            <img src="img/promo-3.svg" width="80" alt="promo" class="img-fluid"/>
+                        </div>
+                        <div class="promo-content-wrap">
+                            <h5>Personaliza Tus sistema</h5>
+                            <p>Modifica los registro o reprotes, puedes Cambiar, Agregar o Elminar campos y columnas segun tus necesidades</p>
+
+                            <span class="color-3 color-3-bg rounded py-1 px-2 text-uppercase">Smart</span>
+                            <span class="color-4 color-4-bg rounded py-1 px-2 text-uppercase">Flexible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--promo section new end-->
+
+    <!--feature section tab style start
+    <section id="features" class="feature-tab-section ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="feature-content-wrap">
+                        <ul class="nav nav-tabs feature-tab justify-content-center border-bottom-0" data-tabs="tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active h6 d-flex align-items-center" href="#tab6-1" data-toggle="tab">
+                                    <span class="ti-palette d-inline-block color-1 mr-2 icon-sm p-1"></span>
+                                    Modulos Habilitados
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-2" data-toggle="tab">
+                                    <span class="ti-rss-alt d-inline-block color-2 mr-2 icon-sm p-1"></span>
+                                    Connect Wifi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-3" data-toggle="tab">
+                                    <span class="ti-shopping-cart d-inline-block color-3 mr-2 icon-sm p-1"></span>
+                                    Online Shopping
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link h6 d-flex align-items-center" href="#tab6-4" data-toggle="tab">
+                                    <span class="ti-palette d-inline-block color-4 mr-2 icon-sm p-1"></span>
+                                    Display Store
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content feature-tab-content">
+                            <div class="tab-pane active" id="tab6-1">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">01.</span>
+                                            <h3>Fully Branded Portal</h3>
+                                            <p>Assertively incentivize long-term high-impact scenarios whereas accurate imperatives.</p>
+                                            <p>Quickly communicate multimedia based materials for enabled channels. Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-1.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-2">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">02.</span>
+                                            <h3>Returns to Exchanges</h3>
+                                            <p>Quickly communicate multimedia based materials for enabled channels. Turn Returns to Exchanges Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <p>Dramatically reconceptualize user-centric expertise whereas competitive synergy.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-2.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-3">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">03.</span>
+                                            <h3>Multichannel Returns</h3>
+                                            <p>Quickly communicate multimedia based materials to team driven infrastructures. Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <p>Competently disintermediate web-enabled growth strategies whereas professional applications.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-3.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6-4">
+                                <div class="row align-items-center justify-content-between pt-5">
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="tab-content-wrap">
+                                            <span class="h1 display-3 color-secondary font-weight-bold mb-3 d-block">04.</span>
+                                            <h3>Set goals & timelines</h3>
+                                            <p>Quickly communicate multimedia based materials for enabled channels. Seamlessly disintermediate robust best practices for B2C e-tailers. Efficiently procrastinate prospective experiences.</p>
+                                            <p>Continually architect multifunctional schemas rather than superior users. Conveniently scale.</p>
+                                            <a href="#" class="mt-3 d-flex align-items-center">Learn more about this <span class="ti-angle-right ml-2"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="img-wrap text-center">
+                                            <img src="img/svg-icon-4.svg" alt="feature" class="img-fluid rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+    <!--feature section tab style end-->
+
+    <!--promo-section start-->
+    <section id="how-it-work" class="how-it-work ptb-100">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-md-7 col-lg-7">
+                    <div class="img-wrap">
+                        <img src="img/how-work.png" alt="how work" class="img-fluid"/>
+                    </div>
+                </div>
+                <div class="col-md-5 col-lg-5">
+                    <div class="content-info-wrap">
+                        <h2>Interfaz Simplificada</h2>
+                        <p>Enfocado en una experiancia que te permita utilizar tu sistema se forma sencilla y sin complicaciones. Sin restringirte de opciones y procesos necesarios para tu negocio.</p>
+
+                        <div class="row mt-5">
+                            <div class="col-md-6 col-lg-6 col-12">
+                                <div class="detail-info-box">
+                                    <span class="ti-palette d-inline-block mb-4 icon-sm text-white p-3 secondary-bg rounded"></span>
+                                    <div class="detail-info-content">
+                                        <h5 class="mb-2">Interfaz Clara</h5>
+                                        <p>Sin complicaciones no necesarias el acceso a tus reportes y registro claro y sin enredos.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-12">
+                                <div class="detail-info-box">
+                                    <span class="ti-announcement d-inline-block mb-4 icon-sm text-white p-3 secondary-bg rounded"></span>
+                                    <div class="detail-info-content">
+                                        <h5 class="mb-2">100% integrado</h5>
+                                        <p>Contabilidad automatica, olvidate de hacer idarios y enredos contables o tributarios.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--promo-section end-->
+
+    <!--screenshots section start
+    <section id="screenshots" class="screenshots-section ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading text-center mb-5">
+                        <h2>Show Our Apps Screenshots</h2>
+                        <p>Credibly synthesize multimedia based networks vis-a-vis top-line growth strategies. Continually leverage existing worldwide interfaces </p>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-slider-content">
+                <div class="screenshot-frame"></div>
+                <div class="screen-carousel owl-carousel owl-theme dot-indicator">
+                    <img src="img/01.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/02.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/03.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/04.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/05.png" class="img-fluid" alt="screenshots"/>
+                    <img src="img/06.png" class="img-fluid" alt="screenshots"/>
+                </div>
+            </div>
+
+        </div>
+    </section>-->
+    <!--screenshots section end-->
+
+    <!--download section start-->
+    <section id="download" class="gradient-overlay">
+        <div class="container">
+            <div class="row justify-content-around align-items-end">
+                <div class="col-md-6 col-lg-5">
+                    <div class="download-txt text-white ptb-100">
+                        <h2 class="text-white">
+                            Empieza ya
+                        </h2>
+                        <p class="lead">Crea tu cuenta, valida tu correo y creamos tu sistema en la nube.</p>
+                        <div class="action-btns download-btn mt-4">
+                            <a href="#" class="btn solid-white-btn mr-3"> <span class="ti-apple mr-2"></span>Registrate</a>
+                            <a href="#" class="btn outline-white-btn"> <span class="ti-android mr-2"></span>Ingresa al demo</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-7">
+                    <div class="d-flex align-items-end">
+                        <img class="img-fluid" src="img/hand-with-app.png" alt="download"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--download section end-->
+
+    <!--testimonial section start
+    <section id="reviews" class="testimonial-section ptb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading mb-5 text-center">
+                        <h2>Testimonios de CLientes</h2>
+                        <p class="lead">
+                            Renovando la forma de vender e implementar sistemas en ecuador, tu sistema ajustado a tus necesdades, dandelo valor a tu informacion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 col-lg-12">
+                    <div class="owl-carousel owl-theme client-testimonial">
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    test Bassa.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-1.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Austin Cesar</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    Tes indunidas.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-2.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Pirtle Karol</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    test mega.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-3.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Aminul Islam</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonial-single shadow-sm gray-light-bg rounded p-4">
+                                <blockquote>
+                                    test gallegos.
+                                </blockquote>
+                                <div class="client-ratting mt-2">
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                        <li class="list-inline-item"><span class="ti-star ratting-color"></span></li>
+                                    </ul>
+                                    <h6 class="font-weight-bold">5.0 <small class="font-weight-lighter">BizBite</small></h6>
+                                </div>
+                            </div>
+                            <div class="client-info-wrap d-flex align-items-center mt-5">
+                                <div class="client-img mr-3">
+                                    <img src="img/client-4.jpg" alt="client" width="60" class="img-fluid rounded-circle shadow-sm"/>
+                                </div>
+                                <div class="client-info">
+                                    <h5 class="mb-0">Pirtle Karol</h5>
+                                    <p class="mb-0">ThemeTags</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>-->
+    <!--testimonial section end-->
+
+    <!--pricing section start-->
+    <section id="pricing" class="pricing ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row align-items-center justify-content-around">
+                <div class="col-md-12 col-lg-4">
+                    <div class="section-heading mb-4">
+                        <h2>Planes de servicio</h2>
+                        <p class="lead">No existe limitantes ni restricciones, el plan es segun el volumne de registros y soporte que necesites.</p>
+                    </div>
+                    <ul class="nav nav-tabs feature-tab pricing-tab border-bottom-0 mb-md-5 mb-lg-0" data-tabs="tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active h6 d-flex align-items-center" href="#monthly" data-toggle="tab">
+                                Mensual
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link h6 d-flex align-items-center" href="#yearly" data-toggle="tab">
+                                Anual
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-12 col-lg-7">
+                    <div class="tab-content feature-tab-content">
+                        <div class="tab-pane active" id="monthly">
+                            <div class="row align-items-center justify-content-between">
+           
+
+                               <div class="col-lg-6 col-md-6 col-6">
+                                    <div class="card popular-price text-center single-pricing-pack">
+                                        <div class="pt-4"><h5>Inicial</h5></div>
+                                        <div class="card-header py-4 border-0 pricing-header">
+                                            <div class="h1 text-center mb-0">$<span
+                                                    class="price font-weight-bolder">20</span></div>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled text-sm mb-4 pricing-feature-list">
+                                                <li>Max 50 registros al mes</li>
+                                                <li>Soporte en linea</li>
+                                                <li>1 Mes Prueba gratis<li>
+                                                <li>Sin tarjeta credito</li>
+                                                
+                                                
+                                            </ul>
+                                            <a href="#" class="btn solid-btn mb-3" target="_blank">Purchase now</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                               <div class="col-lg-6 col-md-6 col-6">
+                                    <div class="card popular-price text-center single-pricing-pack">
+                                        <div class="pt-4"><h5>Completo</h5></div>
+                                        <div class="card-header py-4 border-0 pricing-header">
+                                            <div class="h1 text-center mb-0">$<span
+                                                    class="price font-weight-bolder">50</span></div>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled text-sm mb-4 pricing-feature-list">
+                                                <li>Registros ilimitados</li>
+                                                <li>Soporte en linea y callcenter</li>
+                                                <li>1 Mes Prueba gratis<li>
+                                                <li>Sin tarjeta credito</li>
+                                            </ul>
+                                            <a href="#" class="btn solid-btn mb-3" target="_blank">Purchase now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="yearly">
+                            <div class="row align-items-center justify-content-between">
+
+                               <div class="col-lg-6 col-md-6 col-6">
+                                    <div class="card popular-price text-center single-pricing-pack">
+                                        <div class="pt-4"><h5>Inicial</h5></div>
+                                        <div class="card-header py-4 border-0 pricing-header">
+                                            <div class="h1 text-center mb-0">$<span
+                                                    class="price font-weight-bolder">100</span></div>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled text-sm mb-4 pricing-feature-list">
+                                                <li>Max 50 registros al mes</li>
+                                                <li>Soporte en linea</li>
+                                                <li>1 Mes Prueba gratis<li>
+                                                <li>Sin tarjeta credito</li>
+                                                
+                                                
+                                            </ul>
+                                            <a href="#" class="btn solid-btn mb-3" target="_blank">Purchase now</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                               <div class="col-lg-6 col-md-6 col-6">
+                                    <div class="card popular-price text-center single-pricing-pack">
+                                        <div class="pt-4"><h5>Completo</h5></div>
+                                        <div class="card-header py-4 border-0 pricing-header">
+                                            <div class="h1 text-center mb-0">$<span
+                                                    class="price font-weight-bolder">500</span></div>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled text-sm mb-4 pricing-feature-list">
+                                                <li>Registros ilimitados</li>
+                                                <li>Soporte en linea y callcenter</li>
+                                                <li>1 Mes Prueba gratis<li>
+                                                <li>Sin tarjeta credito</li>
+                                            </ul>
+                                            <a href="#" class="btn solid-btn mb-3" target="_blank">Purchase now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--pricing section end-->
+
+
+    <!--faq section start-->
+    <div id="faq" class="ptb-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 col-lg-8">
+                    <div class="section-heading mb-5">
+                        <h2>Preguntas Frecuentes</h2>
+                        <p>si no esta tu respuesta abajo, enviamos un <a href="#contact" class="page-scroll">Mensaje</a> o enivamos un email a info@cerocodig.net</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-lg-12">
+                    <div id="accordion" class="accordion">
+                        <div class="card mb-0">
+                            <a class="card-header collapsed" data-toggle="collapse" href="#collapseOne">
+                                <h6 class="mb-0 d-inline-block"><span class="ti-receipt mr-3"></span>Cuentos usuarios puedo tener?</h6>
+                            </a>
+                            <div id="collapseOne" class="collapse" data-parent="#accordion" style="">
+                                <div class="card-body">
+                                    <p>No hay limitacion, puedes crear los usuarios que necesitas</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-0">
+                            <a class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
+                                <h6 class="mb-0 d-inline-block"><span class="ti-gallery mr-3"></span>Qhe necesito entregar para poder facturacion electronica</h6>
+                            </a>
+                            <div id="collapseTwo" class="collapse" data-parent="#accordion" style="">
+                                <div class="card-body">
+                                    <p>Estar habilitado por el SRI y tener la firma electronica en Archivo P.12 mira una guia <a>Aqui</a> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-0">
+                            <a class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
+                                <h6 class="mb-0 d-inline-block"><span class="ti-wallet mr-3"></span>Necesito tarjeta de credito?
+                                </h6>
+                            </a>
+                            <div id="collapseThree" class="collapse" data-parent="#accordion" style="">
+                                <div class="card-body">
+                                    <p>No es necesario, puedes pagar en linea o a traves de depositos bancarios directos.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-0">
+                            <a class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
+                                <h6 class="mb-0 d-inline-block"><span class="ti-headphone-alt mr-3"></span> Que necesito para empezar? 
+                                </h6>
+                            </a>
+                            <div id="collapseFour" class="collapse" data-parent="#accordion" style="">
+                                <div class="card-body">
+                                    <p>Crea tu cuenta y valida tu correo. Ahi creamos tu sistema y base de datos, (Demora 30-60 minutos) te enviamos un correo cuando termine y puedas ingresar a tu sistema.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--faq section end-->
+
+    <!--client section start
+    <section class="client-section ptb-100 gray-light-bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="section-heading text-center mb-5">
+                        <h2>Trusted by Companies</h2>
+                        <p class="lead">
+                            Rapidiously morph transparent internal or "organic" sources whereas resource sucking
+                            e-business. Conveniently innovate compelling internal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <div class="owl-carousel owl-theme clients-carousel dot-indicator">
+                        <div class="item single-client">
+                            <img src="img/clients-logo-01.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-02.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-03.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-04.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-05.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-06.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-07.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                        <div class="item single-client">
+                            <img src="img/clients-logo-08.png" alt="client logo" class="img-fluid client-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+    <!--client section start-->
+
+    <!--contact us section start-->
+    <section id="contact" class="contact-us-section ptb-100">
+        <div class="container">
+            <div class="row justify-content-around">
+                <div class="col-md-6">
+                    <div class="contact-us-form gray-light-bg rounded p-5">
+                        <h4>Consultas y Preguntas</h4>
+                        <form action="#" method="POST" id="contactForm1" class="contact-us-form" novalidate="novalidate">
+                            <div class="form-row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="c_name" name="name" placeholder="Nombre" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control" id="c_email" name="email" placeholder="Pon tu correo o telefono" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <textarea name="message" id="c_message" class="form-control" rows="7" cols="25" placeholder="Mensaje"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 mt-3">
+                                    <button type="submit" class="btn solid-btn" id="btn_envio_mensaje" onclick="envio_mensaje()">
+                                        Enviar Mensaje
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <div class="col-md-6">
+                    <div class="contact-us-form gray-light-bg rounded p-5">
+                        <h4>Registrate</h4>
+
+
+                        <form action="#" method="POST" id="contactForm1" class="contact-us-form" novalidate="novalidate">
+                            <div class="form-row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="Id_erp" placeholder="Usuario" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="d_Id" placeholder="Id o Ruc" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="d_RazonSocial" placeholder="Razon Social" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="d_NombreComercial" placeholder="Nombre Comercial" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control" name="u_correo" placeholder="Email" required="required">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <select id="userTipo" class="form-control selectpicker">
+                                            <option>Inicial</option>
+                                            <option>Completo</option>
+                                        </select>                                    
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 mt-3">
+                                    <button type="submit" class="btn solid-btn" id="btnContactUs" onclick="registro_cuenta()">
+                                        Registrarse
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--contact us section end-->
+
+</div>
+<!--body content wrap end-->
+
+<!--footer section start-->
+<footer class="footer-section">
+    <!--footer top start-->
+    <div class="footer-top gradient-bg">
+        <div class="container">
+            <!--<div class="row">
+                <div class="col-lg-4 col-12">
+                    <div class="footer-nav-wrap text-white mb-0 mb-md-4 mb-lg-0">
+                        <a class="d-block" href="#"><img src="img/logo-white.png" alt="footer logo" width="150" class="img-fluid mb-1"></a>
+                        <p>Intrinsicly matrix high standards in niches whereas intermandated niche markets. Objectively harness competitive resources.</p>
+                        <ul class="list-unstyled social-list mb-0">
+                            <li class="list-inline-item"><a href="#" class="rounded"><span class="ti-facebook white-bg color-2 shadow rounded-circle"></span></a></li>
+                            <li class="list-inline-item"><a href="#" class="rounded"><span class="ti-twitter white-bg color-2 shadow rounded-circle"></span></a></li>
+                            <li class="list-inline-item"><a href="#" class="rounded"><span class="ti-linkedin white-bg color-2 shadow rounded-circle"></span></a></li>
+                            <li class="list-inline-item"><a href="#" class="rounded"><span class="ti-dribbble white-bg color-2 shadow rounded-circle"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-12">
+                    <div class="footer-nav-wrap text-white">
+                        <h5 class="text-white">Usefull Links</h5>
+                        <ul class="list-unstyled footer-nav-list mt-3">
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Privacy Protection</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Safe Payments</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Terms of Services</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Documentation</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-12">
+                    <div class="footer-nav-wrap text-white">
+                        <h5 class="text-white">Company</h5>
+                        <ul class="list-unstyled footer-nav-list mt-3">
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> About us Section</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Pricing Section</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Features Section</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> FAQ Section</a></li>
+                            <li><a href="#" class="text-foot"><span class="ti-angle-double-right"></span> Contact Section</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+
+
+                <div class="col-lg-4 col-md-4 col-12">
+                    <div class="footer-nav-wrap text-white">
+                        <h5 class="text-light footer-head">Newsletter</h5>
+                        <p>Subscribe our newsletter to get our update. We don't send span email to you.</p>
+                        <form action="#" class="newsletter-form mt-3">
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="email" placeholder="Enter your email" required="">
+                                <div class="input-group-append">
+                                    <button class="btn solid-btn subscribe-btn btn-hover" type="submit">
+                                        Subscribe
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+    <!--footer top end-->
+
+    <!--footer copyright start-->
+    <div class="footer-bottom gray-light-bg py-3">
+        <div class="container">
+            <div class="row text-center justify-content-center">
+                <div class="col-md-6 col-lg-5"><p class="copyright-text pb-0 mb-0">Copyrights © 2018. All
+                    rights reserved by CeroCodigo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--footer copyright end-->
+</footer>
+<!--footer section end-->
+
+<!--bottom to top button start-->
+<button class="scroll-top scroll-to-target" data-target="html">
+    <span class="ti-angle-up"></span>
+</button>
+<!--bottom to top button end-->
+
+
+<!--jQuery-->
+<script src="js/jquery-3.4.1.min.js"></script>
+<!--Popper js-->
+<script src="js/popper.min.js"></script>
+<!--Bootstrap js-->
+<script src="js/bootstrap.min.js"></script>
+<!--Magnific popup js-->
+<script src="js/jquery.magnific-popup.min.js"></script>
+<!--jquery easing js-->
+<script src="js/jquery.easing.min.js"></script>
+<!--jquery ytplayer js-->
+<script src="js/jquery.mb.YTPlayer.min.js"></script>
+<!--wow js-->
+<script src="js/wow.min.js"></script>
+<!--owl carousel js-->
+<script src="js/owl.carousel.min.js"></script>
+<!--countdown js-->
+<script src="js/jquery.countdown.min.js"></script>
+<!--custom js-->
+<script src="js/scripts.js"></script>
+</body>
+</html>
