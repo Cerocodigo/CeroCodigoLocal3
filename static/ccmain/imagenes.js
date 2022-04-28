@@ -1,5 +1,10 @@
 
 
+
+function ejemplo_img(){
+    alert('ddd')
+}
+
 function getBase64Image(img, t_w, t_h) {
     // Create an empty canvas element
     var canvas = document.createElement("canvas");
