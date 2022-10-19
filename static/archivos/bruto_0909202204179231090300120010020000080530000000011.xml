@@ -1,0 +1,101 @@
+<notaCredito xmlns:ns0="http://www.w3.org/2000/09/xmldsig#" xmlns:ns1="http://uri.etsi.org/01903/v1.3.2#" id="comprobante" version="1.1.0"><infoTributaria><ambiente>2</ambiente><tipoEmision>1</tipoEmision><razonSocial>STX TEXTILES CIA LTDA</razonSocial><ruc>1792310903001</ruc><claveAcceso>0909202204179231090300120010020000080530000000011</claveAcceso><codDoc>04</codDoc><estab>001</estab><ptoEmi>002</ptoEmi><secuencial>000008053</secuencial><dirMatriz>Calle Caspicara Oe12 193 y Panamericana Norte Km 12 1/2</dirMatriz></infoTributaria><infoNotaCredito><fechaEmision>09/09/2022</fechaEmision><dirEstablecimiento>Calle Caspicara Oe12 193 y Panamericana Norte Km 12 1/2   QUITO ECUADOR</dirEstablecimiento><tipoIdentificacionComprador>04</tipoIdentificacionComprador><razonSocialComprador>LUIVAN S.A.</razonSocialComprador><identificacionComprador>0992932945001</identificacionComprador><contribuyenteEspecial>00181</contribuyenteEspecial><obligadoContabilidad>SI</obligadoContabilidad><codDocModificado>01</codDocModificado><numDocModificado>001-002-000057924</numDocModificado><fechaEmisionDocSustento>24/08/2022</fechaEmisionDocSustento><totalSinImpuestos>1410.000000</totalSinImpuestos><valorModificacion>1579.200000</valorModificacion><moneda>DOLAR</moneda><totalConImpuestos><totalImpuesto><codigo>2</codigo><codigoPorcentaje>2</codigoPorcentaje><baseImponible>1410.00</baseImponible><valor>169.20</valor></totalImpuesto></totalConImpuestos><motivo>Nc. por refacturacion y cambio de precio</motivo></infoNotaCredito><detalles><detalle><codigoInterno>101001</codigoInterno><descripcion>DP OPALO PLAIN LV-01 IVORY</descripcion><cantidad>300</cantidad><precioUnitario>4.7</precioUnitario><descuento>0</descuento><precioTotalSinImpuesto>1410</precioTotalSinImpuesto><detallesAdicionales><detAdicional nombre="NA" valor="169.2" /></detallesAdicionales><impuestos><impuesto><codigo>2</codigo><codigoPorcentaje>2</codigoPorcentaje><tarifa>12</tarifa><baseImponible>1410</baseImponible><valor>169.2</valor></impuesto></impuestos></detalle></detalles><infoAdicional><campoAdicional nombre="Mail1">facturastx@stxtextiles.com;eprietonogales@luivan.com;knogales2003@hotmail.com</campoAdicional></infoAdicional><ns0:Signature Id="Signature180845">
+<ns0:SignedInfo Id="Signature-SignedInfo776474">
+<ns0:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+<ns0:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+<ns0:Reference Id="SignedPropertiesID550768" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature180845-SignedProperties835073">
+<ns0:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+<ns0:DigestValue>F6tWRo2yigkX72qRpAX1UubVXI8=</ns0:DigestValue>
+</ns0:Reference>
+<ns0:Reference URI="#Certificate1793927">
+<ns0:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+<ns0:DigestValue>1QHR1gGCUVO4FVnk2VTOYBzgDzM=</ns0:DigestValue>
+</ns0:Reference>
+<ns0:Reference Id="Reference-ID-1038008" URI="#comprobante">
+<ns0:Transforms>
+<ns0:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+</ns0:Transforms>
+<ns0:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+<ns0:DigestValue>luXhYeT3jvX95hCXx+YCLiO9KrA=</ns0:DigestValue>
+</ns0:Reference>
+</ns0:SignedInfo>
+<ns0:SignatureValue Id="SignatureValue370509">
+y9k8U4bBd+DTeuZr1q5nush875/GFffuDYYsSK/GU57LB0LAcvjRCUeflcUKTrkNPv1Lk94mg8h5
+GSQJLmiaAa6d9AJokETb2uj2n5xlR0vHj0ZtxkBqSmWyeeeS7T6j/BQG4aoVMAzxIOO+7/2lAm2e
+qYY2NEUm8jrnai/hSPO/q+lkeYO99ivGLSbmDZMuupCB1S+OR+8rD7c6QxcGMJ8Rvr/B6w6HgTV6
+5wxx1v2Z3PRhB8B5OoxZI4ksTRLaQcmH3mLeGU3hgwIzkqUY00GUiqtOZBVlnrITrs4orNxmVMtY
+QO+OaNjf4SRZhWnpGWx3bJAg6xvCDbumF7zOhg==
+</ns0:SignatureValue>
+<ns0:KeyInfo Id="Certificate1793927">
+<ns0:X509Data>
+<ns0:X509Certificate>
+MIIMGjCCCgKgAwIBAgIENmmYkzANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
+BAoMFFNFQ1VSSVRZIERBVEEgUy5BLiAyMTAwLgYDVQQLDCdFTlRJREFEIERFIENFUlRJRklDQUNJ
+T04gREUgSU5GT1JNQUNJT04xOTA3BgNVBAMMMEFVVE9SSURBRCBERSBDRVJUSUZJQ0FDSU9OIFNV
+QkNBLTIgU0VDVVJJVFkgREFUQTAeFw0yMTA2MDIxNjM3MDlaFw0yNDA2MDExNjM3MDlaMIGaMSMw
+IQYDVQQDDBpKQUlNRSBSQU1JUk8gUklWRVJBIEJFUk1FTzEVMBMGA1UEBRMMMDIwNjIxMTE0NzE3
+MTAwLgYDVQQLDCdFTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04xHTAbBgNV
+BAoMFFNFQ1VSSVRZIERBVEEgUy5BLiAyMQswCQYDVQQGEwJFQzCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBAPbYpb0uBaNWl5TwJj8XVmDkFzm6x/tEJLbkRgO9fBRwmUN6aGrGmq/T/jVr
+zUDZNfBWjuedzfbnMpPA2CIGgO3wyh79Obiu0ueFd7paksB91V4oSM8E0ThyLaWTNoZts34Og+mV
+ZLp6m6eUXxib8WYTURC1jC7RAQu93fKgzNkmKvO4ogwfcVMtdzalvKxiYOmmnb2i//aMUyR2bTCf
++pLFM2LiCiafAbNAXaTM/4kGs+DnGnHcBBnYNlEb0Lp/skpH6g9RPCOp9uIvn5LnJJYRlwoF+e9N
+GrPvSIq9l0tiaFO7Eyn/kE5cLSDpPEgbFBxgGo0oplUyqWyF4VXDFe8CAwEAAaOCB2UwggdhMAwG
+A1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUjLrKEVd4JYAdawpLVb+NrmLdvY8wWQYIKwYBBQUHAQEE
+TTBLMEkGCCsGAQUFBzABhj1odHRwOi8vb2NzcGd3LnNlY3VyaXR5ZGF0YS5uZXQuZWMvZWpiY2Ev
+cHVibGljd2ViL3N0YXR1cy9vY3NwMIHPBgNVHS4EgccwgcQwgcGggb6ggbuGgbhsZGFwOi8vbGRh
+cHNkY2EyLnNlY3VyaXR5ZGF0YS5uZXQuZWMvQ049QVVUT1JJREFEIERFIENFUlRJRklDQUNJT04g
+U1VCQ0EtMiBTRUNVUklUWSBEQVRBLE9VPUVOVElEQUQgREUgQ0VSVElGSUNBQ0lPTiBERSBJTkZP
+Uk1BQ0lPTixPPVNFQ1VSSVRZIERBVEEgUy5BLiAyLEM9RUM/ZGVsdGFSZXZvY2F0aW9uTGlzdD9i
+YXNlMCEGA1UdEQQaMBiBFmphaW1lckBzdHh0ZXh0aWxlcy5jb20wggESBgNVHSAEggEJMIIBBTBg
+BgorBgEEAYKmcgIKMFIwUAYIKwYBBQUHAgIwRB5CAEMAZQByAHQAaQBmAGkAYwBhAGQAbwAgAGQA
+ZQAgAE0AaQBlAG0AYgByAG8AIABkAGUAIABFAG0AcAByAGUAcwBhMIGgBgorBgEEAYKmcgIEMIGR
+MIGOBggrBgEFBQcCARaBgWh0dHBzOi8vd3d3LnNlY3VyaXR5ZGF0YS5uZXQuZWMvd3AtY29udGVu
+dC9kb3dubG9hZHMvTm9ybWF0aXZhcy9QX2RlX0NlcnRpZmljYWRvcy9Qb2xpdGljYXMgZGUgQ2Vy
+dGlmaWNhZG8gTWllbWJybyBkZSBFbXByZXNhLnBkZjCCAqIGA1UdHwSCApkwggKVMIHloEGgP4Y9
+aHR0cDovL29jc3Bndy5zZWN1cml0eWRhdGEubmV0LmVjL2VqYmNhL3B1YmxpY3dlYi9zdGF0dXMv
+b2NzcKKBn6SBnDCBmTE5MDcGA1UEAwwwQVVUT1JJREFEIERFIENFUlRJRklDQUNJT04gU1VCQ0Et
+MiBTRUNVUklUWSBEQVRBMTAwLgYDVQQLDCdFTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5G
+T1JNQUNJT04xHTAbBgNVBAoMFFNFQ1VSSVRZIERBVEEgUy5BLiAyMQswCQYDVQQGEwJFQzCBx6CB
+xKCBwYaBvmxkYXA6Ly9sZGFwc2RjYTIuc2VjdXJpdHlkYXRhLm5ldC5lYy9DTj1BVVRPUklEQUQg
+REUgQ0VSVElGSUNBQ0lPTiBTVUJDQS0yIFNFQ1VSSVRZIERBVEEsT1U9RU5USURBRCBERSBDRVJU
+SUZJQ0FDSU9OIERFIElORk9STUFDSU9OLE89U0VDVVJJVFkgREFUQSBTLkEuIDIsQz1FQz9jZXJ0
+aWZpY2F0ZVJldm9jYXRpb25MaXN0P2Jhc2UwgeCggd2ggdqGgddodHRwczovL3BvcnRhbC1vcGVy
+YWRvcjIuc2VjdXJpdHlkYXRhLm5ldC5lYy9lamJjYS9wdWJsaWN3ZWIvd2ViZGlzdC9jZXJ0ZGlz
+dD9jbWQ9Y3JsJmlzc3Vlcj1DTj1BVVRPUklEQUQgREUgQ0VSVElGSUNBQ0lPTiBTVUJDQS0yIFNF
+Q1VSSVRZIERBVEEsT1U9RU5USURBRCBERSBDRVJUSUZJQ0FDSU9OIERFIElORk9STUFDSU9OLE89
+U0VDVVJJVFkgREFUQSBTLkEuIDIsQz1FQzAdBgNVHQ4EFgQUbl04LtsqNQUHu7a50b0JpGXSKZ0w
+KwYDVR0QBCQwIoAPMjAyMTA2MDIxNjM3MDlagQ8yMDI0MDYwMTE2MzcwOVowCwYDVR0PBAQDAgXg
+MCMGCisGAQQBgqZyAwUEFQwTSkVGRSBBRE1JTklTVFJBVElWTzAaBgorBgEEAYKmcgMBBAwMCjE3
+MDc3NzU3NjEwFQYKKwYBBAGCpnIDCQQHDAVRVUlUTzARBgorBgEEAYKmcgMiBAMMAS4wNwYKKwYB
+BAGCpnIDBwQpDCdDQVNQSUNBUkEgT0UxMi0xOTMgWSBQQU5BTUVSSUNBTkEgTk9SVEUwHAYKKwYB
+BAGCpnIDAgQODAxKQUlNRSBSQU1JUk8wHwYKKwYBBAGCpnIDIAQRDA8wMDIwMDEwMDAxOTk2MzAw
+EwYKKwYBBAGCpnIDIQQFDANQRlgwFwYKKwYBBAGCpnIDDAQJDAdFQ1VBRE9SMBYGCisGAQQBgqZy
+AwMECAwGUklWRVJBMBEGCisGAQQBgqZyAx4EAwwBLjAmBgorBgEEAYKmcgMKBBgMFlNUWCBURVhU
+SUxFUyBDSUEuIExUREEwHQYKKwYBBAGCpnIDCwQPDA0xNzkyMzEwOTAzMDAxMBIGCisGAQQBgqZy
+Ax0EBAwCTm8wFgYKKwYBBAGCpnIDBAQIDAZCRVJNRU8wHAYKKwYBBAGCpnIDCAQODAw1OTM5ODQy
+NTE5NjUwDQYJKoZIhvcNAQELBQADggIBACws+2+FuY/Kz+xynQQHEdaURIAlmtR4Zmi7uVeRfP2H
+SyYSKQpFAQvcdIt6kx5g1YfVaZXt0Lv2RG8Tmf0hJAWFeHBkA2acDGvJyHU0n0FkGCrr96aGKSbj
+fOYIP7CFsU9bC0XvM6/PgwKGKGmdoQ/TwBNgQig44d0hpYPOyfqdAuTN8AtnjtGlmw5jKbawwxy7
+N+dUblryvErwPEStCr+guwTvt/3zTaCfQfZmaUH2p7uPOhFPeqO9zm6/caZiHMPBVwDuqNb2Ly0+
+qT2/sncFdngd3G7JLxhl73Xzfzo4/4ix2xMufxHPcQP6A6Xd2UFFfpOaApBFbmatyqTbLKgBNW5s
+eeY1NWgrpOwKpa6k5rRnAHCkc0Zp3+1cY46EdystFEfaE8KrWUi7bdH9J2Dbm4BYC7nVQQq0IN67
+Tqp6nod3Oa5grxyQsF5xxwxWFN/Elm1aEeDtfHWOgY3KUgpcBBi5WFqj00ZBhmLjkU7QfiHkwPRh
+HJjD+IeWwOJRSAGTtVyFGzE4OF0+iXx44hm/SfUmOEgoBnSRUNJAZeAyays6PmK1eM5wz21j6acM
+FYeYf7nJjB0GVnn8VU2haecTuOa04tDVm7kVDQaQcJp22lwUYw++stjlxSsF6u9rUDEBlzZaQmu3
+wGl8c9b2nxtctB1PihffNxNRsRYC3Har
+</ns0:X509Certificate>
+</ns0:X509Data>
+<ns0:KeyValue>
+<ns0:RSAKeyValue>
+<ns0:Modulus>
+9tilvS4Fo1aXlPAmPxdWYOQXObrH+0QktuRGA718FHCZQ3poasaar9P+NWvNQNk18FaO553N9ucy
+k8DYIgaA7fDKHv05uK7S54V3ulqSwH3VXihIzwTROHItpZM2hm2zfg6D6ZVkunqbp5RfGJvxZhNR
+ELWMLtEBC73d8qDM2SYq87iiDB9xUy13NqW8rGJg6aadvaL/9oxTJHZtMJ/6ksUzYuIKJp8Bs0Bd
+pMz/iQaz4OcacdwEGdg2URvQun+ySkfqD1E8I6n24i+fkucklhGXCgX5700as+9Iir2XS2JoU7sT
+Kf+QTlwtIOk8SBsUHGAajSimVTKpbIXhVcMV7w==
+</ns0:Modulus>
+<ns0:Exponent>AQAB</ns0:Exponent>
+</ns0:RSAKeyValue>
+</ns0:KeyValue>
+</ns0:KeyInfo>
+<ns0:Object Id="Signature180845-Object448504"><ns1:QualifyingProperties Target="#Signature180845"><ns1:SignedProperties Id="Signature180845-SignedProperties835073"><ns1:SignedSignatureProperties><ns1:SigningTime>2022-09-14T08:15:10-05:00</ns1:SigningTime><ns1:SigningCertificate><ns1:Cert><ns1:CertDigest><ns0:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><ns0:DigestValue>kq+uWXxgLqKzEh9IKQeTzgibe8I=</ns0:DigestValue></ns1:CertDigest><ns1:IssuerSerial><ns0:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-2 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 2,C=EC</ns0:X509IssuerName><ns0:X509SerialNumber>912890003</ns0:X509SerialNumber></ns1:IssuerSerial></ns1:Cert></ns1:SigningCertificate></ns1:SignedSignatureProperties><ns1:SignedDataObjectProperties><ns1:DataObjectFormat ObjectReference="#Reference-ID-1038008"><ns1:Description>contenido comprobante</ns1:Description><ns1:MimeType>text/xml</ns1:MimeType></ns1:DataObjectFormat></ns1:SignedDataObjectProperties></ns1:SignedProperties></ns1:QualifyingProperties></ns0:Object></ns0:Signature></notaCredito>
