@@ -12,7 +12,9 @@ import datetime
 import json
 import random
 from django.core.mail import EmailMessage
+import logging
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 from django.shortcuts import get_object_or_404, render
@@ -77,7 +79,7 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
     traer_campos_funciones = traer_campos_funciones_edocs(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('t_pkmodulo')[0])
                                  
     tablas  = db_registro.tablas(request.POST.getlist('t_pkmodulo')[0])
-
+    tabla_cabecera = tablas[0]['Nombre']
     tabla_cab = traer_campos['tabla_cab']
     campos_cab = traer_campos['campos_cab']
 
@@ -148,7 +150,7 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                 arr_cab[a['Nombre']] = 0
 
         #trasapsomos xml
-        for desg in desglose_cab:
+        for desg in desglose_cab:  
             arr_cab[desg['campo']] = e_data[desg['xml_cab']][desg['xml']]
 
         print('#arr_cab ------')
@@ -250,22 +252,89 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                     if a['TablaCampo'] == 'cmpoperacion':
                         arr_det[a['Nombre']] = 0
 
-                for lineas in e_data['detalle']:
-                    arr_det_temp= {}
-                    for ff in arr_det:
-                        arr_det_temp[ff] = arr_det[ff]
-                    #traspaso xml
-                    for desg in desglose_det:
-                        if desg['xml'] == 'impuesto-tarifa':
-                            arr_det_temp[desg['campo']] = round(float(lineas[desg['xml']]))                           
+                if e_data['infoTributaria']['codDoc'] == '07':
+                    compro = {}
+
+                    for lineas in e_data['impuestos']:
+                        if 'numDocSustento' in lineas:
+                            if not(lineas['numDocSustento'] in compro):
+                                compro[lineas['numDocSustento']] = {'fuente_base':0,'fuente_ret':0,'iva_base':0,'iva_ret':0}                 
+                            if lineas['codigo'] == '2':
+                                compro[lineas['numDocSustento']]['iva_base'] = compro[lineas['numDocSustento']]['iva_base'] + float(lineas['baseImponible'])
+                                compro[lineas['numDocSustento']]['iva_ret'] = compro[lineas['numDocSustento']]['iva_ret'] + float(lineas['valorRetenido'])
+                            if lineas['codigo'] == '1':
+                                compro[lineas['numDocSustento']]['fuente_base'] = compro[lineas['numDocSustento']]['fuente_base'] + float(lineas['baseImponible'])
+                                compro[lineas['numDocSustento']]['fuente_ret'] = compro[lineas['numDocSustento']]['fuente_ret'] + float(lineas['valorRetenido'])
                         else:
-                            arr_det_temp[desg['campo']] = lineas[desg['xml']]
+                            if not('0' in compro):
+                                compro['0'] = {'fuente_base':0,'fuente_ret':0,'iva_base':0,'iva_ret':0} 
 
-                    #traspaso traspaso
-                    for tras in traspaso_det:
-                        arr_det_temp[tras['campo']] = valores_traspaso[tras['campo']]
+                            if lineas['codigo'] == '2':
+                                compro['0']['iva_base'] = compro['0']['iva_base'] + float(lineas['baseImponible'])
+                                compro['0']['iva_ret'] = compro['0']['iva_ret'] + float(lineas['valorRetenido'])
+                            if lineas['codigo'] == '1':
+                                compro['0']['fuente_base'] = compro['0']['fuente_base'] +  float(lineas['baseImponible'])
+                                compro['0']['fuente_ret'] = compro['0']['fuente_ret'] + float(lineas['valorRetenido'])
+                  
 
-                    envio_datset[tablas[1]['Nombre']].append(arr_det_temp)
+                    for sod in compro:
+                        arr_det_temp= {}
+                        for ff in arr_det:
+                            arr_det_temp[ff] = arr_det[ff]
+                        for desg in desglose_det:
+                            if desg['xml'] == 'numDocSustento':
+                                arr_det_temp[desg['campo']] = sod
+                            if desg['xml'] == 'fuente_base':
+                                arr_det_temp[desg['campo']] = compro[sod]['fuente_base']
+                            if desg['xml'] == 'iva_base':
+                                arr_det_temp[desg['campo']] = compro[sod]['iva_base']
+                            if desg['xml'] == 'fuente_ret':
+                                arr_det_temp[desg['campo']] = compro[sod]['fuente_ret']
+                            if desg['xml'] == 'iva_ret':
+                                arr_det_temp[desg['campo']] = compro[sod]['iva_ret']
+
+                        envio_datset[tablas[1]['Nombre']].append(arr_det_temp)
+
+
+
+                if e_data['infoTributaria']['codDoc'] == '01':
+                    for lineas in e_data['detalle']:
+                        arr_det_temp= {}
+                        for ff in arr_det:
+                            arr_det_temp[ff] = arr_det[ff]
+                        #traspaso xml
+                        for desg in desglose_det:
+                            if desg['xml'] == 'impuesto-tarifa':
+                                arr_det_temp[desg['campo']] = round(float(lineas[desg['xml']]))                           
+                            else:
+                                arr_det_temp[desg['campo']] = lineas[desg['xml']]
+
+                        #traspaso traspaso
+                        for tras in traspaso_det:
+                            arr_det_temp[tras['campo']] = valores_traspaso[tras['campo']]
+
+                        envio_datset[tablas[1]['Nombre']].append(arr_det_temp)
+
+
+                if e_data['infoTributaria']['codDoc'] == '04':
+                    for lineas in e_data['detalle']:
+                        arr_det_temp= {}
+                        for ff in arr_det:
+                            arr_det_temp[ff] = arr_det[ff]
+                        #traspaso xml
+                        for desg in desglose_det:
+                            if desg['xml'] == 'impuesto-tarifa':
+                                arr_det_temp[desg['campo']] = round(float(lineas[desg['xml']]))                           
+                            else:
+                                arr_det_temp[desg['campo']] = lineas[desg['xml']]
+
+                        #traspaso traspaso
+                        for tras in traspaso_det:
+                            arr_det_temp[tras['campo']] = valores_traspaso[tras['campo']]
+
+                        envio_datset[tablas[1]['Nombre']].append(arr_det_temp)
+
+
 
                 pk_inicial = db_registro.sql_traer_directo("select if((max(Pk" + tablas[0]['Nombre'] + ")+ 1) is Null,1,(max(Pk" + tablas[0]['Nombre'] + ")+ 1)) as 'valor' from " + tablas[0]['Nombre']  )
 
@@ -318,8 +387,11 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                                         if funciones_det[a2['Nombre']][0]['CampoReferencia'] == a['Nombre']:
                                             fila[a2['Nombre']] = ref_valor[0][funciones_det[a2['Nombre']][0]['Sentencia']]
                             else:
-                                msg_errores.append('Dato Nulo:' + str(a['Nombre']))
-                                dato_nulo = 1
+                                if funciones_det[a['Nombre']][0][0]['Permite_nulo'] == 'No':
+                                    msg_errores.append('Dato Nulo:' + str(a['Nombre']))
+                                    dato_nulo = 1
+                                else:
+                                    fila[a['Nombre']] = ''
 
               
 
@@ -341,7 +413,10 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                                     operador = u["Sentencia"]
                                 else:
                                     if u["Estado"] == "C":
-                                        Valor = fila[u["Sentencia"]]
+                                        if fila[u["Sentencia"]] != '':
+                                            Valor = fila[u["Sentencia"]]
+                                        else:
+                                            Valor = 0.0
                                     if u["Estado"] == "V":
                                         Valor = u["Sentencia"]
                                     if operador == "=":
@@ -394,7 +469,7 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                             if A_GroupWhere != '':
                                 A_GroupWhere = A_GroupWhere[0:-2]
                             if A_Where == "Where ":
-                                A_Where == ""
+                                A_Where = ""
 
                             for x3 in funciones_det[a['Nombre']][3]:
                                 if x3["Tipo"] == "Valor":
@@ -416,7 +491,7 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                                         A_Group = A_Group + str(x3["Origen"]) + '.' + str(x3["Elemento"]) + ', '
                             if A_Group != '':
                                 A_Group = A_Group[0:-2]
-                            A_Select = A_Select + " ) as '" + str(yy["Campo"]) + "'"
+                            A_Select = A_Select + " ) as '" + str(a["Nombre"]) + "'"
                             if(A_Group == ""):
                                 if(A_GroupWhere == ""):
                                     sentencia = A_Select + " " + A_From + " " + A_Where
@@ -428,11 +503,11 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                                 else:
                                     sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " +  A_Group + ', ' + A_GroupWhere
                     
-                            tempo_valor = db.cmpconso_ejecutar(sentencia)
+                            tempo_valor = db_registro.cmpconso_ejecutar(sentencia)
                             if len(tempo_valor) == 0:
                                 fila[a['Nombre']] = 0   
                             else:
-                                fila[a['Nombre']] = tempo_valor[0][yy["Campo"]]       
+                                fila[a['Nombre']] = tempo_valor[0][a["Nombre"]]       
 
                         if a['TablaCampo'] == 'cmpdecabecera':
                             fila[a['Nombre']] = envio_datset[tablas[0]['Nombre']][0][funciones_det[a['Nombre']][0]['Campo']]
@@ -528,10 +603,10 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                                     A_Select = A_Select + ' Avg(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
                                 if x3["Funcion"] == "Contar":
                                     A_Select = A_Select + ' Count(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                A_Group = A_Group + str(x3["Origen"]) + '.' + str(x3["Elemento"]) + ', '
-                        if A_Group != '':
-                            A_Group = A_Group[0:-2]
+                                A_Group = A_Group + str(x3['Grupo']) + ', '
                     A_Select = A_Select + " ) as '" + str(a['Nombre']) + "'"
+                    if A_Group != '':
+                        A_Group = A_Group[0:-2]
                     if(A_Group == ""):
                         if(A_GroupWhere == ""):
                             sentencia = A_Select + " " + A_From + " " + A_Where
@@ -696,12 +771,12 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                                 num_subdet = num_subdet + 1
                     num_det = num_det + 1
 
-            senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('t_pkmodulo')[0], 'Guardar Registro Nuevo', envio_datset)  
+            senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('t_pkmodulo')[0], 'Guardar Registro Nuevo', envio_datset, tabla_cabecera)  
 
             db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
             if db.ingreso_base(senten_cab, senten_det, senten_acc, request.POST.getlist('t_pkmodulo')[0], senten_subdet) == True:
                 db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-                senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('t_pkmodulo')[0], "Post Guardar Registro Nuevo", envio_datset)  
+                senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('t_pkmodulo')[0], "Post Guardar Registro Nuevo", envio_datset, tabla_cabecera)  
                 db.ingreso_post(senten_acc, request.POST.getlist('t_pkmodulo')[0])
                 db.auditoria_ingresar(envio_datset, request.POST.getlist('usuario')[0], 'Guardar Registro Nuevo')
                 for ax in senten_acc:
@@ -717,7 +792,7 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
     return {'ok':0, 'Errores':arr_errores, 'msg':msg_errores,'buenas':arr_buenas}
 
 
-def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
+def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, tabla_cabecera):
      
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     datosCabecera = db.TraerAccionesCabecera(pkmodulo)
@@ -730,7 +805,7 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                 for a in envio_datset:
                     tabla_cab = a
                     break
-                if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
+                if validar_condiciones_nom_tabla(request, Id_empresa, z["PkAccion"], envio_datset, tabla_cabecera) == True:
                     datasetIngreso = []
                     listado_tablas = db.ListadoTablas(z["ModuloAfectado"])
                     listado_campos = {}
@@ -1132,6 +1207,107 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                     senten_acc.append(Update)
     return senten_acc
 
+def Acc_TraerDataTable(request, Id_empresa, datatable, query_nom, indice):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+
+    A_Select = "Select "
+    A_From = "From "
+    A_Where = "Where "
+    A_Group = ""
+    A_GroupWhere = ""
+    sentencia = ""
+    
+    datos = db.hacer_query_TraerFrom(query_nom)
+    for cc in datos:
+        A_From = A_From + str(cc["Tabla"]) + " as " + cc["Nombre"] + ", "
+    if A_From == "From ":
+        A_From = ""
+    else:
+        A_From = A_From[0:-2]
+
+
+    datos = db.hacer_query_TraerWhere(query_nom)
+    for cc in datos:
+        if cc["Tipo"] == "Campo":
+            if cc["Funcion"] == "":
+                A_Where = A_Where + " " + str(cc["Origen"]) + "." + str(cc["Elemento"]) + " "
+            if cc["Funcion"] == "Suma":
+                A_Where = A_Where + " Sum(" + str(cc["Origen"]) + "." + str(cc["Elemento"]) + ") "
+                A_GroupWhere = A_GroupWhere + str(cc["Grupo"]) + ", "
+
+            if cc["Funcion"] == "Promedio":
+                A_Where = A_Where + " Avg(" + str(cc["Origen"]) + "." + str(cc["Elemento"]) + ") "
+                A_GroupWhere = A_GroupWhere + str(cc["Grupo"]) + ", "
+
+            if cc["Funcion"] == "Contar":
+                A_Where = A_Where +" Count(" +  str(cc["Origen"]) + "." + str(cc["Elemento"]) + ") "
+                A_GroupWhere = A_GroupWhere + str(cc["Grupo"]) + ", "
+
+        if cc["Tipo"] == "Valor":
+            A_Where = A_Where + " '" + cc["Elemento"] + "' "
+
+        if cc["Tipo"] == "Operacion":
+            A_Where = A_Where + " " + cc["Elemento"] + " "
+
+        if cc["Tipo"] == "Registro":
+            A_Where = A_Where + " '" + str(datatable[str(cc["Origen"])][indice][cc["Elemento"]] ) + "' "
+
+        if cc["Tipo"] == "Cabecera":            
+            A_Where = A_Where + " '" + str(datatable[str(cc["Origen"])][indice][cc["Elemento"]] ) + "' "
+    
+    if A_GroupWhere != "":
+        A_GroupWhere = A_GroupWhere[0:-2]
+
+
+    datos = db.hacer_query_TraerColumnas(query_nom)
+    for cc in datos:
+        A_Select = A_Select + " CAST( "
+        datosInt = db.hacer_query_TraerColumnasDetalle(cc["PkColumna"])
+        for cc3 in datosInt:
+            if cc3["Tipo"] == "Campo":
+                if cc3["Funcion"] == "":
+                    A_Select = A_Select + " " + str(cc3["Origen"]) + "." + str(cc3["Elemento"]) + " "
+                if cc3["Funcion"] == "Suma":
+                    A_Select = A_Select + " Sum(" + str(cc3["Origen"]) + "." + str(cc3["Elemento"]) + ") "
+                    A_Group = A_Group + str(cc3["GroupBy"]) + ", "
+                if cc3["Funcion"] == "Promedio":
+                    A_Select = A_Select + " Avg(" + str(cc3["Origen"]) + "." + str(cc3["Elemento"]) + ") "
+                    A_Group = A_Group + str(cc3["GroupBy"]) + ", "
+                if cc3["Funcion"] == "Contar":
+                    A_Select = A_Select +" Count(" +  str(cc3["Origen"]) + "." + str(cc3["Elemento"]) + ") "
+                    A_Group = A_Group + str(cc3["GroupBy"]) + ", "
+            if cc3["Tipo"] == "Valor":
+                A_Select = A_Select + " '" + cc3["Elemento"] + "' "
+
+            if cc3["Tipo"] == "Operacion":
+                A_Select = A_Select + " " + cc3["Elemento"] + " "
+
+            if cc3["Tipo"] == "Registro":
+                A_Select = A_Select + " '" + str(datatable[str(cc3["Origen"])][indice][cc3["Elemento"]] ) + "' "
+            if cc3["Tipo"] == "Cabecera":            
+                A_Select = A_Select + " '" + str(datatable[str(cc3["Origen"])][indice][cc3["Elemento"]] ) + "' "                
+
+        A_Select = A_Select + "as char) as '" + str(cc["Nombre"]) + "', "
+    if A_Group != "":
+        A_Group = A_Group[0:-2]
+    if A_Select != "Select ":
+        A_Select = A_Select[0:-2]
+
+    sentencia =  A_Select + " " + A_From
+    if A_Where != "Where ":
+        sentencia = sentencia + " " + A_Where
+
+    if A_Group == "":
+        if A_GroupWhere == "":
+            sentencia = sentencia
+        else:
+            sentencia = sentencia + " Group by " + A_GroupWhere
+    else:
+        if A_GroupWhere == "":
+            sentencia = sentencia + " Group by " + A_Group 
+        else:
+            sentencia = sentencia + " Group by " + A_Group + ", " + A_GroupWhere
+    return db.cmpconso_ejecutar(sentencia)
 
 
 def validar_condiciones(request, Id_empresa, v_PkAccion, cabecera):
@@ -1142,7 +1318,13 @@ def validar_condiciones(request, Id_empresa, v_PkAccion, cabecera):
             return False  
     return True
 
-
+def validar_condiciones_nom_tabla(request, Id_empresa, v_PkAccion, cabecera,nom_tabla):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    datosCabecera = db.TraerAccionescondiciones(v_PkAccion)
+    for a in datosCabecera:
+        if str(cabecera[nom_tabla][0][a['ElementoA']]) != str(a['ElementoB']):
+            return False  
+    return True
 
 def get_max(request, campo, tabla, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -1190,9 +1372,9 @@ def edocs_eliminaredocs(request, Id_empresa):
 
 def edocs_sri(request, Id_empresa):
     db = web.con_db.edocs(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    registros_pend = db.traer_edocs_pendientes(request.POST.getlist('t_fecha')[0], request.POST.getlist('t_orden')[0], request.POST.getlist('t_filtro')[0])
-    registros_ingre = db.traer_edocs_ingresados(request.POST.getlist('t_fecha')[0], request.POST.getlist('t_orden')[0], request.POST.getlist('t_filtro')[0])
-    registros_recha = db.traer_edocs_rechazadas(request.POST.getlist('t_fecha')[0], request.POST.getlist('t_orden')[0], request.POST.getlist('t_filtro')[0])
+    registros_pend = db.traer_edocs_pendientes(request.POST.getlist('t_fecha')[0], request.POST.getlist('t_orden')[0], request.POST.getlist('t_filtro')[0], request.POST.getlist('t_docu')[0])
+    registros_ingre = db.traer_edocs_ingresados(request.POST.getlist('t_fecha')[0], request.POST.getlist('t_orden')[0], request.POST.getlist('t_filtro')[0], request.POST.getlist('t_docu')[0])
+    registros_recha = db.traer_edocs_rechazadas(request.POST.getlist('t_fecha')[0], request.POST.getlist('t_orden')[0], request.POST.getlist('t_filtro')[0], request.POST.getlist('t_docu')[0])
     enlaces = db.traer_edocs_enlaces()
     for a in enlaces:
         a['desgloce'] = db.traer_edocs_desgloce(a['pkmodulo'])
@@ -1448,13 +1630,39 @@ def Factura_ingreso_rap(Clave_doc):
         #comprobante_xml = respuestaInterna2[4]   
         comprobante_xml = ET.fromstring(respuestaInterna2[4]  )
 
-        compro_pasar = {'infoTributaria':{},'infoFactura':{},'detalle':[],'infoAdicional':{}, 'msg':'si'}
+        compro_pasar = {'infoNotaCredito':{}, 'infoTributaria':{},'infoFactura':{},'detalle':[],'infoAdicional':{}, 'infoCompRetencion':{}, 'impuestos':[], 'msg':'si'}
 
         
         for child in comprobante_xml:
             if child.tag == "infoTributaria":
                 for child in child:
-                    compro_pasar['infoTributaria'][child.tag] = child.text           
+                    compro_pasar['infoTributaria'][child.tag] = child.text    
+            if child.tag == "infoNotaCredito":
+                for child in child:
+                    if child.tag  == 'fechaEmision':
+                        compro_pasar['infoNotaCredito'][child.tag] = datetime.datetime.strptime(child.text, '%d/%m/%Y').strftime('%Y-%m-%d')     
+                    else:
+                        if child.tag  == 'numDocModificado':
+                            child.text = child.text.split('-')[2]
+                            for idx in range(len(child.text)):
+                                if child.text.startswith('0'):
+                                    child.text = child.text[1:]
+                            compro_pasar['infoNotaCredito'][child.tag] = child.text
+                        else:
+                            compro_pasar['infoNotaCredito'][child.tag] = child.text    
+            if child.tag == "infoCompRetencion":
+                for child in child:
+                    if child.tag  == 'fechaEmision':
+                        compro_pasar['infoCompRetencion'][child.tag] = datetime.datetime.strptime(child.text, '%d/%m/%Y').strftime('%Y-%m-%d')     
+                    else:
+                        compro_pasar['infoCompRetencion'][child.tag] = child.text     
+            if child.tag == "impuestos":
+                for child in child:
+                    tempo = {}
+                    for child in child:
+                        tempo[child.tag] = child.text
+                    compro_pasar['impuestos'].append(tempo)
+
             if child.tag == "infoFactura":
                 for child in child:
                     if child.tag != "pagos":
@@ -1787,8 +1995,17 @@ def Retencion(Clave_doc):
 
 
             #html_Datelle += "<td>" + val_impuestos['fechaEmisionDocSustento'][i] + "<br></td>"
-            #JVFecha.append(val_impuestos['fechaEmisionDocSustento'][i])
-            #JVEjercicio.append(str(val_impuestos['fechaEmisionDocSustento'][i][3:]))
+            if 'fechaEmisionDocSustento' in val_impuestos:
+                if len(val_impuestos['fechaEmisionDocSustento']) > 0:
+                    JVFecha.append(val_impuestos['fechaEmisionDocSustento'][i])
+                    JVEjercicio.append(str(val_impuestos['fechaEmisionDocSustento'][i][3:]))
+                else:
+                    JVFecha.append('')
+                    JVEjercicio.append('')
+            else:
+                JVFecha.append('')
+                JVEjercicio.append('')
+
             
             #html_Datelle += "<td>" + val_impuestos['fechaEmisionDocSustento'][i][3:] + "<br></td>"
             if val_impuestos['codigo'][i] == "1":
@@ -1892,7 +2109,7 @@ def Credito(Clave_doc):
         #print type(treecomprobante_xml)
         
         val_fijos =  {'fechaAuto' : "", 'codDocModificado' : "", 'numDocModificado' : "", 'fechaEmisionDocSustento' : "", 'motivo' : "", 'Codigo_int' : "", 'contribuyenteEspecial' : "", 'Forma_pago' : "", 'numeroAutorizacion' : respuestaInterna2[1], 'fechaEmision' : " ", 'dirEstablecimiento' : " ", 'obligadoContabilidad' : " ",   'tipoIdentificacionComprador' : " ",    'razonSocialComprador' : " ",   'identificacionComprador' : " ",    'totalSinImpuestos' : " ",  'totalDescuento' : " ", 'totalConImpuestos' : " ",  'propina' : " ",    'importeTotal' : " ",   'moneda' : " ", 'ambiente' : " ",   'tipoEmision' : " ",    'razonSocial' : " ",    'nombreComercial' : " ",    'ruc' : " ",    'claveAcceso' : " ",    'codDoc' : " ", 'estab' : " ",  'ptoEmi' : " ", 'secuencial' : " ", 'dirMatriz' : " ",  'formaPago' : " ",  'total' : " ",  'plazo' : " ",  'unidadTiempo' : " "}
-        val_detalles = {'codigoInterno': [], 'codigoAdicional': [], 'descripcion': [], 'cantidad': [], 'precioUnitario': [], 'descuento': [], 'precioTotalSinImpuesto': []}
+        val_detalles = {'codigoInterno': [], 'codigoAdicional': [], 'descripcion': [], 'cantidad': [], 'precioUnitario': [], 'descuento': [], 'precioTotalSinImpuesto': [], 'detallesAdicionales':[]}
         Val_subtotales = {'codigo' : [],'codigoPorcentaje' : [],'descuentoAdicional' : [],'baseImponible' : [],'valor' : []}
         Val_Totales = {'base0' : "", 'base12' : "", 'base14' : "", 'base0des' : "0.00", 'base12des' : "0.00", 'base14des' : "0.00", 'iva' : ""}
 
@@ -1949,7 +2166,7 @@ def Credito(Clave_doc):
         html_Datelle =''
         for i in range(0,len(val_detalles['codigoInterno'])):
             html_Datelle += "'<tr> <td>" + val_detalles['codigoInterno'][i] + "<br></td>"
-            html_Datelle += "<td>" + val_detalles['codigoAdicional'][i] + "<br></td>"
+            #html_Datelle += "<td>" + val_detalles['codigoAdicional'][i] + "<br></td>"
             html_Datelle += "<td>" + val_detalles['descripcion'][i] + "<br></td>"
             html_Datelle += "<td>" + val_detalles['cantidad'][i] + "<br></td>"
             html_Datelle += "<td>" + val_detalles['precioUnitario'][i] + "<br></td>"
@@ -1959,7 +2176,7 @@ def Credito(Clave_doc):
         
 
             JVcodigoPrincipal.append(val_detalles['codigoInterno'][i])
-            JVcodigoAuxiliar.append(val_detalles['codigoAdicional'][i])
+            #JVcodigoAuxiliar.append(val_detalles['codigoAdicional'][i])
             JVdescripcion.append(str(val_detalles['descripcion'][i]))
             JVcantidad.append(val_detalles['cantidad'][i])
             JVprecioUnitario.append(val_detalles['precioUnitario'][i])

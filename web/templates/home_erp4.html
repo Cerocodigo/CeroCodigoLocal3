@@ -64,10 +64,14 @@
 <!-- Main canvg code -->
 <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
 
-<script src="/static/ccmain/main_script.js"></script>
-<script src="/static/ccmain/menu_general.js"></script>
-<script src="/static/ccmain/validaciones.js"></script>
-<script src="/static/ccmain/imagenes.js"></script>
+<script src="/static/ccmain/4/main_script.js"></script>
+<script src="/static/ccmain/4/menu_general.js"></script>
+<script src="/static/ccmain/4/validaciones.js"></script>
+<script src="/static/ccmain/4/imagenes.js"></script>
+<script src="/static/ccmain/4/admin_campos.js"></script>
+<script src="/static/ccmain/4/sri.js"></script>
+<script src="/static/ccmain/4/paneles.js"></script>
+
 <style>
   google.charts.load('current', {'packages':['corechart']});
 
@@ -153,11 +157,8 @@
 
 
 $(window).load(function() {
-   // executes when complete page is fully loaded, including all frames, objects and images
-        //traer_alertas()
-        pre_ejecutados()
-        //traer_mensajes()
-        //traer_tareas()
+  pre_ejecutados()
+
 
 
         $.ajax({
@@ -202,7 +203,7 @@ $(window).load(function() {
           }
         });
         
-
+  
 
         $.ajax({
           type: 'POST',
@@ -233,8 +234,8 @@ $(window).load(function() {
         document.getElementById('calendar-tab').click();
 
               {% if datos_cuenta.dias_pendientes > 60 %}   document.getElementById('a_default_pagos').click()           {% endif %}
-        tarer_pero_media()
-
+    
+  
 });
 
 
@@ -290,6 +291,158 @@ function nueva_tareas() {
   web_esUsuario = '{{Es_Usuarios}}'
   web_fecha = '{{fecha}}'
   web_numeroRuc = '{{datos_cuenta.datos_cuentas.0.numeroRuc}}'
+
+  
+const CSS_COLOR_NAMES = [
+  "AliceBlue",
+  "AntiqueWhite",
+  "Aqua",
+  "Aquamarine",
+  "Azure",
+  "Beige",
+  "Bisque",
+  "Black",
+  "BlanchedAlmond",
+  "Blue",
+  "BlueViolet",
+  "Brown",
+  "BurlyWood",
+  "CadetBlue",
+  "Chartreuse",
+  "Chocolate",
+  "Coral",
+  "CornflowerBlue",
+  "Cornsilk",
+  "Crimson",
+  "Cyan",
+  "DarkBlue",
+  "DarkCyan",
+  "DarkGoldenRod",
+  "DarkGray",
+  "DarkGrey",
+  "DarkGreen",
+  "DarkKhaki",
+  "DarkMagenta",
+  "DarkOliveGreen",
+  "DarkOrange",
+  "DarkOrchid",
+  "DarkRed",
+  "DarkSalmon",
+  "DarkSeaGreen",
+  "DarkSlateBlue",
+  "DarkSlateGray",
+  "DarkSlateGrey",
+  "DarkTurquoise",
+  "DarkViolet",
+  "DeepPink",
+  "DeepSkyBlue",
+  "DimGray",
+  "DimGrey",
+  "DodgerBlue",
+  "FireBrick",
+  "FloralWhite",
+  "ForestGreen",
+  "Fuchsia",
+  "Gainsboro",
+  "GhostWhite",
+  "Gold",
+  "GoldenRod",
+  "Gray",
+  "Grey",
+  "Green",
+  "GreenYellow",
+  "HoneyDew",
+  "HotPink",
+  "IndianRed",
+  "Indigo",
+  "Ivory",
+  "Khaki",
+  "Lavender",
+  "LavenderBlush",
+  "LawnGreen",
+  "LemonChiffon",
+  "LightBlue",
+  "LightCoral",
+  "LightCyan",
+  "LightGoldenRodYellow",
+  "LightGray",
+  "LightGrey",
+  "LightGreen",
+  "LightPink",
+  "LightSalmon",
+  "LightSeaGreen",
+  "LightSkyBlue",
+  "LightSlateGray",
+  "LightSlateGrey",
+  "LightSteelBlue",
+  "LightYellow",
+  "Lime",
+  "LimeGreen",
+  "Linen",
+  "Magenta",
+  "Maroon",
+  "MediumAquaMarine",
+  "MediumBlue",
+  "MediumOrchid",
+  "MediumPurple",
+  "MediumSeaGreen",
+  "MediumSlateBlue",
+  "MediumSpringGreen",
+  "MediumTurquoise",
+  "MediumVioletRed",
+  "MidnightBlue",
+  "MintCream",
+  "MistyRose",
+  "Moccasin",
+  "NavajoWhite",
+  "Navy",
+  "OldLace",
+  "Olive",
+  "OliveDrab",
+  "Orange",
+  "OrangeRed",
+  "Orchid",
+  "PaleGoldenRod",
+  "PaleGreen",
+  "PaleTurquoise",
+  "PaleVioletRed",
+  "PapayaWhip",
+  "PeachPuff",
+  "Peru",
+  "Pink",
+  "Plum",
+  "PowderBlue",
+  "Purple",
+  "RebeccaPurple",
+  "Red",
+  "RosyBrown",
+  "RoyalBlue",
+  "SaddleBrown",
+  "Salmon",
+  "SandyBrown",
+  "SeaGreen",
+  "SeaShell",
+  "Sienna",
+  "Silver",
+  "SkyBlue",
+  "SlateBlue",
+  "SlateGray",
+  "SlateGrey",
+  "Snow",
+  "SpringGreen",
+  "SteelBlue",
+  "Tan",
+  "Teal",
+  "Thistle",
+  "Tomato",
+  "Turquoise",
+  "Violet",
+  "Wheat",
+  "White",
+  "WhiteSmoke",
+  "Yellow",
+  "YellowGreen",
+]
 </script>
 
 
@@ -324,7 +477,7 @@ function nueva_tareas() {
             <li>
               
               
-              <span class="label label-green" id="div_peso_media" onclick="tarer_pero_media()">cccccccccc</span>
+              <span class="label label-green" id="div_peso_media" onclick="tarer_pero_media()"></span>
 
               {% if disco_usado.pocen <= 0.5 %}
                 <span class="label label-green" id="div_pagos" style="background: green;">Base Datos: {{disco_usado.usado}}  - {{ disco_usado.max}} Gb</span>
@@ -553,16 +706,16 @@ function nueva_tareas() {
 
                         {% if Es_admin == "Y" %}  
                           <li class="treeview" style="text-align: center;">        
-                            <a href="" >
-                              <span style="color: rgb(9, 249, 9);">Nuevo Reporte</span> 
-                            </a>
+                            <div class="row">  
+                              <p style="background: whitesmoke;padding-left: 25px;padding-right: 25px;cursor: pointer;margin-right: 20px" onclick="menu_reporte_crear('{{pkmodulo.PkModulo}}')">
+                                <i class="fa fa-plus" style="color: lightskyblue;"></i>
+                              </p>
+                            </div>
                           </li>
                         {% endif %}
               
-
                       </ul>
 
-                      
 
                   </li>
                 {% endif %}
@@ -571,12 +724,12 @@ function nueva_tareas() {
 
               {% if Es_admin == "Y" %} 
 
-              <li class="treeview" style="text-align: center;">    
+              <li class="treeview" style="text-align: center;" id="divproceso_crear_{{id.PkModGen}}">    
  
                 <div class="row">  
-                  <a style="background: whitesmoke;width: 45%;padding-left: 25px;padding-right: 25px;cursor: pointer;"  onclick="menu_proceso_crear('{{id.PkModGen}}')">
+                  <p style="background: whitesmoke;padding-left: 25px;padding-right: 25px;cursor: pointer;"  onclick="menu_proceso_crear('{{id.PkModGen}}')">
                     <i class="fa fa-plus" style="color: green;"></i>
-                  </a>
+                  </p>
               
                 </div>    
               </li>
@@ -635,6 +788,16 @@ function nueva_tareas() {
 
                           <div class="col-md-12 col-sm-12 col-xs-12" style="margin-left: 0px;">
                             <div class="col-md-2 col-sm-2 col-xs-6">
+                              <label>Documento</label>
+                              <select class="btn btn-info dropdown-toggle" id="edocs_docu_sri" style="width: 100%;font-size: 11px;padding-top: 0px;padding-bottom: 0px;color: black;" onchange="actualizar_sri_docs()" value="RazonSocial">
+                                
+                                <option selected value="Factura">Factura</option>
+                                <option value="Notas de Credito">Notas de Credito</option>
+                                <option value="Comprobante de Retencion">Comprobante de Retencion</option>
+ 
+                              </select>
+                            </div>
+                            <div class="col-md-2 col-sm-2 col-xs-6">
                               <label>Orden</label>
                               <select class="btn btn-info dropdown-toggle" id="edocs_tipo_sri" style="width: 100%;font-size: 11px;padding-top: 0px;padding-bottom: 0px;color: black;" onchange="actualizar_sri_docs()" value="RazonSocial">
                                 <option selected value="web_edocs_main.RAZON_SOCIAL_EMISOR">Razon Social</option>
@@ -668,7 +831,7 @@ function nueva_tareas() {
                               <label>Filtro</label>
                               <input type="text" name="" id='edocs_filtro_sri' onchange="actualizar_sri_docs()" style="width: 100%;">
                             </div>
-                             <div class="col-md-2 col-sm-2 col-xs-2">
+                            <div class="col-md-1 col-sm-1 col-xs-1">
                               <label>Año </label>
                               <input type="number" name="" value="{{t_anio}}" id='edocs_fecha_sri_anio' onchange="actualizar_sri_docs()" style="width: 100%;">                            
                             </div>
@@ -717,7 +880,7 @@ function nueva_tareas() {
 
                                       {% for modul in sri_rap %}
                                         {% for ref in modul.referencias %}
-                                          <th>{{ref.campo}} </th>
+                                          <th>{{ref.campo}}</th>
                                         {% endfor %}
                                       {% endfor %}
                               
@@ -2192,33 +2355,48 @@ function nueva_tareas() {
       <button type="button" class="close" data-dismiss="modal" id="cerrar_default_sri_auto"><span aria-hidden="true">×</span></button>
 
 
-      
-
-      {% for modul in sri_rap %}
 
 
-<div class="col-lg-12 col-md-12 col-sm-12" id="sri_{{modul.pkmodulo}}">
-      {% for ref in modul.referencias %}
+      <div class="" role="tabpanel" data-example-id="togglable-tabs" style="background-color: transparent;">
+        <ul class="nav nav-tabs bar_tabs" role="tablist">
+          {% for modul in sri_rap %}
+          <li role="presentation" class=""><a href="#xa_{{modul.pkmodulo}}" data-toggle="tab" aria-expanded="true">{{modul.nombre}}<div class="ripple-container"></div></a></li>
 
-        <div class="col-lg-3 col-md-3 col-sm-3" style="padding-right: 0px;padding-left: 20px;">
-          <label class="control-label" style="font-size:12px; font-weight:bold;">{{ref.campo}}</label>
-          <select class="form-control" value="1" style="height: 30px;font-size: 11px;" id="{{ref.campo}}">
-          {% for valores_ref in ref.valores %}            
-            <option value="{{valores_ref.Valor}}">{{valores_ref.Display}}</option>
           {% endfor %}
 
-          </select>
+
+        </ul>
+
+        <div class="tab-content">
+          {% for modul in sri_rap %}
+          <div class="tab-pane box-body tableFixHead" id="xa_{{modul.pkmodulo}}" style="background: white;">
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="sri_{{modul.pkmodulo}}">
+              {% for ref in modul.referencias %}
+        
+                <div class="col-lg-3 col-md-3 col-sm-3" style="padding-right: 0px;padding-left: 20px;">
+                  <label class="control-label" style="font-size:12px; font-weight:bold;">{{ref.campo}}</label>
+                  <select class="form-control" value="1" style="height: 30px;font-size: 11px;" id="{{ref.campo}}">
+                  {% for valores_ref in ref.valores %}            
+                    <option value="{{valores_ref.Valor}}">{{valores_ref.Display}}</option>
+                  {% endfor %}
+        
+                  </select>
+                </div>
+              {% endfor %}
+        
+            </div>
+          <button class="btn bg-blue btn-flat margin"  style="margin-bottom: 3px;padding-top: 0px;width: 100%;padding-bottom: 0px;margin-top: 3px;" id="sri_auto_{{modul.pkmodulo}}" onclick="sri_auto_envio_a_gid('{{modul.pkmodulo}}')">Grabar todas como: {{modul.nombre}}</button>
+
+          </div>
+          {% endfor %}
+
         </div>
-      {% endfor %}
 
-</div>
-
-              <!--pkid': 1, 'pkmodulo': '449', 'campo': 'BYS_Buscar', 'valor': '0', 'pkestructura': 671, 'tipo': 'Buscar'} -- {'pkid': 2, 'pkmodulo': '449', 'campo': 'Retencion_fuente', 'valor': '0', 'pkestructura': 671, 'tipo': -->
-
-        <button class="btn bg-blue btn-flat margin"  style="margin-bottom: 3px;padding-top: 0px;width: 100%;padding-bottom: 0px;margin-top: 3px;" id="sri_auto_{{modul.pkmodulo}}" onclick="sri_auto_envio_a_gid('{{modul.pkmodulo}}')">Grabar todas como: {{modul.nombre}}</button>
+      </div>
 
 
-      {% endfor %}
+ 
       
 
       
@@ -2266,8 +2444,7 @@ function nueva_tareas() {
       <input type="hidden" id="vfinal_ficha_3">
       <input type="hidden" id="vfinal_ficha_4">
       <input type="hidden" id="vfinal_ficha_5">
-      <input type="hidden" id="vfinal_ficha_6">
-
+      <input type="hidden" id="vfinal_ficha_6">      
       <div class="modal-body">
 
       <div id="intnota_ficha_ref" style="overflow: auto;height: 550px;"> </div>
@@ -2278,6 +2455,43 @@ function nueva_tareas() {
   </div>
   <!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade" id="modal-default_ficha_ref_multi">
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content">
+      <!--<button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>-->
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" id="cerrar_default_ficha_ref_multi"><span aria-hidden="true">×</span>
+        </button>
+        <!--<h4 class="modal-title" id="myModalLabel">{{idioma_html.Buscador}}</h4>-->
+    </div>
+      <input class="form-control" type="text" id="vfinal_ficha_1_multi" onchange="filtrar_fichas_multi()">
+      <input type="hidden" id="vfinal_ficha_2_multi">
+      <input type="hidden" id="vfinal_ficha_3_multi">
+      <input type="hidden" id="vfinal_ficha_4_multi">
+      <input type="hidden" id="vfinal_ficha_5_multi">
+      <input type="hidden" id="vfinal_ficha_6_multi">      
+        
+      <div class="modal-header" id="vfinal_ficha_7_multi">
+
+      </div>
+
+
+      <button class="btn bg-blue btn-flat margin" onclick="pasar_ficha_multi()" style="width: 100%;">listo</button>
+
+      
+      <div class="modal-body">
+
+      <div id="intnota_ficha_ref_multi" style="overflow: auto;height: 550px;"> </div>
+      </div>
+
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
 
 <div class="modal fade" id="modal-default_grupo_log">
   <div class="modal-dialog modal-lg">
@@ -2330,6 +2544,857 @@ function nueva_tareas() {
   </div>
   <!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade" id="modal-default_admin_campos">
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content">
+      <!--<button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>-->
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" id="cerrar_default_admin_campos"><span aria-hidden="true">×</span></button>
+      
+      <div class="col-sm-4">
+        <label class="control-label for=" adm_dis_8"="" style="font-size: 12px;font-weight: bold;">nombre</label>
+        <input readonly="readonly" type="text" id="modal_campos_nombre" class="form-control col-sm-4" onchange="" style="height: 25px;font-size: 11px;line-height: 7px;">
+      </div>
+      <div class="col-sm-4">
+        <label class="control-label for=" adm_dis_8"="" style="font-size: 12px;font-weight: bold;">Display</label>
+        <input readonly="readonly" type="text" id="modal_campos_display" class="form-control col-sm-4" onchange="" style="height: 25px;font-size: 11px;line-height: 7px;">
+      </div>
+      <input readonly="readonly" type="hidden" id="modal_campos_cmptipo" class="form-control col-sm-4" onchange="" style="height: 25px;font-size: 11px;line-height: 7px;">
+      <input readonly="readonly" type="hidden" id="modal_campos_nivel" class="form-control col-sm-4" onchange="" style="height: 25px;font-size: 11px;line-height: 7px;">
+
+      <input readonly="readonly" type="hidden" id="modal_campos_zona" class="form-control col-sm-4" onchange="" style="height: 25px;font-size: 11px;line-height: 7px;">
+      <input readonly="readonly" type="hidden" id="modal_campos_pestana" class="form-control col-sm-4" onchange="" style="height: 25px;font-size: 11px;line-height: 7px;">
+
+      
+    </div>
+
+      <div class="modal-body row" style="text-align: center;">
+
+        <div class="container col-sm-3">
+          <ul class="nav nav-tabs bar_tabs nav-stacked">
+            <li><a data-toggle="pill" href="#cmptxtsimple" id="mm_cmptxtsimple">Texto Simple</a></li>
+            <li><a data-toggle="pill" href="#cmpnumsimple" id="mm_cmpnumsimple">Numero Simple</a></li>
+            <li><a data-toggle="pill" href="#cmpnumsecuencial" id="mm_cmpnumsecuencial">Numero Secuencial</a></li>
+            <li><a data-toggle="pill" href="#cmpopcmultiple" id="mm_cmpopcmultiple">Opcion Multiple</a></li>
+            <li><a data-toggle="pill" href="#cmpsistema" id="mm_cmpsistema">Sistema</a></li>
+            <li><a data-toggle="pill" href="#cmpformuladetalle" id="mm_cmpformuladetalle">Formula Detalle</a></li>
+            <li><a data-toggle="pill" href="#cmpfecha" id="mm_cmpfecha">Fecha</a></li>
+            <li><a data-toggle="pill" href="#cmpreferencia" id="mm_cmpreferencia">Referencia</a></li>
+            <li><a data-toggle="pill" href="#cmpreferenciaadjunto" id="mm_cmpreferenciaadjunto">Referencia Adjunto</a></li>
+            <li><a data-toggle="pill" href="#cmpoperacion" id="mm_cmpoperacion">Operacion</a></li>
+            <li><a data-toggle="pill" href="#cmpconsolidado" id="mm_cmpconsolidado">Consolidado</a></li>
+            <li><a data-toggle="pill" href="#cmparchivo" id="mm_cmparchivo">Archivo</a></li>
+            <li><a data-toggle="pill" href="#cmpnumeroaletras" id="mm_cmpnumeroaletras">Traductor de numero a letras</a></li>
+            <li><a data-toggle="pill" href="#cmpdecabecera" id="mm_cmpdecabecera">De Cabecera</a></li>
+            <li><a data-toggle="pill" href="#cmpelectronico" id="mm_cmpelectronico">Electronico</a></li>
+            <li><a data-toggle="pill" href="#cmpcondicional" id="mm_cmpcondicional">Condiconal</a></li>
+
+          </ul>
+        </div>
+
+          <div class="tab-content col-sm-9">
+            <div id="cmptxtsimple" class=tab-pane fade in active" style="background: white;">Texto Simple
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor Predeterminado</label>
+                  <input type="text" id="cmptexto_Predeterminado" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;">
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Largo Maximo</label>
+                  <input type="number" id="cmptexto_Largo" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;">
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Unico</label>
+                  <select class="form-control col-sm-3" id="cmptexto_Unico" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;"><option selected="">No</option><option>Si</option></select>
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Modificable</label>
+                  <select class="form-control col-sm-3"  id="cmptexto_Modificable" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;"><option selected="">Si</option><option>No</option></select>
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">tipo</label>
+                    <select class="form-control col-sm-3" id="cmptexto_tipo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Normal</option><option>Cedula</option></select>
+                </div>
+                
+                
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmptxtsimple')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpnumsimple" class=tab-pane fade in active" style="background: white;">Numero Simple
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor Menor</label>
+                  <input type="number" id="cmpnumsimple_Menor" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="0">
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor Mayor</label>
+                  <input type="number" id="cmpnumsimple_Mayor" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="99999999">
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Cantidad Decimales</label>
+                  <input type="number" id="cmpnumsimple_Decimales" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="2">
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor Predeterminado</label>
+                  <input type="number" id="cmpnumsimple_Valor" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;"value="0.00">
+                </div>
+                
+              </div> 
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpnumsimple')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpnumsecuencial" class=tab-pane fade in active" style="background: white;">Numero Secuencial
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Inicia</label>
+                  <input type="number" id="cmpnumsimple_Inicia" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="0">
+                </div>  
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Aumenta en</label>
+                  <input type="number" id="cmpnumsimple_Aumenta" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="1">
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpnumsecuencial')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpopcmultiple" class=tab-pane fade in active" style="background: white;">Opcion Multiple
+              <div class='row'>
+                <div class='row' id="cmpopcmultiple_row">
+
+                  <table id="cmp_opcion" class="table table-striped" style="width: 1115px;overflow-x:auto;font-size: 11px;background: white;">'
+                    <thead><tr>
+                      <th style="width: 20px;">
+                      <button type="button" onclick="cmpopcion_add_fila()" class="btn bg-green btn-flat margin" style="padding: 3px 8px;margin-bottom: 0px;margin-top: 0px;">+</button>
+                      </th>
+                      <th>Display</th>
+                      <th>Valor</th>
+                      <th>Color</th>
+                    </tr></thead>
+                    </table>
+
+           
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpopcmultiple')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpsistema" class=tab-pane fade in active" style="background: white;">Sistema
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor</label>
+                    <select class="form-control col-sm-3" id="cmpsistema_valor" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Usuario Actual</option><option>Fecha Actual</option><option>Lista usuarios</option></select> 
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpsistema')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpformuladetalle" class=tab-pane fade in active" style="background: white;">Formula Detalle
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Operacion</label>
+                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Campo</label>
+                    <select class="form-control col-sm-3" id="cmpformuladetalle_campo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Decimales</label>
+                    <input type="number" id="cmpformuladetalle_decimales" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="2">
+
+                </div>
+                <div class='row' id="cmpformuladetalle_row">
+
+                
+           
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpformuladetalle')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpfecha" class=tab-pane fade in active" style="background: white;">Fecha
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Con tiempo</label>
+                    <select class="form-control col-sm-3" id="cmpfecha_tiempo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="" value="Y">Si</option><option value="N">No</option></select> 
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpfecha')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpreferencia" class=tab-pane fade in active" style="background: white;">Referencia
+              <div class='row'>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Origen</label>
+                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Nivel</label>
+                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Campo</label>
+                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                </div>
+
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpreferencia')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpreferenciaadjunto" class=tab-pane fade in active" style="background: white;">Referencia Adjunto
+              <div class='row'>
+
+
+                <div class='row' id="cmpreferenciaadjunto_row">
+
+                
+           
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpreferenciaadjunto')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpoperacion" class=tab-pane fade in active" style="background: white;">Operacion
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Decimales</label>
+                    <input type="text" class="form-control col-sm-3" id="cmpoperacion_decimales" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected=""> 
+                </div>
+                <div class='row' id="cmpoperacion_row">
+
+                
+           
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpoperacion')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpconsolidado" class=tab-pane fade in active" style="background: white;">Consolidado
+              <div class='row'>
+
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpconsolidado')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmparchivo" class=tab-pane fade in active" style="background: white;">Archivo
+              
+              <div class='row'>
+                <select class="form-control col-sm-3" id="cmparchivo_ruta" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;">'
+                  <option value="Todos">Todos</option>
+                  <option value="Imagenes">Imagenes</option>
+                  <option value="Excell">Excell</option>
+                  <option value="Pdf">Pdf</option>
+                </select>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmparchivo')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+              
+
+            </div>
+            <div id="cmpnumeroaletras" class=tab-pane fade in active" style="background: white;">Traductor de numero a letras
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Campo</label>
+                    <select class="form-control col-sm-3" id="cmpnumeroaletras_campo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpnumeroaletras')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpdecabecera" class=tab-pane fade in active" style="background: white;">De Cabecera
+              <div class='row'>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Campo</label>
+                    <select class="form-control col-sm-3" id="cmpdecabecera_campo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                </div>
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpdecabecera')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpelectronico" class=tab-pane fade in active" style="background: white;">Electronico
+              <div class='row'>
+
+
+                <div class="box-group" id="accordion">
+                  <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                  <div class="panel box box-primary">
+                    <div class="box-header with-border">
+                      <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#cmpelec_cert">
+                          Certificado
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="cmpelec_cert" class="panel-collapse collapse in">
+
+                      <div class="box-body">
+                       
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Clave</label>
+                          <input type="text" id="cmpelectronico_clave" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="0">
+                        </div>
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Certficado</label>
+                          <input type="text" id="cmpelectronico_certificado" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="0">
+                        </div>
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Clave Acceso</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_acceso" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Correo Formulario</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_emailform" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Correo Interno</label>
+                          <input type="text" id="cmpelectronico_email_interno" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="0">
+                        </div>
+        
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Obligatorio</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_Obligatorio" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected>Si</option><option>No</option></select> 
+                        </div>
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Condicion</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_CondicionCmp" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor</label>
+                          <input type="text" id="cmpelectronico_CondicionVal" class="form-control col-sm-4" style="height: 25px;font-size: 11px;line-height: 7px;" value="0">
+                        </div>
+                        <div class="col-sm-4">
+                          <label class="control-label" style="font-size: 12px;font-weight: bold;">Impresion</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_Impresion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected>Vertical</option><option>Horizontal</option></select> 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel box box-danger">
+                    <div class="box-header with-border">
+                      <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#cmpelec_tribu">
+                          Tributaria
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="cmpelec_tribu" class="panel-collapse collapse">
+                      <div class="box-body">
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">ambiente</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_ambiente" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected>1 Pruebas</option><option>2 Produccion</option></select> 
+                        </div>  
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tipoEmision</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_tipoEmision" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected>1 Emision Normal</option></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocial</label>
+                          <input type="text" class="form-control col-sm-3" id="cmpelectronico_razonSocial" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" >
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">nombreComercial</label>
+                          <input type="text" class="form-control col-sm-3" id="cmpelectronico_nombreComercial" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" > 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">ruc</label>
+                          <input type="text" class="form-control col-sm-3" id="cmpelectronico_ruc" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" >
+                        </div>
+
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fecha</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_fecha" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codDoc</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_codDoc" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>01 Factura</option><option>04 Nota Credito</option><option>05 Nota Debito</option><option>06 Guia</option><option>07 Retencion</option></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">estab</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_estab" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">ptoEmi</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_ptoEmi" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">secuencial</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_secuencial" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirMatriz</label>
+                          <input type="text" class="form-control col-sm-3" id="cmpelectronico_dirMatriz" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" > 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">regimenMicroempresas</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_regimenMicroempresas" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>CONTRIBUYENTE RÉGIMEN MICROEMPRESAS</option></select> 
+                        </div>
+                        <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">agenteRetencion</label>
+                          <select class="form-control col-sm-3" id="cmpelectronico_agenteRetencion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected>No</option><option>Si</option></select> 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel box box-success">
+                    <div class="box-header with-border">
+                      <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#cmpelec_docu">
+                          Documento
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="cmpelec_docu" class="panel-collapse collapse">
+                      <div class="box-body">
+                        <ul class="nav nav-tabs bar_tabs">
+                          <li class="active"><a data-toggle="pill" href="#cmpelectFactura" id="mm_cmpelectFactura" >Factura</a></li>
+                          <li><a data-toggle="pill" href="#cmpelectRetencion" id="mm_cmpelectRetencion" >Retencion</a></li>
+                          <li><a data-toggle="pill" href="#cmpelectCredito" id="mm_cmpelectCredito" >Nota Credito</a></li>
+                          <li><a data-toggle="pill" href="#cmpelectGuia" id="mm_cmpelectGuia" >Guia Remision</a></li>      
+                          <li><a data-toggle="pill" href="#cmpelectDebito" id="mm_cmpelectDebito" >Nota Debito</a></li>      
+                        </ul>
+                      <div class="tab-content col-sm-12">
+                        <div id="cmpelectFactura" class="tab-pane fade in active" style="background: white;">
+                          <div class="box-group" id="cmpelec_datos_fact">
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_fact" href="#cmpelec_f_c">
+                                    Cabecera
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_f_c" class="panel-collapse collapse in">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmision</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_fechaEmision" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirEstablecimiento</label><input type="text" class="form-control col-sm-3" id="cmpelectronico_f_f_dirEstablecimiento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">contribuyenteEspecial</label><input type="text" class="form-control col-sm-3" id="cmpelectronico_f_f_contribuyenteEspecial" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" value="No"></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">obligadoContabilidad</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_obligadoContabilidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>NO</option><option>SI</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tipoIdentificacionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_tipoIdentificacionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocialComprador</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_razonSocialComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">identificacionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_identificacionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">totalSinImpuestos</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_totalSinImpuestos" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">totalDescuento</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_totalDescuento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">propina</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_propina" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">importeTotal</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_importeTotal" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">moneda</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_moneda" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>DOLAR</option></select></div>
+
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo1</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_codigo1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje1</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_codigoPorcentaje1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible1</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_baseImponible1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descuento_adicional1</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_descuento_adicional1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor1</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_valor1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo2</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_codigo2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje2</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_codigoPorcentaje2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible2</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_baseImponible2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor2</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_valor2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descuento_adicional2</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_descuento_adicional2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo3</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_codigo3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje3</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_codigoPorcentaje3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible3</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_baseImponible3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor3</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_valor3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descuento_adicional3</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_descuento_adicional3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">unidadTiempo</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_unidadTiempo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">formaPago</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_formaPago" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">total</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_total" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">plazo</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_plazo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <!-- <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">comercioExterior</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_comercioExterior" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">incoTermFactura</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_incoTermFactura" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">lugarIncoTerm</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_lugarIncoTerm" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">paisOrigen</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_paisOrigen" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">puertoEmbarque</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_puertoEmbarque" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">puertoDestino</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_puertoDestino" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">paisDestino</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_paisDestino" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">paisAdquisicion</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_paisAdquisicion" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">guiaRemision</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_guiaRemision" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">direccionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_direccionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">incoTermTotalSinImpuestos</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_incoTermTotalSinImpuestos" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fleteInternacional</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_fleteInternacional" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">seguroInternacional</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_seguroInternacional" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">gastosAduaneros</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_gastosAduaneros" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">gastosTransporteOtros</label><select class="form-control col-sm-3" id="cmpelectronico_f_f_gastosTransporteOtros" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div> -->
+                                  
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_fact" href="#cmpelec_f_d">
+                                    Detalle
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_f_d" class="panel-collapse collapse">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPrincipal</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_codigoPrincipal" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descripcion</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_descripcion" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">cantidad</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_cantidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">precioUnitario</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_precioUnitario" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descuento</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_descuento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">precioTotalSinImpuesto</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_precioTotalSinImpuesto" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_codigo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_codigoPorcentaje" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tarifa</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_tarifa" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_baseImponible" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_valor" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoAuxiliar</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_codigoAuxiliar" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">unidadMedida</label><select class="form-control col-sm-3" id="cmpelectronico_f_d_unidadMedida" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          
+                        </div>
+        
+                        <div id="cmpelectRetencion" class="tab-pane fade" style="background: white;">
+                          <div class="box-group" id="cmpelec_datos_Retencion">
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Retencion" href="#cmpelec_r_c">
+                                    Cabecera
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_r_c" class="panel-collapse collapse in">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmision</label><select class="form-control col-sm-3" id="cmpelectronico_r_f_fechaEmision" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirEstablecimiento</label><input  type="text"  class="form-control col-sm-3" id="cmpelectronico_r_f_dirEstablecimiento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">contribuyenteEspecial</label><input   type="text" class="form-control col-sm-3" id="cmpelectronico_r_f_contribuyenteEspecial" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;"  value="No"></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">obligadoContabilidad</label><select class="form-control col-sm-3" id="cmpelectronico_r_f_obligadoContabilidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>No</option><option>Si</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tipoIdentificacionSujetoRetenido</label><select class="form-control col-sm-3" id="cmpelectronico_r_f_tipoIdentificacionSujetoRetenido" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocialSujetoRetenido</label><select class="form-control col-sm-3" id="cmpelectronico_r_f_razonSocialSujetoRetenido" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">identificacionSujetoRetenido</label><select class="form-control col-sm-3" id="cmpelectronico_r_f_identificacionSujetoRetenido" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">periodoFiscal</label><select class="form-control col-sm-3" id="cmpelectronico_r_f_periodoFiscal" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Retencion" href="#cmpelec_r_d">
+                                    Detalle
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_r_d" class="panel-collapse collapse">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_codDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmisionDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_fechaEmisionDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocSustento_est</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_numDocSustento_est" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocSustento_punto</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_numDocSustento_punto" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocSustento_sec</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_numDocSustento_sec" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_codigo</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_codigo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>1-Renta</option><option>2-Iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_codigoRetencion</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_codigoRetencion" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_baseImponible</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_baseImponible" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_porcentajeRetener</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_porcentajeRetener" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_valorRetenido</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_valorRetenido" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_codigo2</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_codigo2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>1-Renta</option><option>2-Iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_valorRetenido2</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_valorRetenido2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_codigoRetencion2</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_codigoRetencion2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_baseImponible2</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_baseImponible2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">det_porcentajeRetener2</label><select class="form-control col-sm-3" id="cmpelectronico_r_d_det_porcentajeRetener2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+
+
+                                </div>
+                              </div>
+                            </div>
+                          </div>                          
+                          
+                        </div>
+                        <div id="cmpelectCredito" class="tab-pane fade" style="background: white;">
+                          <div class="box-group" id="cmpelec_datos_Credito">
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Credito" href="#cmpelec_c_c">
+                                    Cabecera
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_c_c" class="panel-collapse collapse in">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmision</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_fechaEmision" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirEstablecimiento</label><input type="text" class="form-control col-sm-3" id="cmpelectronico_c_f_dirEstablecimiento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tipoIdentificacionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_tipoIdentificacionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocialComprador</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_razonSocialComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">identificacionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_identificacionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">obligadoContabilidad</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_obligadoContabilidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>No</option><option>Si</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codDocModificado</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codDocModificado" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocModificado_est</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_numDocModificado_est" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocModificado_punto</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_numDocModificado_punto" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocModificado_sec</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_numDocModificado_sec" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmisionDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_fechaEmisionDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">totalSinImpuestos</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_totalSinImpuestos" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valorModificacion</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_valorModificacion" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">moneda</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_moneda" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>DOLAR</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">motivo</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_motivo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>Devolucion</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo1</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codigo1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje1</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codigoPorcentaje1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible1</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_baseImponible1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor1</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_valor1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo2</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codigo2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje2</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codigoPorcentaje2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible2</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_baseImponible2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor2</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_valor2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <!-- <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">desc1</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_desc1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div> -->
+                                  <!-- <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">desc2</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_desc2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div> -->
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo3</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codigo3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje3</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_codigoPorcentaje3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible3</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_baseImponible3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor3</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_valor3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <!-- <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">desc3</label><select class="form-control col-sm-3" id="cmpelectronico_c_f_desc3" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div> -->
+                                  
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Credito" href="#cmpelec_c_d">
+                                    Detalle
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_c_d" class="panel-collapse collapse">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoInterno</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_codigoInterno" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoAdicional</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_codigoAdicional" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descripcion</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_descripcion" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">cantidad</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_cantidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">precioUnitario</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_precioUnitario" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descuento</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_descuento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">precioTotalSinImpuesto</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_precioTotalSinImpuesto" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_codigo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_codigoPorcentaje" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tarifa</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_tarifa" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_baseImponible" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor</label><select class="form-control col-sm-3" id="cmpelectronico_c_d_valor" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>      
+                        </div>
+                        <div id="cmpelectGuia" class="tab-pane fade" style="background: white;">
+                          <div class="box-group" id="cmpelec_datos_Guia">
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Guia" href="#cmpelec_g_c">
+                                    Cabecera
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_g_c" class="panel-collapse collapse in">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirEstablecimiento</label><input type="text" class="form-control col-sm-3" id="cmpelectronico_g_f_dirEstablecimiento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirPartida</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_dirPartida" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocialTransportista</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_razonSocialTransportista" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tipoIdentificacionTransportista</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_tipoIdentificacionTransportista" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">rucTransportista</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_rucTransportista" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">obligadoContabilidad</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_obligadoContabilidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>No</option><option>Si</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaIniTransporte</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_fechaIniTransporte" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaFinTransporte</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_fechaFinTransporte" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">placa</label><select class="form-control col-sm-3" id="cmpelectronico_g_f_placa" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Guia" href="#cmpelec_g_d">
+                                    Detalle
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_g_d" class="panel-collapse collapse">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">identificacionDestinatario</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_identificacionDestinatario" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocialDestinatario</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_razonSocialDestinatario" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirDestinatario</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_dirDestinatario" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">motivoTraslado</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_motivoTraslado" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">docAduaneroUnico</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_docAduaneroUnico" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codEstabDestino</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_codEstabDestino" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">ruta</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_ruta" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_codDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocSustento_punto</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_numDocSustento_punto" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numAutDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_numAutDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmisionDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_fechaEmisionDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoInterno</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_codigoInterno" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoAdicional</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_codigoAdicional" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">descripcion</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_descripcion" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">cantidad</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_cantidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocSustento_est</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_numDocSustento_est" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocSustento_sec</label><select class="form-control col-sm-3" id="cmpelectronico_g_c_numDocSustento_sec" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>      
+                        </div>
+                        <div id="cmpelectDebito" class="tab-pane fade" style="background: white;">
+                          <div class="box-group" id="cmpelec_datos_Debito">
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Debito" href="#cmpelec_d_c">
+                                    Cabecera
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_d_c" class="panel-collapse collapse in">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmision</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_fechaEmision" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">dirEstablecimiento</label><input type="text" class="form-control col-sm-3" id="cmpelectronico_d_f_dirEstablecimiento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tipoIdentificacionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_tipoIdentificacionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razonSocialComprador</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_razonSocialComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">identificacionComprador</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_identificacionComprador" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">obligadoContabilidad</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_obligadoContabilidad" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>NO</option><option>SI</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codDocModificado</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_codDocModificado" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocModificado_est</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_numDocModificado_est" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocModificado_punt</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_numDocModificado_punt" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">numDocModificado_sec</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_numDocModificado_sec" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">fechaEmisionDocSustento</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_fechaEmisionDocSustento" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">totalSinImpuestos</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_totalSinImpuestos" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valorTotal</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_valorTotal" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo1</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_codigo1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje1</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_codigoPorcentaje1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tarifa1</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_tarifa1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0</option><option>12</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible1</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_baseImponible1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor1</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_valor1" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigo2</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_codigo2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>2 IVA</option><option>3 IECE</option><option>9 Sin Uso</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">codigoPorcentaje2</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_codigoPorcentaje2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0-0%</option><option>2-12%</option><option>3-14%</option><option>6-No objeto iva</option><option>7-Exento de iva</option></select></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">tarifa2</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_tarifa2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option>0</option><option>12</option></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">baseImponible2</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_baseImponible2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor2</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_valor2" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">unidadTiempo</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_unidadTiempo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">formaPago</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_formaPago" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">total</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_total" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">plazo</label><select class="form-control col-sm-3" id="cmpelectronico_d_f_plazo" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel box box-primary">
+                              <div class="box-header with-border">
+                                <h4 class="box-title">
+                                  <a data-toggle="collapse" data-parent="#cmpelec_datos_Debito" href="#cmpelec_d_d">
+                                    Detalle
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="cmpelec_d_d" class="panel-collapse collapse">
+                                <div class="box-body">
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">razon</label><select class="form-control col-sm-3" id="cmpelectronico_d_c_razon" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  <div class="col-sm-3"><label class="control-label" style="font-size: 12px;font-weight: bold;">valor</label><select class="form-control col-sm-3" id="cmpelectronico_d_c_valor" style="padding: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select></div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>                                
+                          
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+
+     
+                    
+                  </div>
+
+                  <div class="panel box box-primary">
+                    <div class="box-header with-border">
+                      <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#cmpelec_adicional">
+                          Adicionales
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="cmpelec_adicional" class="panel-collapse collapse">
+                      <div class="box-body">
+                        <div class='row' id="cmpelec_adicional_row">
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>                
+                
+              </div>
+
+              
+
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpelectronico')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            <div id="cmpcondicional" class=tab-pane fade in active" style="background: white;">Condiconal
+              <div class='row' id="cmpcondicional_row">
+
+              </div>
+
+              <div class='row'>
+                <button type="button" onclick="grabar_admi_campo('cmpcondicional')" class="btn bg-green btn-flat margin" data-dismiss="modal">Grabar</button>'
+                <button type="button" class="btn bg-gray btn-flat margin" data-dismiss="modal">Cancelar</button>'
+              </div>
+            </div>
+            
+          </div>
+      </div>
+
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
 
 </section>
 <!-- /.content -->
@@ -2440,7 +3505,7 @@ function nueva_tareas() {
           </div>-->
           {% endif %}
 
-          {% if Es_admin == "Y" %}
+          {% if Es_Usuarios == "Y" or Es_admin == "Y" %}
           <div class="" style="padding-left: 10px;padding-right: 10px;">
             <button type="button" class="btn bg-blue btn-flat margin" onclick="user_nuevo()" style="height: 25px;padding: 3px 4px;width: 100%;">Usuarios<div class="ripple-container"></div></button>
           </div>
@@ -2450,7 +3515,7 @@ function nueva_tareas() {
             <button type="button" class="btn bg-blue btn-flat margin" onclick="user_clave()" style="height: 25px;padding: 3px 4px;width: 100%;">Cambiar Clave<div class="ripple-container"></div></button>
             <div id="div_cambio"></div>
           </div>
-          {% if Es_admin == "Y" %}
+          {% if Es_Usuarios == "Y" or Es_admin == "Y" %}
           <div class="" style="padding-left: 10px;padding-right: 10px;">
             <button type="button" class="btn bg-blue btn-flat margin" onclick="user_acces()" style="height: 25px;padding: 3px 4px;width: 100%;">Permisos<div class="ripple-container"></div></button>
           </div>

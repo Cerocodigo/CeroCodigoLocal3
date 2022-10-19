@@ -7,6 +7,7 @@
 #import urllib2
 from ast import Try
 import re
+from shutil import register_unpack_format
 import sys
 import smtplib
 import unicodedata
@@ -15,7 +16,9 @@ import json
 import random
 from django.core.mail import EmailMessage
 import os.path
+import logging
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 from django.shortcuts import get_object_or_404, render
@@ -40,6 +43,18 @@ from datetime import datetime
 
 from datetime import date
 
+
+
+def menu_add_reporte(request, Id_empresa, nombre, pkmodulo, usuario):
+    db = web.con_db.menu_reportes(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    reporte = db.traer_reporte_por_nombre(nombre, pkmodulo)
+    if len(reporte) > 0:
+        return {'resp':0, 'msg':'Reporte ya existe'}
+    else:
+        reporte = db.crear_reporte(nombre, pkmodulo)       
+        return {'resp':1, 'reporte':reporte}
+
+
 def menu_add_proceso(request, Id_empresa, nombre, tipo, cabecera, usuario):
     db = web.con_db.menu_modulos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     procesos = db.traer_modulo_por_nombre(nombre, nombre.replace(' ','_'))
@@ -51,12 +66,44 @@ def menu_add_proceso(request, Id_empresa, nombre, tipo, cabecera, usuario):
             tipo = 'Reporte'
             procesos = db.modulo_crear_modulo(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], tipo) 
         else:
-            tipo = 'Registro'
-            procesos = db.modulo_crear_modulo(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], tipo) 
-            estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_'), nombre) 
-            campo = db.modulo_crear_campoPk(nombre.replace(' ','_'), estructura[0]['PkEstructura'])
-            db.modulo_crear_camposxestructura(procesos[0]['PkModulo'], estructura[0]['PkEstructura'], campo[0]['PkCampo'], nombre.replace(' ','_'))
+            procesos = db.modulo_crear_modulo(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], 'Registro') 
+            db.estruc_crear_tabla(nombre.replace(' ','_')) 
+            estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_'), nombre)
+            cmp = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+            t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'Pk'+nombre.replace(' ','_')}
+            campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+            t_dataX = {'Posicion':'0','Nombre':'Pk'+nombre.replace(' ','_'),'Descripcion':'Pk'+nombre,'Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
+            cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
 
+            if tipo == 'Detalle' or tipo == 'SubDetalle':
+                estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_')+'Detalle', nombre+'Detalle')
+                db.estruc_crear_tabla(nombre.replace(' ','_')+'Detalle') 
+                cmp = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+                t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'Pk'+nombre.replace(' ','_') + 'Detalle'}
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                t_dataX = {'Posicion':'0','Nombre':'Pk'+nombre.replace(' ','_') + 'Detalle','Descripcion':'Pk'+nombre + 'Detalle','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
+                cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
+
+                t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'PkCabecera'}
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                t_dataX = {'Posicion':'0','Nombre':'PkCabecera','Descripcion':'PkCabecera','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
+                cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
+                
+            if tipo == 'SubDetalle':
+
+                estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_')+'DetalleDetalle', nombre+'DetalleDetalle')
+                db.estruc_crear_tabla(nombre.replace(' ','_')+'DetalleDetalle') 
+                cmp = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+                t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'Pk'+nombre.replace(' ','_') + 'DetalleDetalle'}
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                t_dataX = {'Posicion':'0','Nombre':'Pk'+nombre.replace(' ','_') + 'DetalleDetalle','Descripcion':'Pk'+nombre + 'DetalleDetalle','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
+                cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
+
+                t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'PkCabecera'}
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                t_dataX = {'Posicion':'0','Nombre':'PkCabecera','Descripcion':'PkCabecera','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
+                cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
+            
         dbr = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa])
         if tipo == 'Reporte':
             dbr.acc_por_mas(procesos[0]['PkModulo'], usuario,0,0,0,0, cabecera, 1)
@@ -83,7 +130,6 @@ def menu_editar_atributos(request, Id_empresa, PkModGen, Icono, Nombre):
 def menu_editar_orden(request, Id_empresa, PkModGen1, PkModGen2):
     db = web.con_db.menu_modulos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     modulos = db.traer_sysmodulogeneral_codigos(PkModGen1, PkModGen2)
-    print(modulos)
     db.traer_sysmodulogeneral_update('Orden', modulos[0]['PkModGen'], modulos[1]['Orden'])
     db.traer_sysmodulogeneral_update('Orden', modulos[1]['PkModGen'], modulos[0]['Orden'])
     return {'ok':1}
@@ -285,6 +331,34 @@ def pdf_ficha(request, Id_empresa):
          a['datos'] = db.traer_plantilla_pdf_valor(a['pksegmento'])
     return {'respuesta':'ok', 'plantilla':plan_seg}
 
+def nuevo_dir_ficha_multi(request, Id_empresa):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    pkestruc  = db.traer_estructuras_porPk(request.POST.getlist('t_pketr')[0])
+    filas = json.loads(request.POST.get('filas'))
+    for fila in filas:
+        txt_campos = ''
+        txt_vals = ''
+        for a in fila:
+            txt_campos = txt_campos + "`" + str(a)+ "`," 
+            if str(fila[a]) == '':
+                txt_vals = txt_vals + "'',"
+            else:
+                if str(fila[a])[0] == '@':
+                    if fila[a] == '@now':
+                            txt_vals = txt_vals + " now(),"      
+                    if fila[a] == '@user':
+                            txt_vals = txt_vals + "'" + str(request.POST.get('usuario'))+ "'," 
+                    if str(fila[a])[:2] == '@@':
+                        tempo_db = db.sql_traer_directo(fila[a][2:].replace('@pkreges@',str(request.POST.getlist('t_valor')[0])))
+                        txt_vals = txt_vals + "'" + str(tempo_db[0]['Val'])+ "',"
+                else:
+                    txt_vals = txt_vals + "'" + str(fila[a])+ "',"        
+        senten = "insert into `"+str(pkestruc[0]['Nombre'])+"` ("+txt_campos+"`"+str(request.POST.getlist('t_campo')[0])+"`) VALUES ("+txt_vals+" '"+str(request.POST.getlist('t_valor')[0])+"')"
+        
+
+        db.sql_directo(senten)
+    return {'respuesta':'ok'}
+
 
 def nuevo_dir_ficha(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -294,16 +368,19 @@ def nuevo_dir_ficha(request, Id_empresa):
     txt_vals = ''
     for a in v_dict_add:
         txt_campos = txt_campos + "`" + str(a)+ "`," 
-        if str(v_dict_add[a])[0] == '@':
-            if v_dict_add[a] == '@now':
-                    txt_vals = txt_vals + " now(),"      
-            if v_dict_add[a] == '@user':
-                    txt_vals = txt_vals + "'" + str(request.POST.get('usuario'))+ "'," 
-            if str(v_dict_add[a])[:2] == '@@':
-                tempo_db = db.sql_traer_directo(v_dict_add[a][2:].replace('@pkreges@',str(request.POST.getlist('t_valor')[0])))
-                txt_vals = txt_vals + "'" + str(tempo_db[0]['Val'])+ "',"
+        if str(v_dict_add[a]) == '':
+            txt_vals = txt_vals + "'',"
         else:
-            txt_vals = txt_vals + "'" + str(v_dict_add[a])+ "',"        
+            if str(v_dict_add[a])[0] == '@':
+                if v_dict_add[a] == '@now':
+                        txt_vals = txt_vals + " now(),"      
+                if v_dict_add[a] == '@user':
+                        txt_vals = txt_vals + "'" + str(request.POST.get('usuario'))+ "'," 
+                if str(v_dict_add[a])[:2] == '@@':
+                    tempo_db = db.sql_traer_directo(v_dict_add[a][2:].replace('@pkreges@',str(request.POST.getlist('t_valor')[0])))
+                    txt_vals = txt_vals + "'" + str(tempo_db[0]['Val'])+ "',"
+            else:
+                txt_vals = txt_vals + "'" + str(v_dict_add[a])+ "',"        
     senten = "insert into `"+str(pkestruc[0]['Nombre'])+"` ("+txt_campos+"`"+str(request.POST.getlist('t_campo')[0])+"`) VALUES ("+txt_vals+" '"+str(request.POST.getlist('t_valor')[0])+"')"
     
 
@@ -450,7 +527,8 @@ def eliminar(request, Id_empresa, pkmodulo, pkregistro):
 @csrf_exempt
 def filtro(request, Id_empresa): 
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    campos_cab = json.loads(request.POST.get('campos'))
+    #campos_cab = json.loads(request.POST.get('campos')) t_PkEstructura
+    campos_cab = db.traer_campos_por_pkestr_solo_visible_orden_consuWeb(request.POST.get('t_PkEstructura')) 
     sentencia_where = ''
     sentencia_select = ''
     valore_filtro = request.POST.getlist('v_where_valor')[0].split(",")
@@ -459,8 +537,8 @@ def filtro(request, Id_empresa):
             sentencia_select = ''
             sentencia_where = sentencia_where + '('
             for a in campos_cab:
-                sentencia_where = sentencia_where + ' ' +  a[0].strip() + " like '%" + xx + "%' or"
-                sentencia_select = sentencia_select + '' + a[0].strip() + ', '
+                sentencia_where = sentencia_where + ' ' +  a['Nombre'].strip() + " like '%" + xx + "%' or"
+                sentencia_select = sentencia_select + '' + a['Nombre'].strip() + ', '
             sentencia_where = sentencia_where[:-2] + ') and '
         sentencia_where = sentencia_where[:-4]
     else:
@@ -469,7 +547,7 @@ def filtro(request, Id_empresa):
             sentencia_where = sentencia_where + '('
             sentencia_where = sentencia_where + ' ' +  request.POST.getlist('v_campo')[0] + " like '%" + xx + "%' or"
             for a in campos_cab:
-                sentencia_select = sentencia_select + '' + a[0].strip() + ', '
+                sentencia_select = sentencia_select + '' + a['Nombre'].strip() + ', '
             sentencia_where = sentencia_where[:-2] + ') and '
         sentencia_where = sentencia_where[:-4]
     sentencia_select = sentencia_select[:-2]
@@ -622,9 +700,12 @@ def guardar_base(request, Id_empresa):
         num_det = 0
         if len(envio_datset) >1:
             if len(envio_datset[request.POST.getlist('nom_tabla')[0] + "Detalle"])>0:
+                fila_int = 0
+
                 pk_detalle = get_max(request, ("Pk"+ request.POST.getlist('nom_tabla')[0] + "Detalle"), request.POST.getlist('nom_tabla')[0] + "Detalle", Id_empresa)
                 senten_det.append("delete from " + request.POST.getlist('nom_tabla')[0] + "detalle where PKCabecera = '" + pk_cabecera + "'")
             for z in envio_datset[request.POST.getlist('nom_tabla')[0] + "Detalle"]:
+                fila_int = fila_int +1
                 sentencia = "insert into `" + request.POST.getlist('nom_tabla')[0] +  "Detalle` (" 
                 Vsentencia = "VALUES ("
                 for i in campos_det:
@@ -633,6 +714,11 @@ def guardar_base(request, Id_empresa):
                         #    z[i["Nombre"]] = pk_detalle + num_det
                         if ((i["Nombre"]) == ("PKCabecera")):
                             z[i["Nombre"]] = pk_cabecera
+                        else:
+                            if not((i["Nombre"]) == ("Pk"+ request.POST.getlist('nom_tabla')[0] + "Detalle")):
+                                z[i["Nombre"]] = fila_int
+
+
                     if ((i["Nombre"]) != ("Pk"+ request.POST.getlist('nom_tabla')[0] + "Detalle")):
                         sentencia = sentencia + "`" + i["Nombre"] + "`, "  
                         txtvalor = str(z[i["Nombre"]]).replace("'", " ")
@@ -697,7 +783,9 @@ def guardar_base(request, Id_empresa):
         num_subdet = 0
         pkkabecera_subdetalle = 0
         if request.POST.getlist('tiene_detalle')[0] == 'Si':
+            fila_int = 0
             for z in envio_datset[request.POST.getlist('nom_tabla')[0] + "Detalle"]:
+                fila_int = fila_int + 1
                 sentencia = "insert into `" + request.POST.getlist('nom_tabla')[0] +  "Detalle` (" 
                 Vsentencia = "VALUES ("
                 for i in campos_det:
@@ -705,8 +793,12 @@ def guardar_base(request, Id_empresa):
                         if ((i["Nombre"]) == ("Pk"+ request.POST.getlist('nom_tabla')[0] + "Detalle")):
                             pkkabecera_subdetalle = z[i["Nombre"]]
                             z[i["Nombre"]] = pk_detalle + num_det
-                        if ((i["Nombre"]) == ("PKCabecera")):
-                            z[i["Nombre"]] = pk_cabecera
+                        else:
+                            if ((i["Nombre"]) == ("PKCabecera")):
+                                z[i["Nombre"]] = pk_cabecera
+                            else:
+                                z[i["Nombre"]] = fila_int
+
                     sentencia = sentencia + "`" + i["Nombre"] + "`, "  
                     txtvalor = str(z[i["Nombre"]]).replace("'", " ")
                     txtvalor = str(txtvalor).replace("Á", "A")
@@ -1168,8 +1260,9 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                         if y["Tipo"] == "Operacion":
                             variables = y["Variables"].split(",")
                             valor_final = y["Valor"]
-                            for yy in variables:
-                                valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
+                            if not(y["Variables"] == ''):
+                                for yy in variables:
+                                    valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
                             UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
                         if y["Tipo"] == "Registro":
                             UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "', "
@@ -1181,6 +1274,69 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                     else:
                         Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
                     senten_acc.append(Update)
+            if z["Accion"] == "cc_actualizaciones":
+                if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
+                    Update = ""
+                    UpdateFrom = "UPDATE"
+                    UpdateSet = "SET"
+                    UpdateWhere = "WHERE "
+                    Updatehaving  = " "
+                    Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
+                    Updata = db.TraerUpdateFrom(z["PkAccion"])
+                    for y in Updata:
+                        UpdateFrom = UpdateFrom + " " + str(y["Tabla"]) + ", "
+                    UpdateFrom = UpdateFrom[0:-2]
+                    
+                    Updata = db.TraerUpdateWhere(z["PkAccion"])
+                    for y in Updata:
+                        if y["Tipo"] == "Campo":
+                            UpdateWhere = UpdateWhere + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
+                        if y["Tipo"] == "Valor":
+                            UpdateWhere = UpdateWhere + "\'" + str(y["Elemento"]) + "\' "
+                        if y["Tipo"] == "Operacion":
+                            UpdateWhere = UpdateWhere + str(y["Elemento"]) + "  "
+                        if y["Tipo"] == "Registro":
+                            UpdateWhere = UpdateWhere + " \'" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "\' "
+                        if y["Tipo"] == "Registro sin Comillas":
+                            UpdateWhere = UpdateWhere +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+
+                    Updata = db.TraerUpdatehaving(z["PkAccion"])
+                    for y in Updata:
+                        if y["Tipo"] == "Campo":
+                            Updatehaving = Updatehaving + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
+                        if y["Tipo"] == "Valor":
+                            Updatehaving = Updatehaving + "\'" + str(y["Elemento"]) + "\' "
+                        if y["Tipo"] == "Operacion":
+                            Updatehaving = Updatehaving + str(y["Elemento"]) + "  "
+                        if y["Tipo"] == "Registro":
+                            Updatehaving = Updatehaving + " \'" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "\' "
+                        if y["Tipo"] == "Registro sin Comillas":
+                            Updatehaving = Updatehaving +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+
+                    Updata = db.TraerUpdateSet(z["PkAccion"])
+                    for y in Updata:
+                        if y["Tipo"] == "Campo":
+                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(y["Valor"]) + ", "
+                        if y["Tipo"] == "Valor":
+                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = \'" + str(y["Valor"]) + "\', "
+                        if y["Tipo"] == "Operacion":
+                            variables = y["Variables"].split(",")
+                            valor_final = y["Valor"]
+                            if not(y["Variables"] == ''):
+                                for yy in variables:
+                                    valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
+                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
+                        if y["Tipo"] == "Registro":
+                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = \'" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "\', "
+                        if y["Tipo"] == "Registro sin Comillas":
+                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + ", "
+                    UpdateSet = UpdateSet[0:-2]    
+                    if UpdateWhere == "WHERE":
+                        Update = UpdateFrom + " " + UpdateSet + " " + Updatehaving
+                    else:
+                        Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
+                    logger.debug('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
+                    senten_acc.append('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
     return senten_acc
 
 def Acc_TraerDataTable(request, Id_empresa, datatable, query_nom, indice):
@@ -1391,6 +1547,30 @@ def actualiza_campos(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     sentencia = "update camposxestructura set " + request.POST.getlist('t_atributo')[0] + " = '" + request.POST.getlist('t_valor')[0] + "' where camposxestructura.PkId = " + request.POST.getlist('t_pkcampo')[0] 
     db.sql_directo(sentencia)
+
+
+def intercambio_listado_dir(request, Id_empresa):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    camposA = db.traer_campo_por_pkestr_nombre(request.POST.getlist('t_pkestructura')[0], request.POST.getlist('t_cc_nombre')[0])
+    
+    list_cmpo = db.traer_listado_cc_por_estru_posi_normal(request.POST.getlist('t_pkestructura')[0], request.POST.getlist('dirre')[0], camposA[0]["posicionConsulta"], camposA[0]["PkId"], camposA[0]["posicionConsulta"])
+    if len(list_cmpo) > 0:
+        BB = list_cmpo[0]['PkId']
+        if request.POST.getlist('dirre')[0] == '0':
+            difer = int(camposA[0]["posicionConsulta"]) - int(list_cmpo[0]['posicionConsulta']) 
+            for a in list_cmpo:
+                if int(difer) > (int(camposA[0]["posicionConsulta"]) - int(a["posicionConsulta"])):
+                    difer = int(camposA[0]["posicionConsulta"]) - int(a["posicionConsulta"])
+                    BB = a["PkId"]
+        else:
+            difer = int(list_cmpo[0]['posicionConsulta'])  - int(camposA[0]["posicionConsulta"]) 
+            for a in list_cmpo:
+                if int(difer) > ( int(a["posicionConsulta"]) - int(camposA[0]["posicionConsulta"]) ):
+                    difer = int(a["posicionConsulta"]) - int(camposA[0]["posicionConsulta"])
+                    BB = a["PkId"]
+        camposB = db.traer_campo_por_id(BB)
+        db.actualizar_dato_campo_id(camposA[0]["PkId"], 'posicionConsulta', camposB[0]["posicionConsulta"] )
+        db.actualizar_dato_campo_id(camposB[0]["PkId"], 'posicionConsulta', camposA[0]["posicionConsulta"] )
 
 def intercambio_dir(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -1910,18 +2090,14 @@ def discksize_media(Id_empresa):
 
 def validar_user_empresa_soloval(request, Id_empresa, usuarios, clave):
     respuesta = []
-    print('clave' + str(clave))
     hash_clave = hashear(clave)
-    print(hash_clave)
     db = web.con_db.inter_login_LOGIN("Mysql")
     dbEmpresa = db.traer_empresa(Id_empresa)
-    print(dbEmpresa)
     if len(dbEmpresa) == 1:
         if dbEmpresa[0]["estado"] == "valido":
             log_empresa = dbEmpresa[0]['Negocio']
             db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
             usuario_ok = db_cliente.traer_usuario(usuarios, hash_clave)
-            print("usuario_ok " + str(usuario_ok))
             if len(usuario_ok) == 1:
                 return 'ok'
             else:
@@ -1963,7 +2139,11 @@ def validar_user_empresa(request, Id_empresa, usuario, clave):
                 certificado = db_cliente.carga_certificado()
                 tareas = db_cliente.carga_list_areas()
                 datos_cuentas = db_cliente.carga_datos_cuentas() 
-                db_agente = web.con_db.agente_central('cerocodigo','AEx_1237458','cliente_nlubkov','107.170.92.160') 
+                
+                db_agente_web = dbEmpresa[0]["cc_control"].split(',')
+                #db_agente = web.con_db.agente_central('cerocodigo','AEx_1237458','cliente_nlubkov','107.170.92.160') 
+                db_agente = web.con_db.agente_central(db_agente_web[0],db_agente_web[1],db_agente_web[2],db_agente_web[3]) 
+
                 datos_clientes = db_agente.traer_cupo(datos_cuentas[0]['numeroRuc']) 
                 valores_cuentas = db_agente.traer_valores(datos_cuentas[0]['numeroRuc']) 
                 sri_ingreso_rap = db_cliente.carga_sri_ingreso_rap()
@@ -2223,7 +2403,7 @@ def restauracion_base_manual2(request, Id_empresa):
                 db.sql_directo(command)
                 ind = ind + 1
             except:
-                print(command)
+                pass
         #usuario'
         sete = "delete from usuario"
         db.sql_directo(sete)
@@ -2255,7 +2435,7 @@ def restauracion_base_manual(request, Id_empresa):
                         yield "20"
                         ind = 0
                 except:
-                    print(command)
+                    pass
             #usuario'
             sete = "delete from usuario"
             db.sql_directo(sete)
@@ -2282,7 +2462,7 @@ def restauracion_base(request, Id_empresa, clave):
                 db.sql_directo(command)
                 ind = ind + 1
             except:
-                print(command)
+                pass
         sete = "delete from usuario"
         db.sql_directo(sete)
         sete = "insert into `usuario` (`Usuario`, `Clave`, `Nombre`, `Apellido`, `Apellido2`, `Anulado`, `FechaExpiracion`, `Admin`, `Sri`, `Reportes`, `Campos`, `Plantillas`, `Acciones`, `Procesos_Modulos`, `Eliminar_Importar`, `Usuarios`, `hash`, `Cargo`, `Correo`, `Telefono`) VALUES ('" +str(Id_empresa)+ "', 'clas', 'nom', 'ap', 'ap', 'N', '2024-07-11', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', '" +str(datos_cliente[0]['u_clave'])+ "', 'Administrador', '" + str(datos_cliente[0]['u_correo']) +"', 'tel')"

@@ -1,6 +1,8 @@
 import web.mysql
 import datetime
+import logging
 
+logger = logging.getLogger(__name__)
 #import web.MySQLdb
 class inter_login_LOGIN:
     def __init__(self,V_base):
@@ -82,7 +84,6 @@ class inter_login_LOGIN:
     def log_demo(self, t_Fecha, t_Nombres, t_Telefono, t_Email, t_Tipo, t_Tamano):
         if self.V_base == "Mysql":
             sentencia = "insert into `ing_demo` (`Fecha`, `Nombres`, `Telefono`, `Email`, `Tipo`, `Tamano`) VALUES ('" + str(t_Fecha) +  "', '" + str(t_Nombres) +  "', '" + str(t_Telefono) +  "', '" + str(t_Email) +  "', '" + str(t_Tipo) +  "', '" + str(t_Tamano) +  "')"
-            print(sentencia)
             self.mysql_con.ejecutar(sentencia)            
     def experto_ingresar(self, nombre, email, pais, ciudad, exper):
         if self.V_base == "Mysql":
@@ -191,7 +192,7 @@ class externo_cliente:
     def carga_opciones(self, V_user):
         return self.mysql_con.table('select DISTINCT    m.tipo AS "formtipo",   m.PkModulo AS "PkModulo",   WE.pk AS "id", WE.pk AS "PkOpciones", CASE WHEN  WE.tipo = 1 THEN "Consulta" WHEN  WE.tipo = 2 THEN "Ingresar" WHEN  WE.tipo = 3 THEN "Modificar" WHEN  WE.tipo = 4 THEN "Eliminar" END AS "Nombre",  s.icono FROM    web_a_permisos WE,  modulo M,   sysmodulogeneral S WHERE WE.pkmodulo = M.PkModulo AND S.PkModGen = M.Cabecera and WE.usuario = "'+str(V_user)+'" AND M.anulado LIKE "N" and WE.tipo in(1,2,3,4) ORDER BY s.orden,   m.orden')
     def carga_reportes(self, V_user):
-        return self.mysql_con.table('select DISTINCT M.tipo as "formtipo", M.PkModulo as "Pkmodulo", RE.PkReporte,  RE.PkReporte as "id", lower(REPLACE(RE.Nombre," ","")) as "nombre", RE.Nombre as "diplay", RE.Descripcion as "descripcion", RE.formato as "formato", RE.posicion as "posicion", RE.Arch_Excell as "arch_excell", RE.Con_detalle as "con_detalle", RE.Tipo as "tipo", s.icono from web_a_permisos WE, sysmodulogeneral S, reportesmain RE, modulo M where WE.usuario = "'+str(V_user)+'" and WE.pkmodulo = M.PkModulo and M.Cabecera = S.PkModGen and M.PkModulo = RE.PkModulo and M.tipo = "Reporte" and M.anulado LIKE "N" and RE.anulado = "N" ORDER BY s.orden,    m.orden')
+        return self.mysql_con.table('select DISTINCT M.tipo as "formtipo", M.PkModulo as "Pkmodulo", RE.PkReporte,  RE.PkReporte as "id", lower(REPLACE(RE.Nombre," ","")) as "nombre", RE.Nombre as "diplay", RE.Descripcion as "descripcion", RE.formato as "formato", RE.posicion as "posicion", RE.Arch_Excell as "arch_excell", RE.Con_detalle as "con_detalle", RE.Tipo as "tipo", s.icono from web_a_permisos WE, sysmodulogeneral S, reportesmain RE, modulo M where WE.usuario = "'+str(V_user)+'" and WE.pkmodulo = M.PkModulo and M.Cabecera = S.PkModGen and M.PkModulo = RE.PkModulo and M.tipo = "Reporte" and M.anulado LIKE "N" and RE.anulado = "N" ORDER BY  RE.Nombre')
     def carga_list_user(self):
         return self.mysql_con.table('select DISTINCT usuario from usuario')
     def cal_accrap(self, V_user):
@@ -275,16 +276,15 @@ class inter_ref_buscar:
     def reportesreferencias_valores(self, V_sentencia):
         return self.mysql_con.como_cursor(V_sentencia)
 
+
 class menu_modulos:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)      
     def traer_sysmodulogeneral_update(self, str_atributo, str_PkModGen, str_valor):
         sentencia = "UPDATE sysmodulogeneral set "+str(str_atributo)+" = '"+str(str_valor)+"' where PkModGen = " +str(str_PkModGen)
-        print(sentencia)
         self.mysql_con.ejecutar(sentencia)  
     def traer_proceso_update(self, str_atributo, str_pkmodulo, str_valor):
         sentencia = "UPDATE modulo set "+str(str_atributo)+" = '"+str(str_valor)+"' where PkModulo = " +str(str_pkmodulo)
-        print(sentencia)
         self.mysql_con.ejecutar(sentencia)  
     def traer_procesos_por_codigos(self, str_pkmodulo1, str_pkmodulo2):
         sentencia = "select * from modulo where PkModulo in ("+str(str_pkmodulo1)+","+str(str_pkmodulo2)+") "
@@ -322,25 +322,40 @@ class menu_modulos:
     def modulo_crear_modulo(self, str_Nombre, str_Descripcion, str_Cabecera, str_Orden, str_tipo):
         sentencia = "INSERT INTO `modulo` (`Nombre`, `Descripcion`, `Anulado`, `Cabecera`, `Orden`, `Plantilla`, `Imp_rap`, `ing_rap`, `modificable`, `exportable`, `mod_detalle`, `tipo`) VALUES ('"+str(str_Nombre)+"', '"+str(str_Descripcion)+"', 'N', '"+str(str_Cabecera)+"', '"+str(str_Orden)+"', 'def', 'NO', 'NO', 'Si', '', '', '"+str(str_tipo)+"')" 
         self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from modulo where Nombre = '"+(str_Nombre)+"'")  
+    def estruc_crear_tabla(self, str_Nombre):
         sentencia = "CREATE TABLE " + str(str_Nombre) + "(Pk" + str(str_Nombre) + " int NOT NULL AUTO_INCREMENT,PRIMARY KEY (Pk" + str(str_Nombre) + "))"
         self.mysql_con.ejecutar(sentencia)
-        return self.mysql_con.table("Select * from modulo where Nombre = '"+(str_Nombre)+"'")  
 
     def modulo_crear_estructura(self, str_pkmodulo, str_Nombre, str_Descripcion):
-        sentencia = "INSERT INTO `estructura` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`,`HijaDe`,`X`,`Y`, `espacio` ) VALUES ('" & str_pkmodulo & "', '" & str_Nombre & "', '" & str_Descripcion & "', 'N','0','0','0','22')"
+        sentencia = "INSERT INTO `estructura` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`,`HijaDe`,`X`,`Y`, `espacio` ) VALUES ('" +str(str_pkmodulo )+ "', '" +str( str_Nombre )+ "', '" +str( str_Descripcion )+ "', 'N','0','0','0','22')"
         self.mysql_con.ejecutar(sentencia)
         return self.mysql_con.table("Select * from estructura where Nombre = '"+(str_Nombre)+"'")  
 
-    def modulo_crear_campoPk(self, str_Nombre, str_PkEstructura):
-        sentencia = "INSERT INTO `cmpnumsecuencial` (`ValorInicial`, `Aumento`, `PkEstructura`, `Nombre`) VALUES ('1', '1', '" + str(str_PkEstructura) + "', 'Pk" & str_Nombre & "')"
-        self.mysql_con.ejecutar(sentencia)
-        return self.mysql_con.table("Select * from cmpnumsecuencial where PkEstructura = '"+(str_PkEstructura)+"' and Nombre = '"+(str_Nombre)+"'")  
 
-    def modulo_crear_camposxestructura(self, str_pkmodulo, str_PkEstructura, str_Pkcampo, str_Nombre):
-        sentencia = "INSERT INTO `camposxestructura` (`PkModulo`, `PkEstructura`, `PkCampo`, `TablaCampo`, `Posicion`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`, `Visible`, `X`, `Y`, `tamano`, `estilo`, `Modificable` ) VALUES ('" +str(str_pkmodulo)+ "', '" +str(str_PkEstructura)+"', '"+str(str_Pkcampo)+"', 'cmpnumsecuencial', '1', 'Pk" +str(str_Nombre)+ "', 'Clave Primaria de la estructura " +str(str_Nombre)+"', 'N', 'N', 'N', '0', '0', '10', 'Normal', 'Si')"
-        self.mysql_con.ejecutar(sentencia)
+    def modulo_devolver_estructura(self, str_PkEstructura):
+        return self.mysql_con.table("Select * from estructura where PkEstructura = '"+(str_PkEstructura)+"'")  
 
-
+class menu_reportes:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip) 
+    def traer_reporte_por_nombre(self, t_Nombre, t_PkModulo):
+        return self.mysql_con.table("select * from reportesmain where Nombre like '"+str(t_Nombre)+"' and PkModulo = "+str(t_PkModulo)+" ")
+    def crear_reporte(self, t_Nombre, t_PkModulo):
+        sentencia = "INSERT INTO `reportesmain` (`Nombre`, `Descripcion`, `Anulado`, `PkModulo`, `cabeceras`, `formato`, `posicion`, `Arch_Excell`, `Con_detalle`, `Tipo`) VALUES ('"+str(t_Nombre)+"', '"+str(t_Nombre)+"', 'N', '"+str(t_PkModulo)+"', 'True', 'Ambos', 'Vertical', '', 'Sin Detalle', 'Normal')"
+        self.mysql_con.ejecutar(sentencia)      
+        t_Reporte = self.traer_reporte_por_nombre(t_Nombre, t_PkModulo)
+        sentencia = "INSERT INTO `reportesqselect` (`PkReporte`, `Sentencia`, `nivel`) VALUES ('" +str(t_Reporte[0]['PkReporte'])+"', '', '0')"
+        self.mysql_con.ejecutar(sentencia)      
+        sentencia = "INSERT INTO `reportesqfrom` (`PkReporte`, `Sentencia`, `nivel`) VALUES ('" +str(t_Reporte[0]['PkReporte'])+ "', '', '0')"
+        self.mysql_con.ejecutar(sentencia)      
+        sentencia = "INSERT INTO `reportesqwhere` (`PkReporte`, `Sentencia`, `nivel`) VALUES ('"+str(t_Reporte[0]['PkReporte'])+ "', '', '0')"
+        self.mysql_con.ejecutar(sentencia)      
+        sentencia = "INSERT INTO `reportesqrest` (`PkReporte`, `Sentencia`, `nivel`) VALUES ('"+str(t_Reporte[0]['PkReporte'])+ "', '', '0')"
+        self.mysql_con.ejecutar(sentencia)      
+        sentencia = "INSERT INTO `reportesqGRP` (`PkReporte`, `Sentencia`, `nivel`) VALUES ('" +str(t_Reporte[0]['PkReporte'])+ "', '', '0')"
+        self.mysql_con.ejecutar(sentencia)      
+        return t_Reporte
 
 class inter_registro:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
@@ -362,6 +377,9 @@ class inter_registro:
     def al_errores(self):
         sentencia = "select * from web_aut_errores where checkk =0"
         return self.mysql_con.table(sentencia)
+    def traer_plantilla_pdf_bases(self,t_pkpaneL_g):
+        sentencia = "select * from web_p_panel_plantilla_seg_bases where pkgrupo ="+ str(t_pkpaneL_g)
+        return self.mysql_con.table(sentencia)        
     def traer_plantilla_pdf_seg(self,t_pkpaneL_g):
         sentencia = "select * from web_p_panel_plantilla_seg where pkgrupo ="+ str(t_pkpaneL_g)
         return self.mysql_con.table(sentencia)        
@@ -458,7 +476,6 @@ class inter_registro:
         self.mysql_con.ejecutar(sentencia)  
     def traer_usuario(self, str_usuario):
         sentencia = 'select * from usuario where usuario.Usuario = "'+ str(str_usuario) +'"'
-        print(sentencia)
         return self.mysql_con.table(sentencia)  
     def traer_usuarioPk(self, str_usuario):
         sentencia = 'select * from usuario where usuario.PkUsuario = "'+ str(str_usuario) +'"'
@@ -533,8 +550,8 @@ class inter_registro:
         return [tabla, tabla_campos, registros[0], registros[1], sentencia_rebuscar]    
     def consulta_orden_web(self, V_pkmodulo, V_top):
         tabla = self.mysql_con.table('select * from estructura where PkModulo = "' + V_pkmodulo +'" and hijade = 0')
-        tabla_campos = self.mysql_con.table('select nombre from camposxestructura where PkEstructura = "' + str(tabla[0]['PkEstructura']) +'" and visible = "Y" and anulado = "N" order by PosicionConsulta')
-        txt_taer = 'pk'+ tabla[0]['Nombre'] + ', '
+        tabla_campos = self.mysql_con.table('select nombre from camposxestructura where PkEstructura = "' + str(tabla[0]['PkEstructura']) +'" and visible = "Y" and anulado = "N" and Eliminable = "Y" order by PosicionConsulta')
+        txt_taer = 'Pk'+ tabla[0]['Nombre'] + ', '
         for a in tabla_campos:
             txt_taer = txt_taer + ' cast(' + a['nombre'] + ' as char) as "' + a['nombre'] + '" , '
         txt_taer = txt_taer[:-2]
@@ -580,6 +597,15 @@ class inter_registro:
     def traer_campos_por_pkestr_solo_visible(self, PkEstructura):
         Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" and (visible = "Y" or Eliminable = "N") order by posicion, x, y')
         return Campos   
+
+    def traer_campos_por_pkestr_solo_visible_orden(self, PkEstructura):
+        Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" and (visible = "Y") order by posicion, x, y')
+        return Campos   
+
+    def traer_campos_por_pkestr_solo_visible_orden_consuWeb(self, PkEstructura):
+        Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" and (visible = "Y" or Eliminable = "N") order by Eliminable, posicionConsulta')
+        return Campos   
+
     def traer_campos_por_pkestr(self, PkEstructura):
         Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" order by posicion, x, y')
         return Campos    
@@ -606,7 +632,7 @@ class inter_registro:
             for a in campos["campos_det"]:
                 select = select + a['Nombre'] + ', '
             select = select[:-2]
-            val_detalle = self.mysql_con.table('select '+ select +' from ' + str(tablas[1]['Nombre']) +' where PKCabecera = "' + V_pkregistro +'" order by pk'+str(tablas[1]['Nombre']) + ' desc')
+            val_detalle = self.mysql_con.table('select '+ select +' from ' + str(tablas[1]['Nombre']) +' where PKCabecera = "' + V_pkregistro +'" order by pk'+str(tablas[1]['Nombre']) + ' ') #desc
             if len(tablas) > 2:
                 select = ""
                 for a in campos["campos_subdet"]:
@@ -621,7 +647,7 @@ class inter_registro:
         for a in campos["campos_cab"]:
             select = select + a['Nombre'] + ', '
         select = select[:-2]
-        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base'])+' order by pk' + str(tablas[0]['Nombre']) +' desc'
+        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base'])+' order by pk' + str(tablas[0]['Nombre']) +' '  #desc
         val_cabecera = self.mysql_con.table(senten)
         return [val_cabecera]
     def cmpconso_ejecutar(self, cmpsenten):
@@ -631,7 +657,6 @@ class inter_registro:
         tablas = self.mysql_con.ejecutar(cmpsenten)                
         return tablas
     def cmpbuscador_ejecutar_sun_limite(self, cmpsenten):
-        print(cmpsenten)
         tablas = self.mysql_con.table(cmpsenten + " limit 100")  
         return tablas
     def cmpbuscador_ejecutar(self, cmpsenten, limit):
@@ -645,6 +670,8 @@ class inter_registro:
             tablas = self.mysql_con.como_cursor(cmpsenten) 
             return {'error':0, 'resul':tablas}
         except Exception as e: 
+            logger.exception('Valio mysql')
+            logger.exception(str(e) )
             return {'error':str(e)}
     def validaciones(self, tablas):
         devolver = []
@@ -880,6 +907,9 @@ class inter_registro:
     def traer_campo_por_id(self, PkCampo):
         sentencia = "select * from camposxestructura where PkId = '" + str(PkCampo) + "'"
         return self.mysql_con.table(sentencia)
+    def traer_campo_por_pkestr_nombre(self, Pkestru, t_nombre):
+        sentencia = "select * from camposxestructura where PkEstructura = '" + str(Pkestru) + "' and Nombre = '" + str(t_nombre) + "'"
+        return self.mysql_con.table(sentencia)
     def actualizar_dato_campo_id(self, PkCampo, atributo, valor):
         sentencia = "update camposxestructura set " + str(atributo) + " = '" + str(valor) + "' where camposxestructura.PkId = " + str(PkCampo) 
         return self.mysql_con.ejecutar(sentencia)
@@ -891,11 +921,16 @@ class inter_registro:
         return self.mysql_con.table(sentencia)
     def traer_listado_cc_por_estru(self, PKEtruc, dire, posi, Pkid, posiWEB):
         if dire == '0':
-            sentencia = "select * from camposxestructura where PkEstructura = '" + str(PKEtruc) + "' and PkId != '" + str(Pkid) + "' and Anulado = 'N' and Visible = 'Y' and posicionweb = '" +str(posiWEB)+ "' and Posicion < " +str(posi)
+            sentencia = "select * from camposxestructura where PkEstructura = '" + str(PKEtruc) + "' and PkId != '" + str(Pkid) + "' and Anulado = 'N' and Visible = 'Y' and posicionweb = '" +str(posiWEB)+ "' and posicion < " +str(posi)+ " "
         else:
-            sentencia = "select * from camposxestructura where PkEstructura = '" + str(PKEtruc) + "' and PkId != '" + str(Pkid) + "' and Anulado = 'N' and Visible = 'Y' and posicionweb = '" +str(posiWEB)+ "' and Posicion > " +str(posi)        
+            sentencia = "select * from camposxestructura where PkEstructura = '" + str(PKEtruc) + "' and PkId != '" + str(Pkid) + "' and Anulado = 'N' and Visible = 'Y' and posicionweb = '" +str(posiWEB)+ "' and posicion > " +str(posi)+ " "        
         return self.mysql_con.table(sentencia)
-
+    def traer_listado_cc_por_estru_posi_normal(self, PKEtruc, dire, posi, Pkid, posiWEB):
+        if dire == '0':
+            sentencia = "select * from camposxestructura where PkEstructura = '" + str(PKEtruc) + "' and PkId != '" + str(Pkid) + "' and Anulado = 'N' and Visible = 'Y' and posicionConsulta < " +str(posi)
+        else:
+            sentencia = "select * from camposxestructura where PkEstructura = '" + str(PKEtruc) + "' and PkId != '" + str(Pkid) + "' and Anulado = 'N' and Visible = 'Y' and posicionConsulta > " +str(posi)        
+        return self.mysql_con.table(sentencia)
 
 class transsaciones:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
@@ -943,6 +978,40 @@ class transsaciones:
         self.mysql_con.commit()
         return True
 
+
+"""
+class firmas() 
+    clase para traer las firmas electronicas desde la base de datos sobre pdf generados a firmar
+"""
+class firmas:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        """
+        __init__ solo para instanciar la clase Mysql
+        Input: conn_user: Usuario de base de datos, conn_pass: Clave de base de datos, conn_base: NOmbre de base de datos, conn_ip: Ip del host de la base de datos
+        Return: Nada
+        """
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+    def Firma_por_Usuario(self, t_usuario, t_uso, t_pk):
+        """
+        Firma_por_Usuario: Devuelve Listado de firmas a realiar sobre Pdf por usuario y Uso en web_firmas
+        Input:  t_usuario: Usuarrio Actual, t_uso: (variable entre {panel: "Para PDF ejecutados desde panel creados en server", modulo: Para Pdf creados desde regitros o acciones en server}), t_pk: Indicador Priamry key del panel o modulo segun sea el caso
+        Variables de Uso: 
+        mysql_con: Clase intanciaa de base de datos Mysql
+        Return: Tabla Multi registro en diccionario
+            `pkfirma` : Clave Primaria
+            `uso`: (panel: Para PDF ejecutados desde panel creados en server , modulo: Para Pdf creados desde regitros o acciones en server)
+            `certificado : Nombre del archivo P12 de firma electronica
+            `clave` : Clave del archivo P12 de firma electronica
+            `usuario` : Usuario vincula a ese certificado,
+            `expiracion`: FEcha de caducidad de dicho certificado
+            `x` : Posicion x de la firma (Codigo barras) x crece de izquierda a derecha
+            `y` : Posicion y de la firma (Codigo barras) y crece de arriba para abajo 
+            `display` : Texto que sobrepone a codigo de barras firma 
+            `pk` : Primarykey del registro de origen (Panel, Modulo, Plantilla)
+            `firma` Texto que sobrepone a codigo de barras firma
+        """
+        sentencia = "select * from web_firmas where usuario = '"+str(t_usuario)+"' and uso = '"+str(t_uso)+"' and pk = '"+str(t_pk)+"'"
+        return self.mysql_con.table(sentencia)
 
 class paneles:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
@@ -1127,7 +1196,6 @@ class charts:
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
     def traer_charts(self, usuario):
         sentencia = 'select * from web_c_charts where usuario like "%'+ str(usuario) +'%" or usuario like "todos" order by orden'
-        print(sentencia)
         return self.mysql_con.table(sentencia)
     def ejecutar_charts(self, temp_sentencia):
         return self.mysql_con.table(temp_sentencia)
@@ -1177,7 +1245,6 @@ class edocs:
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
     def traer_edocs_traspaso(self, t_pkestructura ):
         senten = 'select * from web_edocs_traspaso where pkestructura = ' + str(t_pkestructura)
-        print(senten)
         return self.mysql_con.table(senten)   
     def traer_edocs_desgloce(self, t_pkestructura ):
         senten = 'select * from web_edocs_seccion where pkestructura = ' + str(t_pkestructura)
@@ -1185,20 +1252,25 @@ class edocs:
     def traer_edocs_enlaces(self):
         senten = 'select * from web_edocs_filtro'
         return self.mysql_con.table(senten)   
-    def traer_edocs_pendientes(self, t_fecha, t_orden, t_filtro):
-        #senten = 'select web_edocs_main.pkid, web_edocs_main.COMPROBANTE, web_edocs_main.TIPO_EMISION, web_edocs_main.SERIE_COMPROBANTE, web_edocs_main.RUC_EMISOR, web_edocs_main.RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.FECHA_AUTORIZACION, web_edocs_main.CLAVE_ACCESO, web_edocs_main.NUMERO_AUTORIZACION, web_edocs_main.IMPORTE_TOTAL, if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and YEAR(sri_compras.Fecha_emision) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day))) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) order by RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.pkid'
-        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and sri_compras.PkSri_compras IS NULL and web_edocs_main.TIPO_EMISION = "0" order by ' +str(t_orden) + ' limit 199'
-        print(senten)
+    def traer_edocs_pendientes(self, t_fecha, t_orden, t_filtro, t_docu):
+        senten = '' 
+        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "'+ str(t_docu) +'" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and sri_compras.PkSri_compras IS NULL and web_edocs_main.TIPO_EMISION = "0" and web_edocs_main.comprobante like "'+ str(t_docu) +'"'
+        senten = senten + ' union all '
+        senten = senten + ' select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(ingresoretenciones.PkIngresoretenciones is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN ingresoretenciones on (ingresoretenciones.Estado != "anulado" and ingresoretenciones.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and ingresoretenciones.Id_cliente = web_edocs_main.RUC_EMISOR ) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Comprobante de Retencion" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and ingresoretenciones.PkIngresoretenciones IS NULL and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'"  limit 199'
+
         return self.mysql_con.table(senten)   
-    def traer_edocs_ingresados(self, t_fecha, t_orden, t_filtro):
+    def traer_edocs_ingresados(self, t_fecha, t_orden, t_filtro, t_docu):
         #senten = 'select web_edocs_main.pkid, web_edocs_main.COMPROBANTE, web_edocs_main.TIPO_EMISION, web_edocs_main.SERIE_COMPROBANTE, web_edocs_main.RUC_EMISOR, web_edocs_main.RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.FECHA_AUTORIZACION, web_edocs_main.CLAVE_ACCESO, web_edocs_main.NUMERO_AUTORIZACION, web_edocs_main.IMPORTE_TOTAL, if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and YEAR(sri_compras.Fecha_emision) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day))) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) order by RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.pkid'
-        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and not(sri_compras.PkSri_compras IS NULL) and web_edocs_main.TIPO_EMISION = "0" order by ' +str(t_orden) + ' limit 199'
-        print(senten)
+        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and not(sri_compras.PkSri_compras IS NULL) and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'" '
+
+        senten = senten + ' union all '
+        senten = senten + ' select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(ingresoretenciones.PkIngresoretenciones is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN ingresoretenciones on (ingresoretenciones.Estado != "anulado" and ingresoretenciones.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and ingresoretenciones.Id_cliente = web_edocs_main.RUC_EMISOR ) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Comprobante de Retencion" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and not(ingresoretenciones.PkIngresoretenciones IS NULL) and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'" limit 199'
+
+
         return self.mysql_con.table(senten)   
-    def traer_edocs_rechazadas(self, t_fecha, t_orden, t_filtro):
+    def traer_edocs_rechazadas(self, t_fecha, t_orden, t_filtro, t_docu):
         #senten = 'select web_edocs_main.pkid, web_edocs_main.COMPROBANTE, web_edocs_main.TIPO_EMISION, web_edocs_main.SERIE_COMPROBANTE, web_edocs_main.RUC_EMISOR, web_edocs_main.RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.FECHA_AUTORIZACION, web_edocs_main.CLAVE_ACCESO, web_edocs_main.NUMERO_AUTORIZACION, web_edocs_main.IMPORTE_TOTAL, if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and YEAR(sri_compras.Fecha_emision) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day))) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) order by RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.pkid'
-        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and web_edocs_main.TIPO_EMISION = "1" order by ' +str(t_orden) + ' limit 199'
-        print(senten)
+        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and web_edocs_main.TIPO_EMISION = "1"  and web_edocs_main.comprobante like "'+ str(t_docu) +'" order by ' +str(t_orden) + '  limit 199'
         return self.mysql_con.table(senten)   
     def claves_invalidos(self, listado):
         senten = 'select CLAVE_ACCESO from web_edocs_main where web_edocs_main.CLAVE_ACCESO in('+str(listado)+')'
@@ -1227,5 +1299,354 @@ class edocs:
     def edocs_eliminaredocs(self, t_pkid, t_estado_sri):
         sentencia = "update web_edocs_main set TIPO_EMISION = '"+str(t_estado_sri)+"' where pkid = '"+str(t_pkid)+"' "
         self.mysql_con.ejecutar(sentencia)
+
+class cmpcampos:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        
+    def crear_camposxestructura(self, t_pkmodulo, t_pkcampo, t_fuente ,t_pkestructura, t_dataX ):
+        sentencia = "INSERT INTO `camposxestructura` (`PkModulo`, `PkEstructura`, `PkCampo`, `TablaCampo`, `Posicion`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`, `Visible`, `X`, `Y`, `tamano`, `estilo`, `Modificable`, `Largo`, `largoweb`,`saltoweb`,`posicionweb`,`posicionConsulta` ) VALUES ('" + str(t_pkmodulo) + "', '" + str(t_pkestructura) + "', '" + str(t_pkcampo) + "', '"+str(t_fuente)+"', '" + str(t_dataX['Posicion']) + "', '" + str(t_dataX['Nombre']) + "', '" + str(t_dataX['Descripcion']) + "', '" + str(t_dataX['Anulado']) + "', '"+str(t_dataX['Eliminable'])+"', '"+str(t_dataX['Visible'])+"', '" + str(t_dataX['X']) + "', '" + str(t_dataX['Y']) + "', '" + str(t_dataX['tamano']) + "', '" + str(t_dataX['estilo']) + "', '" + str(t_dataX['Modificable']) + "', '" + str(t_dataX['largo']) + "', '" + str(t_dataX['largoweb']) + "', '" + str(t_dataX['saltoweb']) + "', '" + str(t_dataX['posicionweb']) + "', '" + str(t_dataX['posicionConsulta']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from camposxestructura where PkModulo = '"+ str(t_pkmodulo)+"' and PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataX['Nombre'])+"'")  
+
+    def alter_Tabla_datos_text(self, es_nuevo, tabla_nombre, cmp_nombre, cmp_nombre_viejo):
+        if es_nuevo == True:
+            sentencia = "ALTER TABLE " + tabla_nombre + "  ADD " + cmp_nombre + " text "
+        else:
+            sentencia = "Alter table " + tabla_nombre + " change " + cmp_nombre_viejo + " " + cmp_nombre + " text "
+        self.mysql_con.ejecutar(sentencia)
+
+    def alter_Tabla_datos_decimal(self, es_nuevo, tabla_nombre, cmp_nombre, cmp_nombre_viejo, Decimales):
+        if es_nuevo == True:
+            sentencia = "ALTER TABLE " + tabla_nombre + "  ADD " + cmp_nombre + " DECIMAL(32," + str(Decimales) + ") "
+        else:
+            sentencia = "Alter table " + tabla_nombre + " change " + cmp_nombre_viejo + " " + cmp_nombre + " DECIMAL(32," + str(Decimales) + ") "
+        self.mysql_con.ejecutar(sentencia)
+
+        
+    def alter_Tabla_datos_fecha(self, es_nuevo, tabla_nombre, cmp_nombre, cmp_nombre_viejo, tiempo):
+        if es_nuevo == True:
+            if tiempo == 'Y':
+                sentencia = "ALTER TABLE " + tabla_nombre + "  ADD " + cmp_nombre + " DATETIME "
+            else:
+                sentencia = "ALTER TABLE " + tabla_nombre + "  ADD " + cmp_nombre + " DATE "
+                    
+        else:
+            if tiempo == 'Y':
+                sentencia = "Alter table " + tabla_nombre + " change " + cmp_nombre_viejo + " " + cmp_nombre + " DATETIME "
+            else:
+                sentencia = "Alter table " + tabla_nombre + " change " + cmp_nombre_viejo + " " + cmp_nombre + " DATE "
+        self.mysql_con.ejecutar(sentencia)
+
+    def tarer_campo_cmpextrucutra(self, t_PkId):
+        return self.mysql_con.table("Select * from camposxestructura where PkId ="+ str(t_PkId))  
+
+    def crear_cmptxtsimple(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmptxtsimple` (`ValorPredeterminado`, `Largo`, `Unico`, `PkEstructura`, `Nombre`, `Descripcion`, `Modificable`, `Cedula`, `largo_txtbox`) VALUES ('" + str(t_dataCampo['ValorPredeterminado']) + "', '" + str(t_dataCampo['Largo']) + "', '" + str(t_dataCampo['Unico']) + "', '" +str(t_pkestructura)+ "', '" + str(t_dataCampo['Nombre'])  + "', '" + str(t_dataCampo['Descripcion'])  + "', '" + str(t_dataCampo['Modificable'])  + "', '" + str(t_dataCampo['Cedula']) + "', '" + str(t_dataCampo['largo_txtbox']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+
+        return self.mysql_con.table("Select * from cmptxtsimple where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+
+
+    def crear_cmpnumsimple(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpnumsimple` (`NumDecimales`, `Menor`, `Mayor`, `Unico`, `PkEstructura`, `Nombre`, `Descripcion`, `Predeterminado`) VALUES ('" + str(t_dataCampo['NumDecimales']) + "', '" + str(t_dataCampo['Menor']) + "', '" + str(t_dataCampo['Mayor']) + "', '" + str(t_dataCampo['Unico']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_dataCampo['Predeterminado']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+
+        return self.mysql_con.table("Select * from cmpnumsimple where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+    def crear_cmpnumsecuencial(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpnumsecuencial` (`ValorInicial`, `Aumento`, `PkEstructura`, `Nombre`) VALUES ('" + str(t_dataCampo['ValorInicial']) + "', '" + str(t_dataCampo['Aumento']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmpnumsecuencial where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+    def crear_cmpopcmultiple(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpopcmultiple` (`PkEstructura`, `Nombre`) VALUES ('" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        pkcampo = self.mysql_con.table("Select * from cmpopcmultiple where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+        for a in t_dataCampo['valores']:
+            sentencia = "INSERT INTO `cmpopcionvalores` (`PkCampo`, `Nombre`, `Valor`, `Color`) VALUES ('" + str(pkcampo[0]['PkCampo']) + "', '" + str(a['Nombre']) + "', '" + str(a['Valor']) + "', '" + str(a['Color']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+        return pkcampo
+
+    def crear_cmpsistema(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpsistema` ( `PkId`, `PkEstructura`, `Nombre`) VALUES ('" + str(t_dataCampo['Tipo']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmpsistema where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+    def crear_cmpformuladetalle(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpformuladetalle` (`Operacion`, `Campo`, `Condicion`, `TablaCabecera`, `TablaDetalle`, `PkEstructura`, `Nombre`, `Anulado`) VALUES ('" + str(t_dataCampo['Operacion']) + "', '" + str(t_dataCampo['Campo']) + "', '" + str(t_dataCampo['Condicion']) + "', '" + str(t_dataCampo['TablaCabecera']) + "', '" + str(t_dataCampo['TablaDetalle']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', 'N')"
+        self.mysql_con.ejecutar(sentencia)
+        pkcampo = self.mysql_con.table("Select * from cmpformuladetalle where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+        #condicion en num decimales
+
+        for a in t_dataCampo['condiciones']:
+            sentencia = "INSERT INTO `cmpformuladetallecondicion` (`PkCampo`, `TablaOrigen`, `Campo`, `Operador`, `Valor`, `Tipo`) VALUES ('" + str(pkcampo[0]['PkCampo']) + "', '" + str(a['TablaOrigen']) + "', '" + str(a['Campo']) + "', '" + str(a['Operador']) + "', '" + str(a['Valor']) + "', '" + str(a['Tipo']) + "')"
+        return pkcampo
+
+    def crear_cmpfecha(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpfecha` (`ValorPredetermindo`, `FechaActual`, `PkEstructura`, `Nombre`, `Tiempo`) VALUES ('" + str(t_dataCampo['ValorPredetermindo']) + "', '" + str(t_dataCampo['FechaActual']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Tiempo']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmpfecha where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+
+    def crear_cmpreferencia(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpreferencia` (`Sentencia`, `TablaOrigen`, `ModuloOrigen`, `Condicion`, `PkEstructura`, `Nombre`, `ext`, `Columnas`, `Modo`, `pkmodulo_ingreso`, `predeterminado`, `Tipo_Predeterminado`, `A_acc_automatic`, `Desglosado`, `Limitante`, `Valor_Desglosado`, `Escribir`, `predeterminado_valor`, `multi_select`, `Permite_nulo`, `visibles`, `largos`, `orden`, `pkmod_consul`, `campo_fk`) VALUES ('" + str(t_dataCampo['Sentencia']) + "', '" + str(t_dataCampo['TablaOrigen']) + "', '" + str(t_dataCampo['ModuloOrigen']) + "', '" + str(t_dataCampo['Condicion']) + "', '" + str(t_pkestructura)+ "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['ext']) + "', '" + str(t_dataCampo['Columnas']) + "', '" + str(t_dataCampo['Modo']) + "', '" + str(t_dataCampo['pkmodulo_ingreso']) + "', '" + str(t_dataCampo['predeterminado']) + "', '" + str(t_dataCampo['Tipo_Predeterminado']) + "', '" + str(t_dataCampo['A_acc_automatic']) + "', '" + str(t_dataCampo['Desglosado']) + "', '" + str(t_dataCampo['Limitante']) + "', '" + str(t_dataCampo['Valor_Desglosado']) + "', '" + str(t_dataCampo['Escribir']) + "', '" + str(t_dataCampo['predeterminado_valor']) + "', '" + str(t_dataCampo['multi_select']) + "', '" + str(t_dataCampo['Permite_nulo']) + "', '" + str(t_dataCampo['visibles']) + "', '" + str(t_dataCampo['largos']) + "', '" + str(t_dataCampo['orden']) + "', '" + str(t_dataCampo['pkmod_consul']) + "', '" + str(t_dataCampo['campo_fk']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        pkcampo = self.mysql_con.table("Select * from cmpreferencia where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+
+        self.mysql_con.ejecutar(sentencia)
+        for a in t_dataCampo['Condiciones']:
+            sentencia = "INSERT INTO `cmpreferenciacondicion` (`PkCampo`, `TablaOrigen`, `ElementoA`, `TipoA`, `Operador`, `ElementoB`, `TipoB`) VALUES ('" + str(pkcampo[0]['PkCampo']) + "', '" + str(pkcampo[0]['TablaOrigen']) + "', '" +  str(a['ElementoA']) + "', '" + str(a['TipoA'])[0:1] + "', '" + str(a['Operador']) + "', '" +  str(a['ElementoB']) + "', '" + str(a['TipoB'])[0:1] + "')"
+            self.mysql_con.ejecutar(sentencia)
+        return pkcampo
+
+
+
+        return pkcampo  
+
+    def crear_cmpreferenciaadjunto(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpreferenciaadjunto` (`PkCampoReferencia`, `CampoReferencia`, `Sentencia`, `PkEstructura`, `Nombre`, `Tamano`, `Modificable`, `Imagen`, `TieneClave`, `Clave`, `Tipo` ) VALUES ('" + str(t_dataCampo['PkCampoReferencia']) + "', '" + str(t_dataCampo['CampoReferencia']) + "', '" + str(t_dataCampo['Sentencia']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Tamano']) + "', '" + str(t_dataCampo['Modificable']) + "', '" + str(t_dataCampo['Imagen']) + "', '" + str(t_dataCampo['TieneClave']) + "', '" + str(t_dataCampo['Clave']) + "', '" + str(t_dataCampo['Tipo']) + "' )"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmpreferenciaadjunto where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+    def crear_cmpoperacion(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpoperacion` (`PkEstructura`, `Nombre`, `Decimales`) VALUES ('" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Decimales']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        Pkcampo = self.mysql_con.table("Select * from cmpoperacion where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+        for a in t_dataCampo['detalle']:
+            sentencia = "INSERT INTO `cmpoperaciondetalle` (`PkCampos`, `Sentencia`, `Estado`) VALUES ('" + str(Pkcampo[0]['PkCampo']) + "', '" + str(a['Sentencia']) + "', '" + str(a['Estado']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+        return Pkcampo
+
+
+    def crear_cmpconsolidado(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpconsolidado` (`Nombre`, `Descripcion`, `PkEstructura`, `Permite_nulo`, `Tipo`) VALUES ('" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Permite_nulo']) + "', '" + str(t_dataCampo['Tipo']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        Pkcampo = self.mysql_con.table("Select * from cmpconsolidado where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+        for a in t_dataCampo['Columna']:
+            sentencia = "INSERT INTO `cmpconsolidadocolumna` (`PkCampo`, `Tipo`, `Elemento`, `Origen`, `Funcion`, `Grupo`) VALUES ('" + str(Pkcampo[0]['PkCampo']) + "', '" + str(a['Tipo']) + "', '" + str(a['Elemento']) + "', '" + str(a['Origen']) + "', '" + str(a['Funcion']) + "', '" + str(a['Group']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+        for a in t_dataCampo['From']:
+            sentencia = "INSERT INTO `cmpconsolidadofrom` (`PkCampo`, `Tabla`, `Nombre`) VALUES ('" + Pkcampo[0]['PkCampo'] + "', '" + str(a['Fuente']) + "', '" + str(a['Nombre']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+        for a in t_dataCampo['Where']:
+            sentencia = "INSERT INTO `cmpconsolidadowhere` (`PkCampo`, `Tipo`, `Elemento`, `Origen`, `Funcion`, `Grupo`) VALUES ('" + Pkcampo[0]['PkCampo'] + "', '" + str(a['Tipo']) + "', '" + str(a['Elemento']) + "', '" + str(a['Origen'])+ "', '" + str(a['Funcion']) + "', '" + str(a['Group']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+        return Pkcampo
+
+    def crear_cmparchivo(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmparchivo` (`PkEstructura`, `Nombre`, `Descripcion`, `Ruta`) VALUES ('" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_dataCampo['Ruta']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmparchivo where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+
+    def crear_cmpnumeroaletras(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpnumeroaletras` (`PkCampoNumero`, `CampoNumero`, `Decimales`, `PkEstructura`, `Nombre`) VALUES ('" + str(t_dataCampo['PkCampoNumero']) + "', '" + str(t_dataCampo['CampoNumero']) + "', '" + str(t_dataCampo['Decimales']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmpnumeroaletras where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+    def crear_cmpdecabecera(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpdecabecera` ( `PkEstructura`, `Nombre`, `Descripcion`, `Campo`) VALUES ('" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_dataCampo['Campo']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+        return self.mysql_con.table("Select * from cmpdecabecera where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+
+    def crear_cmpelectronico(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpelectronico` (`PkEstructura`, `Nombre`, `Descripcion`, `Tipo`, `Certificado`, `Clave`, `ClaveAcceso`, `Correo`, `correo_int`, `Obligatorio`, `Cond_campo`, `Cond_valor`, `Impresion`) VALUES ('" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_dataCampo['Tipo']) + "', '" + str(t_dataCampo['Certificado']) + "', '" + str(t_dataCampo['Clave']) + "', '" + str(t_dataCampo['ClaveAcceso']) + "', '" + str(t_dataCampo['Correo']) + "', '" + str(t_dataCampo['correo_int']) + "', '" + str(t_dataCampo['Obligatorio']) + "', '" + str(t_dataCampo['Cond_campo']) + "', '" + str(t_dataCampo['Cond_valor']) + "', '" + str(t_dataCampo['Impresion']) + "')"
+        self.mysql_con.ejecutar(sentencia)
+
+        Pkcampo = self.mysql_con.table("Select * from cmpelectronico where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'") 
+
+        sentencia = "INSERT INTO `cmpelect_infotributaria` (`pkcampo`, `ambiente`, `tipoEmision`, `razonSocial`, `nombreComercial`, `ruc`, `claveAcceso`, `codDoc`, `estab`, `ptoEmi`, `secuencial`, `dirMatriz`, `fecha`, `regimenMicroempresas`, `agenteRetencion`) VALUES ('" + str(Pkcampo[0]['PkCampo']) + "', '" + t_dataCampo['infoTributaria']['ambiente'] + "', '" + t_dataCampo['infoTributaria']['tipoEmision'] + "', '" + t_dataCampo['infoTributaria']['razonSocial']  + "', '" + t_dataCampo['infoTributaria']['nombreComercial'] + "', '" + t_dataCampo['infoTributaria']['ruc'] + "', '" + t_dataCampo['infoTributaria']['claveAcceso'] + "', '" + t_dataCampo['infoTributaria']['codDoc'] + "', '" + t_dataCampo['infoTributaria']['estab'] + "', '" + t_dataCampo['infoTributaria']['ptoEmi'] + "', '" + t_dataCampo['infoTributaria']['secuencial'] + "', '" + t_dataCampo['infoTributaria']['dirMatriz'] + "', '" + t_dataCampo['infoTributaria']['fecha'] + "', '" + t_dataCampo['infoTributaria']['regimenMicroempresas'] + "', '" + t_dataCampo['infoTributaria']['agenteRetencion'] + "')"
+        self.mysql_con.ejecutar(sentencia)
+
+
+        for a in t_dataCampo['Adicionales']:
+            sentencia = "INSERT INTO `cmpelect_infoadicional` (`pkcampo`, `nombre`, `valor`) " + " VALUES ('" + Pkcampo[0]['PkCampo'] + "', '" + str(a['nombre'])  + "', '" + str(a['valor']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+
+        if t_dataCampo['Tipo'] == 'Factura':
+            sentencia = "INSERT INTO `cmpelect_infofactura` (`pkcampo`, `fechaEmision`, `dirEstablecimiento`, `contribuyenteEspecial`, `obligadoContabilidad`, `tipoIdentificacionComprador`, `razonSocialComprador`, `identificacionComprador`, `totalSinImpuestos`, `totalDescuento`, `propina`, `importeTotal`, `moneda`, `codigo1`, `codigoPorcentaje1`, `baseImponible1`, `valor1`, `codigo2`, `codigoPorcentaje2`, `baseImponible2`, `valor2`, `codigo3`, `codigoPorcentaje3`, `baseImponible3`, `valor3`, `descuento_adicional1`, `descuento_adicional2`, `descuento_adicional3`, `formaPago`, `total`, `plazo`, `unidadTiempo` , `comercioExterior` , `IncoTermFactura` , `lugarIncoTerm` , `paisOrigen` , `puertoEmbarque` , `puertoDestino` , `paisDestino` , `paisAdquisicion` , `guiaRemision` , `direccionComprador` , `incoTermTotalSinImpuestos` , `fleteInternacional` , `seguroInternacional` , `gastosAduaneros` , `gastosTransporteOtros`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"','" + str(t_dataCampo['infoFactura']['fechaEmision']) + "', '" + str(t_dataCampo['infoFactura']['dirEstablecimiento']) + "', '" + str(t_dataCampo['infoFactura']['contribuyenteEspecial']) + "', '" + str(t_dataCampo['infoFactura']['obligadoContabilidad']) + "', '" + str(t_dataCampo['infoFactura']['tipoIdentificacionComprador']) + "', '" + str(t_dataCampo['infoFactura']['razonSocialComprador']) + "', '" + str(t_dataCampo['infoFactura']['identificacionComprador']) + "', '" + str(t_dataCampo['infoFactura']['totalSinImpuestos']) + "', '" + str(t_dataCampo['infoFactura']['totalDescuento']) + "', '" + str(t_dataCampo['infoFactura']['propina']) + "', '" + str(t_dataCampo['infoFactura']['importeTotal']) + "', '" + str(t_dataCampo['infoFactura']['moneda']) + "', '" + str(t_dataCampo['infoFactura']['codigo1']) + "', '" + str(t_dataCampo['infoFactura']['codigoPorcentaje1']) + "', '" + str(t_dataCampo['infoFactura']['baseImponible1']) + "', '" + str(t_dataCampo['infoFactura']['valor1']) + "', '" + str(t_dataCampo['infoFactura']['codigo2']) + "', '" + str(t_dataCampo['infoFactura']['codigoPorcentaje2']) + "', '" + str(t_dataCampo['infoFactura']['baseImponible2']) + "', '" + str(t_dataCampo['infoFactura']['valor2']) + "', '" + str(t_dataCampo['infoFactura']['codigo3']) + "', '" + str(t_dataCampo['infoFactura']['codigoPorcentaje3']) + "', '" + str(t_dataCampo['infoFactura']['baseImponible3']) + "', '" + str(t_dataCampo['infoFactura']['valor3']) + "', '" + str(t_dataCampo['infoFactura']['descuento_adicional1']) + "', '" + str(t_dataCampo['infoFactura']['descuento_adicional2']) + "', '" + str(t_dataCampo['infoFactura']['descuento_adicional3']) + "', '" + str(t_dataCampo['infoFactura']['formaPago']) + "', '" + str(t_dataCampo['infoFactura']['total']) + "', '" + str(t_dataCampo['infoFactura']['plazo']) + "', '" + str(t_dataCampo['infoFactura']['unidadTiempo']) + "', '" + str(t_dataCampo['infoFactura']['comercioExterior']) + "', '" + str(t_dataCampo['infoFactura']['IncoTermFactura']) + "', '" + str(t_dataCampo['infoFactura']['lugarIncoTerm']) + "', '" + str(t_dataCampo['infoFactura']['paisOrigen']) + "', '" + str(t_dataCampo['infoFactura']['puertoEmbarque']) + "', '" + str(t_dataCampo['infoFactura']['puertoDestino']) + "', '" + str(t_dataCampo['infoFactura']['paisDestino']) + "', '" + str(t_dataCampo['infoFactura']['paisAdquisicion']) + "', '" + str(t_dataCampo['infoFactura']['guiaRemision']) + "', '" + str(t_dataCampo['infoFactura']['direccionComprador']) + "', '" + str(t_dataCampo['infoFactura']['incoTermTotalSinImpuestos']) + "', '" + str(t_dataCampo['infoFactura']['fleteInternacional']) + "', '" + str(t_dataCampo['infoFactura']['seguroInternacional']) + "', '" + str(t_dataCampo['infoFactura']['gastosAduaneros']) + "', '" + str(t_dataCampo['infoFactura']['gastosTransporteOtros']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+
+            sentencia = "INSERT INTO `cmpelect_detalles` (`pkcampo`, `codigoPrincipal`, `descripcion`, `cantidad`, `precioUnitario`, `descuento`, `precioTotalSinImpuesto`, `codigo`, `codigoPorcentaje`, `tarifa`, `baseImponible`, `valor`, `codigoAuxiliar`, `unidadMedida`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['detFactura']['codigoPrincipal']) + "', '" + str(t_dataCampo['detFactura']['descripcion']) + "', '" + str(t_dataCampo['detFactura']['cantidad']) + "', '" + str(t_dataCampo['detFactura']['precioUnitario']) + "', '" + str(t_dataCampo['detFactura']['descuento']) + "', '" + str(t_dataCampo['detFactura']['precioTotalSinImpuesto']) + "', '" + str(t_dataCampo['detFactura']['codigo']) + "', '" + str(t_dataCampo['detFactura']['codigoPorcentaje']) + "', '" + str(t_dataCampo['detFactura']['tarifa']) + "', '" + str(t_dataCampo['detFactura']['baseImponible']) + "', '" + str(t_dataCampo['detFactura']['valor']) + "', '" + str(t_dataCampo['detFactura']['codigoAuxiliar']) + "', '" + str(t_dataCampo['detFactura']['unidadMedida']) + "')"
+
+            self.mysql_con.ejecutar(sentencia)
+
+
+
+        if t_dataCampo['Tipo'] == 'Retencion':
+            sentencia = "INSERT INTO `cmpelect_ret_infocompretencion` (`pkcampo`, `fechaEmision`, `dirEstablecimiento`, `contribuyenteEspecial`, `obligadoContabilidad`, `tipoIdentificacionSujetoRetenido`, `razonSocialSujetoRetenido`, `identificacionSujetoRetenido`, `periodoFiscal`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['CabRetencion']['fechaEmision']) + "',  '" + str(t_dataCampo['CabRetencion']['dirEstablecimiento']) + "',  '" + str(t_dataCampo['CabRetencion']['contribuyenteEspecial']) + "',  '" + str(t_dataCampo['CabRetencion']['obligadoContabilidad']) + "',  '" + str(t_dataCampo['CabRetencion']['tipoIdentificacionSujetoRetenido']) + "',  '" + str(t_dataCampo['CabRetencion']['razonSocialSujetoRetenido']) + "',  '" + str(t_dataCampo['CabRetencion']['identificacionSujetoRetenido']) + "',  '" + str(t_dataCampo['CabRetencion']['periodoFiscal']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+            sentencia = "INSERT INTO `cmpelect_ret_impuestos` (`pkcampo`, `codDocSustento`, `fechaEmisionDocSustento`, `numDocSustento_est`, `numDocSustento_punto`, `numDocSustento_sec`, `tipo`, `det_codigo`, `det_codigoRetencion`, `det_baseImponible`, `det_porcentajeRetener`, `det_valorRetenido`, `det_codigo2`, `det_codigoRetencion2`, `det_baseImponible2`, `det_porcentajeRetener2`, `det_valorRetenido2`)  VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['DetRetencion']['codDocSustento']) + "', '" + str(t_dataCampo['DetRetencion']['fechaEmisionDocSustento']) + "', '" + str(t_dataCampo['DetRetencion']['numDocSustento_est']) + "', '" + str(t_dataCampo['DetRetencion']['numDocSustento_punto']) + "', '" + str(t_dataCampo['DetRetencion']['numDocSustento_sec']) + "', '" + str(t_dataCampo['DetRetencion']['tipo']) + "', '" + str(t_dataCampo['DetRetencion']['det_codigo']) + "', '" + str(t_dataCampo['DetRetencion']['det_codigoRetencion']) + "', '" + str(t_dataCampo['DetRetencion']['det_baseImponible']) + "', '" + str(t_dataCampo['DetRetencion']['det_porcentajeRetener']) + "', '" + str(t_dataCampo['DetRetencion']['det_valorRetenido']) + "', '" + str(t_dataCampo['DetRetencion']['det_codigo2']) + "', '" + str(t_dataCampo['DetRetencion']['det_codigoRetencion2']) + "', '" + str(t_dataCampo['DetRetencion']['det_baseImponible2']) + "', '" + str(t_dataCampo['DetRetencion']['det_porcentajeRetener2']) + "', '" + str(t_dataCampo['DetRetencion']['det_valorRetenido2']) + "')"
+
+            self.mysql_con.ejecutar(sentencia)
+
+        if t_dataCampo['Tipo'] == 'Nota credito':
+
+            sentencia = "INSERT INTO `cmpelect_notacredito_info` (`pkcampo`, `fechaEmision`, `dirEstablecimiento`, `tipoIdentificacionComprador`, `razonSocialComprador`, `identificacionComprador`, `obligadoContabilidad`, `codDocModificado`, `numDocModificado_est`, `numDocModificado_punto`, `numDocModificado_sec`, `fechaEmisionDocSustento`, `totalSinImpuestos`, `valorModificacion`, `moneda`, `motivo`, `codigo1`, `codigoPorcentaje1`, `baseImponible1`, `valor1`, `codigo2`, `codigoPorcentaje2`, `baseImponible2`, `valor2`, `codigo3`, `codigoPorcentaje3`, `baseImponible3`, `valor3`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['Cabcredito']['fechaEmision']) + "', '" + str(t_dataCampo['Cabcredito']['dirEstablecimiento']) + "', '" + str(t_dataCampo['Cabcredito']['tipoIdentificacionComprador']) + "', '" + str(t_dataCampo['Cabcredito']['razonSocialComprador']) + "', '" + str(t_dataCampo['Cabcredito']['identificacionComprador']) + "', '" + str(t_dataCampo['Cabcredito']['obligadoContabilidad']) + "', '" + str(t_dataCampo['Cabcredito']['codDocModificado']) + "', '" + str(t_dataCampo['Cabcredito']['numDocModificado_est']) + "', '" + str(t_dataCampo['Cabcredito']['numDocModificado_punto']) + "', '" + str(t_dataCampo['Cabcredito']['numDocModificado_sec']) + "', '" + str(t_dataCampo['Cabcredito']['fechaEmisionDocSustento']) + "', '" + str(t_dataCampo['Cabcredito']['totalSinImpuestos']) + "', '" + str(t_dataCampo['Cabcredito']['valorModificacion']) + "', '" + str(t_dataCampo['Cabcredito']['moneda']) + "', '" + str(t_dataCampo['Cabcredito']['motivo']) + "', '" + str(t_dataCampo['Cabcredito']['codigo1']) + "', '" + str(t_dataCampo['Cabcredito']['codigoPorcentaje1']) + "', '" + str(t_dataCampo['Cabcredito']['baseImponible1']) + "', '" + str(t_dataCampo['Cabcredito']['valor1']) + "', '" + str(t_dataCampo['Cabcredito']['codigo2']) + "', '" + str(t_dataCampo['Cabcredito']['codigoPorcentaje2']) + "', '" + str(t_dataCampo['Cabcredito']['baseImponible2']) + "', '" + str(t_dataCampo['Cabcredito']['valor2']) + "', '" + str(t_dataCampo['Cabcredito']['codigo3']) + "', '" + str(t_dataCampo['Cabcredito']['codigoPorcentaje3']) + "', '" + str(t_dataCampo['Cabcredito']['baseImponible3']) + "', '" + str(t_dataCampo['Cabcredito']['valor3']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+
+            sentencia = "INSERT INTO `cmpelect_notacredito_detalles` (`pkcampo`, `codigoInterno`, `codigoAdicional`, `descripcion`, `cantidad`, `precioUnitario`, `descuento`, `precioTotalSinImpuesto`, `codigo`, `codigoPorcentaje`, `tarifa`, `baseImponible`, `valor`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['Detcredito']['codigoInterno']) + "', '" + str(t_dataCampo['Detcredito']['codigoAdicional']) + "', '" + str(t_dataCampo['Detcredito']['descripcion']) + "', '" + str(t_dataCampo['Detcredito']['cantidad']) + "', '" + str(t_dataCampo['Detcredito']['precioUnitario']) + "', '" + str(t_dataCampo['Detcredito']['descuento']) + "', '" + str(t_dataCampo['Detcredito']['precioTotalSinImpuesto']) + "', '" + str(t_dataCampo['Detcredito']['codigo']) + "', '" + str(t_dataCampo['Detcredito']['codigoPorcentaje']) + "', '" + str(t_dataCampo['Detcredito']['tarifa']) + "', '" + str(t_dataCampo['Detcredito']['baseImponible']) + "', '" + str(t_dataCampo['Detcredito']['valor']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+
+        if t_dataCampo['Tipo'] == 'Guia remision':
+            sentencia = "INSERT INTO `cmpelect_guia_info` (`pkcampo`, `dirEstablecimiento`, `dirPartida`, `razonSocialTransportista`, `tipoIdentificacionTransportista`, `rucTransportista`, `obligadoContabilidad`, `fechaIniTransporte`, `fechaFinTransporte`, `placa`)  VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['CabGuia']['dirEstablecimiento']) + "', '" + str(t_dataCampo['CabGuia']['dirPartida']) + "', '" + str(t_dataCampo['CabGuia']['razonSocialTransportista']) + "', '" + str(t_dataCampo['CabGuia']['tipoIdentificacionTransportista']) + "', '" + str(t_dataCampo['CabGuia']['rucTransportista']) + "', '" + str(t_dataCampo['CabGuia']['obligadoContabilidad']) + "', '" + str(t_dataCampo['CabGuia']['fechaIniTransporte']) + "', '" + str(t_dataCampo['CabGuia']['fechaFinTransporte']) + "', '" + str(t_dataCampo['CabGuia']['placa']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+            sentencia = "INSERT INTO `cmpelect_guia_destinatarios` (`pkcampo`, `identificacionDestinatario`, `razonSocialDestinatario`, `dirDestinatario`, `motivoTraslado`, `docAduaneroUnico`, `codEstabDestino`, `ruta`, `codDocSustento`, `numDocSustento_punto`, `numAutDocSustento`, `fechaEmisionDocSustento`, `codigoInterno`, `codigoAdicional`, `descripcion`, `cantidad`, `numDocSustento_est`, `numDocSustento_sec`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['DetGuia']['identificacionDestinatario']) + "', '" + str(t_dataCampo['DetGuia']['razonSocialDestinatario']) + "', '" + str(t_dataCampo['DetGuia']['dirDestinatario']) + "', '" + str(t_dataCampo['DetGuia']['motivoTraslado']) + "', '" + str(t_dataCampo['DetGuia']['docAduaneroUnico']) + "', '" + str(t_dataCampo['DetGuia']['codEstabDestino']) + "', '" + str(t_dataCampo['DetGuia']['ruta']) + "', '" + str(t_dataCampo['DetGuia']['codDocSustento']) + "', '" + str(t_dataCampo['DetGuia']['numDocSustento_punto']) + "', '" + str(t_dataCampo['DetGuia']['numAutDocSustento']) + "', '" + str(t_dataCampo['DetGuia']['fechaEmisionDocSustento']) + "', '" + str(t_dataCampo['DetGuia']['codigoInterno']) + "', '" + str(t_dataCampo['DetGuia']['codigoAdicional']) + "', '" + str(t_dataCampo['DetGuia']['descripcion']) + "', '" + str(t_dataCampo['DetGuia']['cantidad']) + "', '" + str(t_dataCampo['DetGuia']['numDocSustento_est']) + "', '" + str(t_dataCampo['DetGuia']['numDocSustento_sec']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+
+
+
+        if t_dataCampo['Tipo'] == 'Nota debito':
+            sentencia = "INSERT INTO `cmpelect_notadebito_info` (`pkcampo`, `fechaEmision`, `dirEstablecimiento`, `tipoIdentificacionComprador`, `razonSocialComprador`, `identificacionComprador`, `obligadoContabilidad`, `codDocModificado`, `numDocModificado_est`, `numDocModificado_punt`, `numDocModificado_sec`, `fechaEmisionDocSustento`, `totalSinImpuestos`, `valorTotal`, `codigo1`, `codigoPorcentaje1`, `tarifa1`, `baseImponible1`, `valor1`, `codigo2`, `codigoPorcentaje2`, `tarifa2`, `baseImponible2`, `valor2`, `unidadTiempo` , `formaPago`, `total`, `plazo`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"', '" + str(t_dataCampo['CabNotadebito']['fechaEmision']) + "', '" + str(t_dataCampo['CabNotadebito']['dirEstablecimiento']) + "', '" + str(t_dataCampo['CabNotadebito']['tipoIdentificacionComprador']) + "', '" + str(t_dataCampo['CabNotadebito']['razonSocialComprador']) + "', '" + str(t_dataCampo['CabNotadebito']['identificacionComprador']) + "', '" + str(t_dataCampo['CabNotadebito']['obligadoContabilidad']) + "', '" + str(t_dataCampo['CabNotadebito']['codDocModificado']) + "', '" + str(t_dataCampo['CabNotadebito']['numDocModificado_est']) + "', '" + str(t_dataCampo['CabNotadebito']['numDocModificado_punt']) + "', '" + str(t_dataCampo['CabNotadebito']['numDocModificado_sec']) + "', '" + str(t_dataCampo['CabNotadebito']['fechaEmisionDocSustento']) + "', '" + str(t_dataCampo['CabNotadebito']['totalSinImpuestos']) + "', '" + str(t_dataCampo['CabNotadebito']['valorTotal']) + "', '" + str(t_dataCampo['CabNotadebito']['codigo1']) + "', '" + str(t_dataCampo['CabNotadebito']['codigoPorcentaje1']) + "', '" + str(t_dataCampo['CabNotadebito']['tarifa1']) + "', '" + str(t_dataCampo['CabNotadebito']['baseImponible1']) + "', '" + str(t_dataCampo['CabNotadebito']['valor1']) + "', '" + str(t_dataCampo['CabNotadebito']['codigo2']) + "', '" + str(t_dataCampo['CabNotadebito']['codigoPorcentaje2']) + "', '" + str(t_dataCampo['CabNotadebito']['tarifa2']) + "', '" + str(t_dataCampo['CabNotadebito']['baseImponible2']) + "', '" + str(t_dataCampo['CabNotadebito']['valor2']) + "', '" + str(t_dataCampo['CabNotadebito']['unidadTiempo']) + "', '" + str(t_dataCampo['CabNotadebito']['formaPago']) + "', '" + str(t_dataCampo['CabNotadebito']['total']) + "', '" + str(t_dataCampo['CabNotadebito']['plazo']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+            sentencia = "INSERT INTO `cmpelect_notadebito_motivos` (`pkcampo`, `razon`, `valor`) VALUES ('"+str(Pkcampo[0]['Pkcampo'])+"','" + str(t_dataCampo['DetNotadebito']['razon']) + "', '" + str(t_dataCampo['DetNotadebito']['valor']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+
+        self.mysql_con.ejecutar(sentencia)
+        return Pkcampo 
+
+
+
+
+
+    def crear_cmpcondicional(self, t_pkestructura, t_dataCampo ):
+        sentencia = "INSERT INTO `cmpcondicional` (`PkEstructura`, `Nombre`, `Descripcion`) VALUES ('"+ str(t_pkestructura)+"', '"+ str(t_dataCampo['Nombre'])+"', '"+ str(t_dataCampo['Descripcion'])+"')"
+        self.mysql_con.ejecutar(sentencia)
+        Pkcampo = self.mysql_con.table("Select * from cmpcondicional where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
+        for a in t_dataCampo['detalle']:
+            sentencia = "INSERT INTO `cmpcondicionaldetalle` (`PkCampo`, `TipoA`, `ElementoA`, `Operador`, `TipoB`, `ElementoB`, `TipoC`, `ElementoC`) VALUES ('" + str(Pkcampo[0]['PkCampo'])+ "', '" + str(a['TipoA']) + "', '" + str(a['ElementoA']) + "', '" + str(a['Operador']) + "', '" + str(a['TipoB']) + "', '" + str(a['ElementoB'])+ "', '" + str(a['TipoC'])+ "', '" + str(a['ElementoC'])+ "')"
+            self.mysql_con.ejecutar(sentencia)
+        return Pkcampo
+
+    def max_posis(self, t_pkestructura):
+        sentencia = "SELECT COALESCE(max(Posicion),0) +1 as 'Maxi'  from camposxestructura WHERE PkEstructura = '657'"
+        return self.mysql_con.table(sentencia)[0]['Maxi']          
+
+    def borrar_camposXestructura(self, A_PkId, A_PkModulo, A_PkEstructura, A_PkCampo  ):
+        sentencia = "DELETE FROM `camposxestructura`  WHERE (`PkId`='" + str(A_PkId) + "') AND (`PkModulo`='" + str(A_PkModulo) + "') AND (`PkEstructura`='" + str(A_PkEstructura) + "') AND (`PkCampo`='" + str(A_PkCampo) + "')"
+        self.mysql_con.ejecutar(sentencia)
+
+    def borrar_cmpCampo(self, fuente, t_PkCampo):
+        if fuente == 'cmptxtsimple':
+            sentencia = "delete from cmptxtsimple where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpnumsimple':
+            sentencia = "delete from cmpnumsimple where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpnumsecuencial':
+            sentencia = "delete from cmpnumsecuencial where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpopcmultiple':
+            sentencia = "delete from cmpopcmultiple where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "delete from cmpopcionvalores where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpsistema':
+            sentencia = "delete from cmpsistema where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpformuladetalle':
+            sentencia = "delete from cmpformuladetalle where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "delete from cmpformuladetallecondicion where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpfecha':
+            sentencia = "delete from cmpfecha where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpreferencia':
+            sentencia = "delete from cmpreferencia where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+            sentencia = "delete from cmpreferenciacondicion where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+            sentencia = "delete from cmpreferenciaacciones where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+            #borrar acciones ??si
+
+        if fuente == 'cmpreferenciaadjunto':
+            sentencia = "delete from cmpreferenciaadjunto where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpoperacion':
+            sentencia = "delete from cmpoperacion where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "delete from cmpoperaciondetalle where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpconsolidado':
+            sentencia = "delete from cmpconsolidado where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("delete from cmpconsolidadocolumna where PkCampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpconsolidadofrom where PkCampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpconsolidadowhere where PkCampo = '"+ str(t_PkCampo)+"'")
+
+        if fuente == 'cmparchivo':
+            sentencia = "delete from cmparchivo where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpnumeroaletras':
+            sentencia = "delete from cmpnumeroaletras where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpdecabecera':
+            sentencia = "delete from cmpdecabecera where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+        if fuente == 'cmpelectronico':
+            sentencia = "delete from cmpelectronico where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+
+            self.mysql_con.ejecutar("delete from cmpelect_infofactura where pkcampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpelect_detalles where pkcampo = '"+ str(t_PkCampo)+"'")
+
+            self.mysql_con.ejecutar("delete from cmpelect_ret_infocompretencion where pkcampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpelect_ret_impuestos where pkcampo = '"+ str(t_PkCampo)+"'")
+
+            self.mysql_con.ejecutar("delete from cmpelect_notadebito_info where pkcampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpelect_notadebito_motivos where pkcampo = '"+ str(t_PkCampo)+"'")
+
+            self.mysql_con.ejecutar("delete from cmpelect_notacredito_info where pkcampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpelect_notacredito_detalles where pkcampo = '"+ str(t_PkCampo)+"'")
+
+            self.mysql_con.ejecutar("delete from cmpelect_guia_info where pkcampo = '"+ str(t_PkCampo)+"'")
+            self.mysql_con.ejecutar("delete from cmpelect_guia_destinatarios where pkcampo = '"+ str(t_PkCampo)+"'")
+
+        if fuente == 'cmpcondicional':
+            sentencia = "delete from cmpcondicional where PkCampo = '"+ str(t_PkCampo)+"'"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("delete from cmpcondicionaldetalle where PkCampo = '"+ str(t_PkCampo)+"'")
+
+
+
+
+
+
+
+
+
 
 

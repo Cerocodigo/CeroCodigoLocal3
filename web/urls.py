@@ -1,19 +1,3 @@
-"""django_project URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.10/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
-"""
-
 from django.views.static import serve
 
 from django.conf.urls import url
@@ -51,8 +35,9 @@ urlpatterns = [
     url(r'^(?P<negocio>[a-z, A-Z, 0-9]+)/eshop/(?P<v_cat>[a-z, A-Z, 0-9]+)', views.eshop_bus_solo),          
     url(r'^(?P<negocio>[a-z, A-Z, 0-9]+)/eshop', views.eshop),  
     url(r'^aa', views.aa),
-    url(r'^activar/(?P<Clave_act>[0-9]+)/', views.activar_usuario),
-    url(r'^al_errores', views.al_errores), 
+    url(r'^activar/(?P<Clave_act>[0-9]+)/', views.activar_usuario),    
+    url(r'^myfunction', views.myfunction), 
+    url(r'^myotherfunction', views.myotherfunction), 
     url(r'^adm_estados_cond', views.adm_estados_cond),
     url(r'^adm_estados_actualizar', views.adm_estados_actualizar), 
     url(r'^adm_estados_nuevo', views.adm_estados_nuevo), 
@@ -85,6 +70,7 @@ urlpatterns = [
     url(r'^calendar', views.calendar),      
     url(r'^carga_docs', views.carga_docs),
     url(r'^consolidado', views.consolidado),
+    url(r'^cmpadmin_grabar', views.cmpadmin_grabar),        
     url(r'^crear_new', views.crear_new),        
     url(r'^cmpnumsecuencial', views.cmpnumsecuencial),  
     url(r'^crearcuenta', views.crearcuenta),
@@ -92,21 +78,26 @@ urlpatterns = [
     url(r'^crear_resp', views.crear_resp), 
     url(r'^cargar_charts', views.cargar_charts), 
     url(r'^cambio_dir_reget', views.cambio_dir_reget), 
+    url(r'^nuevo_dir_ficha_multi', views.nuevo_dir_ficha_multi), 
     url(r'^nuevo_dir_ficha', views.nuevo_dir_ficha), 
     url(r'^cla_usuario', views.cla_usuario), 
+    url(r'^catalogo', views.catalogo),
     url(r'^demo_views', views.demo_views),
     url(r'^demolog', views.demolog),
     url(r'^demo', views.demo),
     url(r'^dropbox', views.dropbox),
-    url(r'^catalogo', views.catalogo),
     url(r'^edocs_subir_sri', views.edocs_subir_sri),      
     url(r'^edocs_eliminaredocs', views.edocs_eliminaredocs),
     url(r'^edocs_sri', views.edocs_sri),
     url(r'^edocs_data_sri', views.edocs_data_sri),
     url(r'^e_docs/Facturas/(?P<Clave_doc>[0-9]+)/', views.Factura),
+    url(r'^e_docs/Facturas/(?P<Clave_doc>[0-9]+)', views.Factura),
     url(r'^e_docs/Retenciones/(?P<Clave_doc>[0-9]+)/', views.Retencion),
+    url(r'^e_docs/Retenciones/(?P<Clave_doc>[0-9]+)', views.Retencion),
     url(r'^e_docs/Credito/(?P<Clave_doc>[0-9]+)/', views.Credito),
+    url(r'^e_docs/Credito/(?P<Clave_doc>[0-9]+)', views.Credito),
     url(r'^e_docs/Guia/(?P<Clave_doc>[0-9]+)/', views.Guia),
+    url(r'^e_docs/Guia/(?P<Clave_doc>[0-9]+)', views.Guia),
     url(r'^e_docs', views.e_docs),
     url(r'^enviar_mensaje', views.enviar_mensaje),      
     url(r'^experto_solicitud', views.experto_solicitud),
@@ -121,6 +112,7 @@ urlpatterns = [
     url(r'^guia', views.guia),
     url(r'^intercambio_cc', views.intercambio_cc),  
     url(r'^intercambio_dir', views.intercambio_dir),        
+    url(r'^intercambio_listado_dir', views.intercambio_listado_dir),       
     url(r'^insert_rapido', views.insert_rapido),  
     url(r'^insert_rap_det', views.insert_rap_det),
     url(r'^log_fast', views.log_fast),            
@@ -133,6 +125,7 @@ urlpatterns = [
     url(r'^menu_editar_atributos', views.menu_editar_atributos),   
     url(r'^menu_add_proceso', views.menu_add_proceso),      
     url(r'^menu_add_modulo', views.menu_add_modulo),      
+    url(r'^menu_add_reporte', views.menu_add_reporte),      
     url(r'^menu_eliminar', views.menu_eliminar),      
     url(r'^menu_filtro', views.menu_filtro),      
     url(r'^menu_click', views.menu_click),        
@@ -153,6 +146,8 @@ urlpatterns = [
     url(r'^paneles_items', views.paneles_items),
     url(r'^procesar_import_previa', views.procesar_import_previa),
     url(r'^procesar_import_proceso', views.procesar_import_proceso),
+    url(r'^pdf_ficha_server_test', views.pdf_ficha_server_test),
+    url(r'^pdf_ficha_server', views.pdf_ficha_server),
     url(r'^pdf_ficha', views.pdf_ficha),
     url(r'^promo', views.crear_usuario_promo),      
     url(r'^regis_guardar', views.regis_guardar),   

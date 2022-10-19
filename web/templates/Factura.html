@@ -121,7 +121,7 @@ function hacer_pdf(){
                               
           //----------------------------------------detalle
         doc.text(5, 95, 'Codigo');
-        doc.text(25, 95, 'Auxiliar');
+        doc.text(30, 95, 'Auxiliar');
         doc.text(55, 95, 'Descripcion');
         doc.text(140, 95, 'Cant', 'right');
         doc.text(160, 95, 'Precio', 'right');
@@ -142,10 +142,11 @@ function hacer_pdf(){
         doc.line(5, 96, 205, 96); // horizontal line
         var paguina  = 0
         var ultima_fila = 0
-          
+        
+        
         for (i = 0; i < JVcodigoPrincipal.length; i++) {
-                doc.text(5, (i * 5) + 100 - paguina, JVcodigoPrincipal[i]);
-                doc.text(25, (i * 5) + 100 - paguina, JVcodigoAuxiliar[i]);
+                doc.text(5, (i * 5) + 100 - paguina, JVcodigoPrincipal[i].substring(0, 11).concat('...'));
+                doc.text(30, (i * 5) + 100 - paguina, JVcodigoAuxiliar[i].substring(0, 11).concat('...'));
                 if (JVdescripcion[i].length > 35) {
                 doc.text(55, (i * 5) + 100 - paguina,  JVdescripcion[i].substring(0, 33).concat('...'));
                 } else { 
@@ -266,7 +267,7 @@ function hacer_pdf(){
             <td style="vertical-align: top; width: 50%;">
                                   
 
-                <img style="width: 350px; height: 169px;" src="/static/archivos/{{val_fijos.ruc}}.png" alt=""><br>
+                <img style="width: 350px; height: 169px;" src="/static/archivos/logo/{{val_fijos.ruc}}.png" alt=""><br>
 &nbsp;{{val_fijos.contribuyenteEspecial}}<br>
 &nbsp;OBLIGADO A LLEVAR CONTABILIDAD <span>&nbsp;{{val_fijos.obligadoContabilidad}}<br>
             </span><span></span></td>

@@ -151,3 +151,36 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #MEDIA_URL = 'http://127.0.0.1:8000/media/'
 #MEDIA_ROOT = '/home/admin/webapps/mainfolder/mainapp/media'
 #MEDIA_ROOT = '/home/admin/webapps/mainfolder/mainapp/media'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'mysite.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers':['file'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'web': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
+}

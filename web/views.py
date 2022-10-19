@@ -11,6 +11,10 @@ import unicodedata
 import datetime
 import json
 import random
+import logging
+
+logger = logging.getLogger(__name__)
+
 from django.core.mail import EmailMessage
 
 from time import strftime,localtime
@@ -35,7 +39,9 @@ import web.funciones_edocs
 import web.paneles
 import web.erp_log_menu
 import web.charts
-import web.dropbox
+import web.cmpadmin
+import web.firma_pdf
+import web.pdf
 
 import os
 
@@ -59,6 +65,34 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 
 from django.contrib.humanize.templatetags.humanize import intcomma
+
+def myfunction(request):
+	logger.debug("this is a debug message!")
+
+def myotherfunction(request):
+	logger.error("this is an error message!!")
+
+def cmpadmin_grabar(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':            
+            cmpadmin = web.cmpadmin
+            t_dataCampo = json.loads(request.POST.getlist('t_dataCampostr')[0])     
+            dat_conn = {'conn_user':request.session['conn_user'][request.POST.getlist('Id_empresa')[0]],'conn_pass':request.session['conn_pass'][request.POST.getlist('Id_empresa')[0]],'conn_base':request.session['conn_base'][request.POST.getlist('Id_empresa')[0]],'conn_ip':request.session['conn_ip'][request.POST.getlist('Id_empresa')[0]]}         
+            t_dataX = json.loads(request.POST.getlist('t_dataXstr')[0])     
+            if request.POST.getlist('es_nuevo')[0] == 'false':
+                es_nuevo = False
+            else:
+                es_nuevo = True
+            resp_campo = cmpadmin.cmpadmin_grabar(dat_conn, request.POST.getlist('zona')[0], es_nuevo , request.POST.getlist('pkid')[0], request.POST.getlist('fuente')[0], request.POST.getlist('t_pkmodulo')[0], request.POST.getlist('t_pkestructura')[0], t_dataCampo, t_dataX, request.POST.getlist('tabla_nombre')[0], request.POST.getlist('cmp_nombre')[0], request.POST.getlist('cmp_display')[0])
+            resp_campo['tem_pestalla'] = request.POST.getlist('tem_pestalla')[0]
+            return JsonResponse(resp_campo)
+
+def menu_add_reporte(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':            
+            erp_data = web.erp_log_menu
+            resp_reporte_nuevo = erp_data.menu_add_reporte(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('nombre')[0], request.POST.getlist('PkModulo')[0], request.POST.getlist('usuario')[0])            
+            return JsonResponse(resp_reporte_nuevo)
 
 def menu_add_proceso(request):
     if request.session.has_key('conn_ip'):
@@ -442,6 +476,31 @@ def mover_dir_ficha(request):
                 context = {'resp':0}                
             return JsonResponse(context)
 
+
+def pdf_ficha_server_test(request):
+    pdf = web.pdf
+    pdf.prueba()
+    context = {'msg':'Crear Cliente base'}             
+    return render(request, 'auto_clave.html',context)
+
+def pdf_ficha_server(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            #erp_data = web.erp_log_menu        
+            #data_pdf = erp_data.pdf_ficha(request, request.POST.getlist('Id_empresa')[0])
+            pdf = web.pdf
+            firma = web.firma_pdf 
+            datos_firma = firma.traerdatos(request, request.POST.getlist('usuario')[0], request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_pkpaneL_g')[0])
+
+            pdffile = pdf.crear(request, request.POST.getlist('Id_empresa')[0], datos_firma)
+            if len(datos_firma) > 0:
+                pdf_fianl = firma.firmar(pdffile, request.POST.getlist('Id_empresa')[0] , datos_firma)
+                context = {'pdf_fianl':pdf_fianl}             
+                return JsonResponse(context)                
+            else:
+                context = {'pdf_fianl':pdffile}             
+                return JsonResponse(context)
+
 def pdf_ficha(request):
     if request.session.has_key('conn_ip'):
         if request.method == 'POST':
@@ -455,6 +514,15 @@ def nuevo_dir_ficha(request):
             erp_data = web.erp_log_menu        
             context = erp_data.nuevo_dir_ficha(request, request.POST.getlist('Id_empresa')[0])
             return JsonResponse(context)
+
+def nuevo_dir_ficha_multi(request):
+    print('entro')
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.nuevo_dir_ficha_multi(request, request.POST.getlist('Id_empresa')[0])
+            return JsonResponse(context)
+
 
 
 def cambio_dir_reget(request):
@@ -1136,10 +1204,7 @@ def cargar_charts(request):
     if request.method == 'POST':
         if request.session.has_key('conn_ip'):
             erp_data = web.charts            
-            print('-----------------------cargar_charts1')
             respuesta = erp_data.traer_charts(request, request.POST.getlist('Id_empresa')[0],request.POST.getlist('usuario')[0])
-            print('-----------------------cargar_charts2')
-            print(respuesta)
             return JsonResponse(respuesta)
             
 def cambio_estado(request):
@@ -1198,7 +1263,6 @@ def traer_rapido(request):
 def paneles_items(request):
     if request.session.has_key('conn_ip'):
         if request.method == 'POST':
-            print('--------------------paneles_items')
             paneles_data = web.paneles
             panel_grupo =  paneles_data.traer_condicion_panel_grupo(request, request.POST.getlist('Id_empresa')[0])
             panel_opciones = paneles_data.traer_condicion_panel_opciones(request, request.POST.getlist('Id_empresa')[0])
@@ -1519,6 +1583,17 @@ def intercambio_dir(request):
             context = {'0':'0'}
             return JsonResponse(context)
 
+def intercambio_listado_dir(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu  
+            #actualizae
+            erp_data.intercambio_listado_dir(request, request.POST.getlist('Id_empresa')[0])
+            #actualizae
+            context = {'0':'0'}
+            return JsonResponse(context)
+            
+
 
 def menu_click(request):
     if request.session.has_key('conn_ip'):
@@ -1672,7 +1747,6 @@ import datetime
 def log_fast(request):
     db = web.con_db.inter_login_LOGIN("Mysql") 
     erp_data = web.erp_log_menu
-    print('log_fast')
     if request.method == 'POST':
         Respuesta = erp_data.validar_user_empresa_soloval(request, request.POST.getlist('inputEmpresa')[0], request.POST.getlist('inputUsuario')[0], request.POST.getlist('inputPassword')[0])
         return JsonResponse({'resp':Respuesta})

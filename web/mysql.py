@@ -17,15 +17,11 @@ class class_mysql:
             for sent in sentence:
                 sentemala = sent
                 cur.execute(sent.replace('�',''))
-                print("##: " + str(aaa))
                 aaa = aaa +1
                 db.commit()
         except TimeoutError:
-            print('fue de oreja')
             pass
         except:
-            print('fue de orejsssssa')
-            print(sentemala)
             pass
         db.close()
     def ejecutar(self, sentence):
