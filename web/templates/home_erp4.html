@@ -64,13 +64,26 @@
 <!-- Main canvg code -->
 <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
 
-<script src="/static/ccmain/4/main_script.js"></script>
-<script src="/static/ccmain/4/menu_general.js"></script>
-<script src="/static/ccmain/4/validaciones.js"></script>
-<script src="/static/ccmain/4/imagenes.js"></script>
-<script src="/static/ccmain/4/admin_campos.js"></script>
-<script src="/static/ccmain/4/sri.js"></script>
-<script src="/static/ccmain/4/paneles.js"></script>
+<script src="/static/ccmain/28/main_script.js"></script>
+<script src="/static/ccmain/28/menu_general.js"></script>
+<script src="/static/ccmain/28/validaciones.js"></script>
+<script src="/static/ccmain/28/imagenes.js"></script>
+<script src="/static/ccmain/28/admin_campos.js"></script>
+<script src="/static/ccmain/28/sri.js"></script>
+<script src="/static/ccmain/28/paneles.js"></script>
+<script src="/static/ccmain/28/Dibujo.js"></script>
+<script src="/static/ccmain/28/panel_estados.js"></script>
+<script src="/static/ccmain/28/usuarios.js"></script>
+<script src="/static/ccmain/28/PDF.js"></script>
+<script src="/static/ccmain/28/cmpreferencia.js"></script>
+<script src="/static/ccmain/28/calendario.js"></script>
+<script src="/static/ccmain/28/Notificaciones.js"></script>
+<script src="/static/ccmain/28/reportes.js"></script>
+<script src="/static/ccmain/28/offline.js"></script>
+<script src="/static/ccmain/28/registro.js"></script>
+<script src="/static/ccmain/28/buscadoresCab.js"></script>
+<script src="/static/ccmain/28/cmpcalculos.js"></script>
+<script src="/static/ccmain/28/electronico.js"></script>
 
 <style>
   google.charts.load('current', {'packages':['corechart']});
@@ -140,7 +153,7 @@
 
 
   function bloqueado() {
-    {% if datos_cuenta.dias_pendientes > 90 %}   
+    {% if datos_cuenta.dias_pendientes > 80 %}   
       return true 
     {% else %}
       return false
@@ -181,7 +194,15 @@ $(window).load(function() {
                 //Response["grupos_datos"][Response["paneles"][v]['pkPanel']][0]['Valor']
 
             }else{
-              $("#myTab").prepend('<li role="presentation" class="" id="li' + pestalla + '" style="text-align: right;"><a href="#rr' + pestalla + '" id="id' + pestalla + '" role="tab" data-toggle="tab" aria-expanded="false" >' + Response["paneles"][x]["nombre"] + '</a></li>');
+              if(Response["paneles"][x]['tipo'] == 'Estado'){
+                $("#myTab").prepend('<li role="presentation" class="" id="li' + pestalla + '" style="text-align: right;"><a href="#rr' + pestalla + '" id="id' + pestalla + '" role="tab" data-toggle="tab" aria-expanded="false" onclick="actualizar_paneles_directo("'+Response["paneles"][x]["pkPanel"]+'")">*' + Response["paneles"][x]["nombre"] + '</a></li>');
+
+              }else{
+                if(Response["paneles"][x]['tipo'] != 'Interno'){
+                  $("#myTab").prepend('<li role="presentation" class="" id="li' + pestalla + '" style="text-align: right;"><a href="#rr' + pestalla + '" id="id' + pestalla + '" role="tab" data-toggle="tab" aria-expanded="false" >' + Response["paneles"][x]["nombre"] + '</a></li>');
+
+                }
+              }
             }
 
 
@@ -197,7 +218,7 @@ $(window).load(function() {
 
               $('#rr' + pestalla).html(new_tap);
             }
-            actualizar_paneles()
+            actualizar_paneles() // aqui
             timmer_aut()
 
           }
@@ -218,7 +239,7 @@ $(window).load(function() {
 
 
         var fecha_now = new Date();
-        document.getElementById("calendar_date").value = fecha_now.format("Y-m-d") + 'T' + fecha_now.format("H:i:s")
+        document.getElementById("calendar_date").value = fecha_now.format("Y-m-d") 
 
 
         //document.getElementById("edocs_fecha_sri").value = fecha_now.format("Y-m-d")
@@ -233,9 +254,11 @@ $(window).load(function() {
 
         document.getElementById('calendar-tab').click();
 
-              {% if datos_cuenta.dias_pendientes > 60 %}   document.getElementById('a_default_pagos').click()           {% endif %}
+              {% if datos_cuenta.dias_pendientes > 50 %}   document.getElementById('a_default_pagos').click()           {% endif %}
     
-  
+        Notificaciones_buscar_nuevas()
+        cragar_offlines()
+
 });
 
 
@@ -292,6 +315,10 @@ function nueva_tareas() {
   web_fecha = '{{fecha}}'
   web_numeroRuc = '{{datos_cuenta.datos_cuentas.0.numeroRuc}}'
 
+  web_PermitirCambios = false
+
+  savemode = false
+  web_usuarioExterno = ''// '{{usuarioExterno}}'
   
 const CSS_COLOR_NAMES = [
   "AliceBlue",
@@ -491,6 +518,13 @@ const CSS_COLOR_NAMES = [
              
             </li>
             <!-- Messages: style can be found in dropdown.less-->
+            <li class="dropdown messages-menu">
+              <a id="a_default_offline" onclick="pasar_offlines()">
+                <i class="fa fa-lock"></i>
+                 <span class="label label-danger" id="div_offline">inline</span>
+              </a>
+            </li>
+
             {% if Es_admin == "Y" %}
               <li class="dropdown messages-menu">
                 <a data-toggle="modal" id="a_default_pagos" data-target="#modal-default_pagos">
@@ -509,7 +543,7 @@ const CSS_COLOR_NAMES = [
 
 
             <li class="dropdown messages-menu">
-              <a data-toggle="modal" data-target="#modal-default_errores">
+              <a data-toggle="modal" data-target="#modal-default_errores" >
                 <i class="fa fa-fw fa-warning"></i>
                 <span class="label label-danger" id="div_errores">0</span>
               </a>
@@ -524,81 +558,7 @@ const CSS_COLOR_NAMES = [
 
 
             </li>
-            <!--<li class="dropdown messages-menu">
-              <a class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bell-o"></i>
-                <span class="label label-success" id="val_alerta">0</span>
-              </a>
-              <ul id="menu1" class="dropdown-menu" style="background: aliceblue;">
-                <li>
-                  <div class="text-center">
-                    <a onclick="traer_alertas()" style="cursor: pointer;color: darkslateblue;"><i class="fa fa-retweet"></i> Actualizar<i class="fa fa-angle-right"></i>
-                    </a>
-                  </div>
-                </li>
-              </ul>
-            </li>
-             Notifications: style can be found in dropdown.less -->
-            <!--<li class="dropdown notifications-menu">
-              <a class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-envelope-o"></i>
-                <span class="label label-warning" id="val_msg">0</span>
-              </a>
-              <ul id="menu2" class="dropdown-menu" style="background: aliceblue;">
-                <li>
-                  <ul class="menu">
-
-                    <li>
-                      <div class="text-center">
-                        <a onclick="traer_mensajes()" style="cursor: pointer;color: darkslateblue;"><i class="fa fa-retweet"></i> Actualizar<i class="fa fa-angle-right"></i>
-                        </a>
-
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-             Tasks: style can be found in dropdown.less -->
-
-            <!--  tareas viejas..
-            <li class="dropdown tasks-menu">
-              <a class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-flag-o"></i>
-                <span id="tar_banner" class="label label-danger">0</span>
-              </a>
-              <ul class="dropdown-menu" style="background: aliceblue;">
-                <li class="footer"><div class="text-center">
-                  <a onclick="traer_tareas()" style="cursor: pointer;color: darkslateblue;"><i class="fa fa-retweet"></i> Actualizar
-                  </a> 
-                  <a onclick="nueva_tareas()" style="cursor: pointer;color: darkslateblue;" data-toggle="modal" data-target="#modal-default_alertas"><i class="fa fa-fw fa-plus"></i> Crear 
-                  </a>
-                </div> 
-              </li>
-              <li class="header">Tareas Recibidas</li>
-              <div style="overflow: auto;">
-
-                <li>
-                  <ul id="menu_tar_re">
-
-                  </ul>
-                </li>
-              </div>
-
-              <li class="header">Tareas Enviadas</li>
-              <div style="overflow: auto;">
-
-                <li>
-                  <ul id="menu_tar_en">
-                  </ul>
-                </li>
-              </div>
-              
-            </ul>
-          </li>  -->
-          <!-- User Account: style can be found in dropdown.less -->
-          
-          <!-- Control Sidebar Toggle Button -->
+   
           <li>
             <a href="" data-toggle="control-sidebar" id='link_herra'><i class="fa fa-gears"></i></a>
           </li>
@@ -639,7 +599,7 @@ const CSS_COLOR_NAMES = [
 
             {% if Es_admin == "Y" %}  
             <li class="treeview" style="text-align: center;">    
-              <div class="row">  
+              <div class="row diseno" style="text-align: right; display: none;">  
                 <a style="background: whitesmoke;width: 20%;padding-left: 15px;padding-right: 15px;cursor: pointer;">
                   <i class="fa fa-arrow-circle-down" onclick="menu_lateral_abajo('{{id.PkModGen}}')"></i>
                 </a>
@@ -669,8 +629,7 @@ const CSS_COLOR_NAMES = [
                       </div>    
 
                       {% if Es_admin == "Y" %}  
-                        <div class="col-xs-6" style="text-align: right;">  
-
+                        <div class="col-xs-6 diseno" style="text-align: right; display: none;">  
                           <a style="background: whitesmoke;width: 20%;padding-left: 5px;padding-right: 5px;cursor: pointer;">
                             <i class="fa fa-arrow-circle-down" onclick="menu_proceso_abajo('{{ pkmodulo.id }}', '{{pkmodulo.PkModGen}}')"></i>
                           </a>
@@ -706,7 +665,7 @@ const CSS_COLOR_NAMES = [
 
                         {% if Es_admin == "Y" %}  
                           <li class="treeview" style="text-align: center;">        
-                            <div class="row">  
+                            <div class="row diseno" style="text-align: right; display: none;">  
                               <p style="background: whitesmoke;padding-left: 25px;padding-right: 25px;cursor: pointer;margin-right: 20px" onclick="menu_reporte_crear('{{pkmodulo.PkModulo}}')">
                                 <i class="fa fa-plus" style="color: lightskyblue;"></i>
                               </p>
@@ -726,7 +685,7 @@ const CSS_COLOR_NAMES = [
 
               <li class="treeview" style="text-align: center;" id="divproceso_crear_{{id.PkModGen}}">    
  
-                <div class="row">  
+                <div class="row diseno" style="text-align: right; display: none;">  
                   <p style="background: whitesmoke;padding-left: 25px;padding-right: 25px;cursor: pointer;"  onclick="menu_proceso_crear('{{id.PkModGen}}')">
                     <i class="fa fa-plus" style="color: green;"></i>
                   </p>
@@ -859,12 +818,12 @@ const CSS_COLOR_NAMES = [
 
                           </ul>
                           <div class="tab-content">
-                            <div class="tab-pane box-body tableFixHead active" id="docs_sri_pen" style="background: white; max-height: 500px;overflow: auto;">
+                            <div class="tab-pane box-body tableFixHead active" id="docs_sri_pen" style="background: white; max-height: 500px;overflow: scroll;">
                               
                             </div>
                             <!-- /.tab-pane -->
-                            <div class="tab-pane box-body tableFixHead" id="docs_sri_apr" style="background: white; max-height: 500px;overflow: auto;"> 
-                              <div id="edocs_sri_preingreso" style="overflow: auto;height: 550px;"> 
+                            <div class="tab-pane box-body tableFixHead" id="docs_sri_apr" style="background: white; max-height: 500px;overflow: scroll;"> 
+                              <div id="edocs_sri_preingreso" style="overflow: scroll;height: 550px;"> 
                                 <div>
                                   <label id="edocs_sri_auto_cant">Cantidad: 0</label>
                                   <label id="edocs_sri_auto_val">Valor: 0</label>
@@ -893,11 +852,11 @@ const CSS_COLOR_NAMES = [
                               </div>
                             </div>
 
-                            <div class="tab-pane box-body tableFixHead" id="docs_sri_ing" style="background: white; max-height: 500px;overflow: auto;"> 
+                            <div class="tab-pane box-body tableFixHead" id="docs_sri_ing" style="background: white; max-height: 500px;overflow: scroll;"> 
                              
                             </div>
 
-                            <div class="tab-pane box-body tableFixHead" id="docs_sri_rec" style="background: white; max-height: 500px;overflow: auto;"> 
+                            <div class="tab-pane box-body tableFixHead" id="docs_sri_rec" style="background: white; max-height: 500px;overflow: scroll;"> 
                              
                             </div>
 
@@ -982,9 +941,12 @@ const CSS_COLOR_NAMES = [
                     <div class="box box-primary direct-chat direct-chat-primary">
                       <div class="box-body" style="text-align: center;">
                         <div class="row">
-                          <select class="btn btn-info dropdown-toggle" id="calendar_tipo" style="width: 200px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;color: black;" onchange="calendario()" value='Todos'><option>Todos</option> 
+                          <label style="color: black;font-weight: bold;">Selecionar  <i class="fa fa-hand-o-right"></i></label>
+
+
+                          <select class="btn btn-info dropdown-toggle" id="calendar_tipo" style="width: 200px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;color: black;" onchange="calendario()" ><option>Todos</option> 
                           </select> 
-                          <input type="datetime-local" id="calendar_date" onchange="calendario()">  
+                          <input type="date" id="calendar_date" onchange="calendario()">  
 
 
                             <button type="button" data-toggle="tooltip" data-placement="top" title="Pdf" style="font-size: larger;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;padding-bottom: 0px;" onclick="pdf_calendario()" class="btn btn-info"><span class="fa fa-file-pdf-o" aria-hidden="true"></span></button>
@@ -998,7 +960,7 @@ const CSS_COLOR_NAMES = [
 
                         <div id="calen_myTabContent" class="tab-content">
                           <div role="tabpanel" class="tab-pane fade active in" id="calen_tab_content1" aria-labelledby="home-tab" style="background-color: transparent;">    
-                           <div class="box-body table-responsive no-padding" style="    overflow: auto;">
+                           <div class="box-body table-responsive no-padding" style="    overflow: scroll;">
                             <table class="table table-bordered" style="background: white;" id="table_calen_mes">
                               <thead>
                                 <tr style="align-content: center;"> 
@@ -1135,7 +1097,7 @@ const CSS_COLOR_NAMES = [
                           </div>      
                         </div>
                       <div role="tabpanel" class="tab-pane fade" id="calen_tab_content2" aria-labelledby="home-tab" style="background-color: transparent;">
-                        <div class="box-body table-responsive no-padding" style="    overflow: auto;">
+                        <div class="box-body table-responsive no-padding" style="    overflow: scroll;">
                           <table class="table table-bordered" style="background: white;" id="table_calen_sem">
                             <thead>
                               <tr style="align-content: center;"> 
@@ -1156,25 +1118,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">00</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_00_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_00_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_00_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_00_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_00_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_00_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_00_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_00_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1182,25 +1144,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">01</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_01_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_01_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_01_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_01_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_01_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_01_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_01_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_01_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1208,25 +1170,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">02</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_02_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_02_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_02_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_02_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_02_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_02_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_02_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_02_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1234,25 +1196,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">03</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_03_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_03_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_03_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_03_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_03_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_03_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_03_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_03_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1260,25 +1222,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">04</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_04_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_04_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_04_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_04_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_04_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_04_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_04_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_04_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1286,25 +1248,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">05</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_05_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_05_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_05_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_05_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_05_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_05_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_05_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_05_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1312,25 +1274,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">06</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_06_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_06_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_06_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_06_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_06_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_06_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_06_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_06_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                               -->
@@ -1339,25 +1301,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">07</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_07_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_07_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_07_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_07_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_07_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_07_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_07_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_07_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1365,25 +1327,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">08</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_08_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_08_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_08_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_08_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_08_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_08_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_08_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_08_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1392,25 +1354,25 @@ const CSS_COLOR_NAMES = [
                                 </td>
 
                                 <td>
-                                  <div id="dia_09_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_09_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_09_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_09_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_09_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_09_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_09_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_09_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1419,25 +1381,25 @@ const CSS_COLOR_NAMES = [
                                 </td>
 
                                 <td>
-                                  <div id="dia_10_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_10_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_10_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_10_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_10_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_10_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_10_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_10_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1446,25 +1408,25 @@ const CSS_COLOR_NAMES = [
                                 </td>
 
                                 <td>
-                                  <div id="dia_11_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_11_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_11_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_11_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_11_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_11_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_11_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_11_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1472,25 +1434,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">12</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_12_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_12_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_12_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_12_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_12_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_12_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_12_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_12_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1498,25 +1460,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">13</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_13_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_13_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_13_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_13_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_13_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_13_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_13_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_13_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1524,25 +1486,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">14</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_14_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_14_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_14_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_14_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_14_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_14_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_14_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_14_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1550,25 +1512,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">15</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_15_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_15_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_15_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_15_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_15_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_15_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_15_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_15_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1576,25 +1538,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">16</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_16_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_16_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_16_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_16_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_16_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_16_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_16_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_16_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1602,25 +1564,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">17</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_17_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_17_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_17_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_17_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_17_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_17_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_17_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_17_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1628,25 +1590,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">18</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_18_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_18_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_18_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_18_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_18_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_18_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_18_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_18_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1654,25 +1616,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">19</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_19_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_19_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_19_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_19_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_19_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_19_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_19_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_19_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1680,25 +1642,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">20</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_20_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_20_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_20_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_20_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_20_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_20_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_20_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_20_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <tr>
@@ -1706,25 +1668,25 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">21</div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_21_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td >
-                                  <div id="dia_21_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_21_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_21_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_21_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_21_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                                 <td>
-                                  <div id="dia_21_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                  <div id="dia_21_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                 </td>
                               </tr>
                               <!--
@@ -1733,25 +1695,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">22</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_22_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_22_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_22_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_22_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_22_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_22_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_22_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_22_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1759,25 +1721,25 @@ const CSS_COLOR_NAMES = [
                                     <div class="btn-group-vertical" style="margin: 0;padding: 0;">23</div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_23_0" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_0" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td >
-                                    <div id="dia_23_1" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_1" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_23_2" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_2" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_23_3" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_3" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_23_4" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_4" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_23_5" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_5" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                   <td>
-                                    <div id="dia_23_6" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div></td>
+                                    <div id="dia_23_6" class="row" style="margin: 0;padding: 0;"></div></td>
                                   </td>
                                 </tr>
                               -->
@@ -1790,7 +1752,7 @@ const CSS_COLOR_NAMES = [
                         </div>    
                       </div>
                       <div role="tabpanel" class="tab-pane fade" id="calen_tab_content3" aria-labelledby="home-tab" style="background-color: transparent;">
-                        <div class="box-body table-responsive no-padding" style="overflow: auto;">
+                        <div class="box-body table-responsive no-padding" style="overflow: scroll;">
                           <table class="table table-bordered" style="background: white;" id="table_calen_dia">
                             <thead>
                               <tr style="align-content: center;"> 
@@ -1804,7 +1766,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">07</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_07" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_07" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1812,7 +1774,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">08</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_08" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_08" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1820,7 +1782,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">09</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_09" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_09" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1828,7 +1790,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">10</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_10" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_10" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1836,7 +1798,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">11</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_11" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_11" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1844,7 +1806,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">12</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_12" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_12" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1852,7 +1814,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">13</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_13" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_13" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1860,7 +1822,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">14</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_14" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_14" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1868,7 +1830,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">15</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_15" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_15" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1876,7 +1838,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">16</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_16" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_16" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1884,7 +1846,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">17</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_17" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_17" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1892,7 +1854,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">18</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_18" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_18" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1900,7 +1862,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">19</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_19" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_19" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1908,7 +1870,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">20</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_20" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_20" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                               <tr>
@@ -1916,7 +1878,7 @@ const CSS_COLOR_NAMES = [
                                   <div class="btn-group-vertical" style="margin: 0;padding: 0;">21</div></td>
                                 </td>
                                 <td>
-                                  <div id="du_21" class="btn-group-vertical input-group input-group-sm" style="margin: 0;padding: 0;"></div>
+                                  <div id="du_21" class="row" style="margin: 0;padding: 0;"></div>
                                 </td>
                               </tr>
                             </tbody>
@@ -1993,13 +1955,12 @@ const CSS_COLOR_NAMES = [
   </div>
 </div>
 
-
 <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="modal1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        
-        <h4 class="modal-title" id="myModalLabel">{{idioma_html.Buscador}}</h4>
+        <div id="intbuscadorcab">
+        </div>  
       </div>
       <div class="modal-body">
         <div class="">
@@ -2021,7 +1982,7 @@ const CSS_COLOR_NAMES = [
 <div class="modal fade" id="modal-default">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-     <div id="intnotaCab" style="overflow: auto;height: 600px;">              </div>
+     <div id="intnotaCab" style="overflow: scroll;height: 600px;">              </div>
 
    </div>
    <!-- /.modal-content -->
@@ -2032,7 +1993,7 @@ const CSS_COLOR_NAMES = [
 <div class="modal fade" id="modal-default_alertas">
   <div class="modal-dialog modal-lg">
     <div class="modal-content"><button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-     <div id="intnotaTareas" style="overflow: auto;height: 550px;"> </div>
+     <div id="intnotaTareas" style="overflow: scroll;height: 550px;"> </div>
 
    </div>
    <!-- /.modal-content -->
@@ -2048,7 +2009,7 @@ const CSS_COLOR_NAMES = [
         <!--<h4 class="modal-title" id="myModalLabel">{{idioma_html.Buscador}}</h4>-->
     </div>
     <div class="modal-content">
-     <div id="intnotaPanel" style="overflow: auto;height: 550px;"> </div>
+     <div id="intnotaPanel" style="overflow: scroll;height: 550px;"> </div>
 
    </div>
    <!-- /.modal-content -->
@@ -2061,6 +2022,8 @@ const CSS_COLOR_NAMES = [
     
     <div class="modal-content">
       <div class="modal-header">
+        <button type="button" class="btn btn-info" onclick="buscar_referencia_paneles_filtrar()" style="height: 25px;padding: 3px 4px;"><i class="fa fa-fw fa-check"></i></button>
+
         <button type="button" class="close" data-dismiss="modal" id="cerrar_default_ficha"><span aria-hidden="true">×</span>
         </button>
         <!--<h4 class="modal-title" id="myModalLabel">{{idioma_html.Buscador}}</h4>-->
@@ -2068,12 +2031,14 @@ const CSS_COLOR_NAMES = [
       <!--<button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>  
         -->              
       <input type="hidden" id="vfinal_bus_ficha">
-      <input class="form-control" type="text" id="vfinal_bus_ficha_2" onchange="buscar_referencia_paneles_filtrar()">
+      <input class="form-control" type="text" id="vfinal_bus_ficha_2" onchange="buscar_referencia_paneles_filtrar()" placeholder="Escriba aqui">
 
       <input type="hidden" id="vfinal_bus_ficha_3">
       <input type="hidden" id="vfinal_bus_ficha_4">
+      <input type="hidden" id="vfinal_bus_ficha_5">
+
       <div class="modal-body">
-        <div id="intnota_ficha" style="overflow: auto;height: 550px;">
+        <div id="intnota_ficha" style="overflow: scroll;height: 550px;">
         </div>
       </div>
 
@@ -2086,8 +2051,10 @@ const CSS_COLOR_NAMES = [
 
 <div class="modal fade" id="modal-default_formulas">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content"><button type="button" id="cerrar_formulas" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-     <div id="intformulas" style="overflow: auto;height: 550px;"> 
+    <div class="modal-content">
+      
+      <button type="button" id="cerrar_formulas" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+     <div id="intformulas" style="overflow: scroll;height: 550px;"> 
 
 
 
@@ -2125,6 +2092,7 @@ const CSS_COLOR_NAMES = [
 <div class="modal fade" id="modal-default_wait">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
+      
       <button type="button" id="cerrar_rap" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
       <div id="intwait"> 
 
@@ -2201,13 +2169,13 @@ const CSS_COLOR_NAMES = [
 
                   {% if valores.Estado == 'PENDIENTE' %}
                 
-                    {% if valores.Dias < 61 %}
+                    {% if valores.Dias < 30 %}
                       <tr style="background: lightgreen;">
                     {% endif %}
-                    {% if valores.Dias > 60 and valores.Dias < 91 %}
+                    {% if valores.Dias > 30 and valores.Dias < 75 %}
                       <tr style="background: yellow;">
                     {% endif %}
-                    {% if valores.Dias > 90 %}
+                    {% if valores.Dias > 75 %}
                       <tr style="background: orange;">
                     {% endif %}
                   {% else %}
@@ -2231,7 +2199,7 @@ const CSS_COLOR_NAMES = [
           </div>
 
           <div class="modal-footer" style="text-align: center;">
-              <p>Acceso se bloquea automático si hay facturas con más de 90 días Vencidas<p>
+              <p>Acceso se bloquea automático si hay facturas con más de 80 días Vencidas<p>
               <p>De estar bloqueado sin adeudar nada, comunicarse al 0987202912 para atención inmediata.</p>
           </div>
 
@@ -2259,7 +2227,7 @@ const CSS_COLOR_NAMES = [
           <div class="box-header ui-sortable-handle" style="cursor: move;">
             <i class="fa fa-envelope"></i>
 
-            <h3 class="box-title">Errores en Autorizacion</h3>
+            <h3 class="box-title">Advertencias</h3>
             <!-- tools box -->
             <button type="button" id="cerrar_rap_errores" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
 
@@ -2316,7 +2284,7 @@ const CSS_COLOR_NAMES = [
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal fade" id="modal-default_ficha_imagen" style="overflow: auto;">
+<div class="modal fade" id="modal-default_ficha_imagen" style="overflow: scroll;">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div id="intwait"> 
@@ -2408,7 +2376,7 @@ const CSS_COLOR_NAMES = [
 
       <div class="modal-body">
 
-        <div id="edocs_sri_auto_tabla" style="overflow: auto;height: 550px;"> 
+        <div id="edocs_sri_auto_tabla" style="overflow: scroll;height: 550px;"> 
           <table class="table table-bordered" style="background: white;">
             <thead>
               <tr>
@@ -2435,11 +2403,15 @@ const CSS_COLOR_NAMES = [
     <div class="modal-content">
       <!--<button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>-->
     <div class="modal-header">
+      <button type="button" class="btn btn-info" onclick="filtrar_fichas()" style="height: 25px;padding: 3px 4px;"><i class="fa fa-fw fa-check"></i></button>
+
       <button type="button" class="close" data-dismiss="modal" id="cerrar_default_ficha_ref"><span aria-hidden="true">×</span>
         </button>
         <!--<h4 class="modal-title" id="myModalLabel">{{idioma_html.Buscador}}</h4>-->
     </div>
-      <input class="form-control" type="text" id="vfinal_ficha_1" onchange="filtrar_fichas()">
+    
+      <input class="form-control" type="text" id="vfinal_ficha_1" onchange="filtrar_fichas()" placeholder="Escriba aqui">
+
       <input type="hidden" id="vfinal_ficha_2">
       <input type="hidden" id="vfinal_ficha_3">
       <input type="hidden" id="vfinal_ficha_4">
@@ -2447,7 +2419,7 @@ const CSS_COLOR_NAMES = [
       <input type="hidden" id="vfinal_ficha_6">      
       <div class="modal-body">
 
-      <div id="intnota_ficha_ref" style="overflow: auto;height: 550px;"> </div>
+      <div id="intnota_ficha_ref" style="overflow: scroll;height: 550px;"> </div>
       </div>
 
     </div>
@@ -2462,17 +2434,20 @@ const CSS_COLOR_NAMES = [
     <div class="modal-content">
       <!--<button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>-->
     <div class="modal-header">
+      <button type="button" class="btn btn-info" onclick="filtrar_fichas_multi()" style="height: 25px;padding: 3px 4px;"><i class="fa fa-fw fa-check"></i></button>
+
       <button type="button" class="close" data-dismiss="modal" id="cerrar_default_ficha_ref_multi"><span aria-hidden="true">×</span>
         </button>
         <!--<h4 class="modal-title" id="myModalLabel">{{idioma_html.Buscador}}</h4>-->
     </div>
-      <input class="form-control" type="text" id="vfinal_ficha_1_multi" onchange="filtrar_fichas_multi()">
+      <input class="form-control" type="text" id="vfinal_ficha_1_multi" onchange="filtrar_fichas_multi()" placeholder="Escriba aqui" style="padding-top: 0px;">
       <input type="hidden" id="vfinal_ficha_2_multi">
       <input type="hidden" id="vfinal_ficha_3_multi">
       <input type="hidden" id="vfinal_ficha_4_multi">
       <input type="hidden" id="vfinal_ficha_5_multi">
       <input type="hidden" id="vfinal_ficha_6_multi">      
-        
+      <input type="hidden" id="vfinal_ficha_9_multi">      
+
       <div class="modal-header" id="vfinal_ficha_7_multi">
 
       </div>
@@ -2480,10 +2455,12 @@ const CSS_COLOR_NAMES = [
 
       <button class="btn bg-blue btn-flat margin" onclick="pasar_ficha_multi()" style="width: 100%;">listo</button>
 
-      
-      <div class="modal-body">
+      <div class="modal-header" id="vfinal_ficha_8_multi" style="padding-top: 0px;">
 
-      <div id="intnota_ficha_ref_multi" style="overflow: auto;height: 550px;"> </div>
+      </div>
+      <div class="modal-body" style="padding-top: 0px;">
+
+      <div id="intnota_ficha_ref_multi" style="overflow: scroll;height: 550px;"> </div>
       </div>
 
     </div>
@@ -3395,6 +3372,40 @@ const CSS_COLOR_NAMES = [
   <!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="modal-default_permiteCambio">
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content">
+      <!--<button type="button" id="cerrar_tar" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>-->
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" id="cerrar_permiteCambio"><span aria-hidden="true">×</span>
+        </button>
+        <button type="button" data-toggle="modal" data-target="#modal-default_permiteCambio" id="abrir_default_permiteCambio"  style="display: none;">
+        </button>
+        
+    </div>
+
+      <div class="modal-body row" style="text-align: center;">
+
+        <h4 class="modal-title" id="labelpermiteCambio">Ingrese la clave</h4>
+
+      <input id="default_permiteCambioCampoId" type="hidden" name="" value="">
+      <input id="default_permiteCambioCalveIbase" type="hidden" name="" value="">
+
+      <input id="default_permiteCambioCalveIng" type="password" name="" value="" onchange="permiteCambio()">
+
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <button class="btn bg-blue btn-flat margin" onclick="permiteCambio()">Aceptar</button>
+      </div>
+
+
+      </div>
+
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
 
 </section>
 <!-- /.content -->
@@ -3402,7 +3413,7 @@ const CSS_COLOR_NAMES = [
 <!-- /.content-wrapper -->
 <footer class="main-footer">
   <div class="pull-right hidden-xs">
-    <b>Versión</b> 3.0.0
+    <b>Versión</b> 3.2.0
   </div>
   <strong>Copyright &copy; 2014-{{t_anio}} <a href="http://cerocodigo.com">CeroCodigo</a> y Nicolas Lubkov.</strong> Derechos reservados.
 </footer>
@@ -3429,9 +3440,10 @@ const CSS_COLOR_NAMES = [
         <li><a href="/{{idioma}}/log"><i class="fa fa-sign-out pull-right"></i> Salir </a></li>
       </ul>
       <!-- /.control-sidebar-menu -->
+      
+      {% if Es_Sri == "Y" %}
       <h3 class="control-sidebar-heading">Tributación</h3>
       <ul class="control-sidebar-menu">
-        {% if Es_Sri == "Y" %}
         <li>
           <div class="input-group" style="padding-left: 10px; width: 100%;">
             <label>Ats Mensual</label>
@@ -3499,6 +3511,12 @@ const CSS_COLOR_NAMES = [
 
         <li>
 
+          <div class="" style="padding-left: 10px;padding-right: 10px;">
+            <button type="button" class="btn bg-blue btn-flat margin" onclick="user_firma()" style="height: 25px;padding: 3px 4px;width: 100%;">Firma Electronica<div class="ripple-container"></div></button>
+            
+            <a download="info.txt" id="downloadlink" style="display: none">Download</a>
+          </div>
+
           {% if Es_admin == "Y" %}
           <!--<div class="" style="padding-left: 10px;padding-right: 10px;">
             <button type="button" class="btn bg-blue btn-flat margin" onclick="user_datos()" style="height: 25px;padding: 3px 4px;width: 100%;">Datos Tributarios<div class="ripple-container"></div></button>
@@ -3520,10 +3538,28 @@ const CSS_COLOR_NAMES = [
             <button type="button" class="btn bg-blue btn-flat margin" onclick="user_acces()" style="height: 25px;padding: 3px 4px;width: 100%;">Permisos<div class="ripple-container"></div></button>
           </div>
           {% endif %}
-         
+
+
+          <div class="" style="padding-left: 10px;padding-right: 10px;">
+            <span class="label label-danger" id="div_offlinecc"></span>
+
+          </div>
+          
+          <div class="" style="padding-left: 10px;padding-right: 10px;">
+            <span class="label label-succes" id="div_savemode">on</span>
+
+          </div>
+          {% if Es_admin == "Y" %}
+          <div class="" style="padding-left: 10px;padding-right: 10px;">
+            <button type="button" class="btn bg-blue" onclick="habilitar_diseno()" style="height: 25px;padding: 3px 4px;width: 100%;">Habilitar Diseño</button>
+          </div>
+          {% endif %}
+          <div class="" style="padding-left: 10px;padding-right: 10px;">
+            <button type="button" class="btn bg-red" onclick="PermitirCambios(this)" style="height: 25px;padding: 3px 4px;width: 100%;">Pemitir modificar</button>
+          </div>
+
         </li>
 
-        
       </ul>
 
     </div>

@@ -33,9 +33,9 @@ from dateutil import parser
 
 def ficha_new(request, Id_empresa): 
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    fichaprevia = db.ficha_existe(request.POST.getlist('t_pkpanle')[0],request.POST.getlist('t_fecha')[0],request.POST.getlist('t_pkval')[0])
+    fichaprevia = db.ficha_existe(request.POST.getlist('t_pkpanle')[0],request.POST.getlist('t_fecha')[0],request.POST.getlist('t_pkval')[0], request.POST.getlist('usuario')[0])
     if len(fichaprevia) == 0:
-        db.ficha_new(request.POST.getlist('t_pkpanle')[0],request.POST.getlist('t_fecha')[0],request.POST.getlist('t_pkval')[0])
+        db.ficha_new(request.POST.getlist('t_pkpanle')[0],request.POST.getlist('t_fecha')[0],request.POST.getlist('t_pkval')[0], request.POST.getlist('usuario')[0])
         return {'resp':'si'}
     else:
         return {'resp':'no'}
@@ -58,46 +58,97 @@ def traer_sub_paneles_Imagen(request, Id_empresa, usuario, t_pkpanel, T_valor, t
     return ({'listas_imagen':listas_imagen, 'listas_valor':listas_valor,'t_pkpanel':t_pkpanel })
 
 
-def traer_sub_paneles(request, Id_empresa, usuario, t_pkpanel, T_valor, t_fecha): 
+def traer_sub_paneles(request, Id_empresa, usuario, t_pkpanel, T_valor, t_fecha, t_user): 
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     paneles = {}
     estados = {}
     notas = {}
-    dbgrupos = db.traer_paneles_fichaspk(t_pkpanel)
-    etiquetas = db.traer_paneles_pdf_fichaspk(t_pkpanel)
-    panell = db.traer_panel_por_pk(t_pkpanel)
-    d_fechas = db.traer_paneles_fechas_fichaspk(t_pkpanel, T_valor)
-    for yy in dbgrupos:       
-        yy['vals'] = db.traer_notas_valores(yy["cond_base"].replace('@pk@',T_valor).replace('@fecha@',t_fecha))
-        div_roe = str(yy['Valor']).split('//')
-        if len(div_roe) >1:
-            yy['Valor'] = {}
-            yy['Valor'][yy['pkgrupo']] = {}
-            for yyy in div_roe:
-                if len(yyy) > 0:
-                    div_camp = yyy.split('$')
-                    if div_camp[0] == '@calculo':              
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['base'] = div_camp[1]                      
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['calculo'] = div_camp[2]                      
-                    if div_camp[0] == '@opcion':              
-                        bas_temp = db.traer_sql_directo(div_camp[2])
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['vlas'] = bas_temp    
-                    if div_camp[0] == '@listado':              
-                        bas_temp = db.traer_sql_directo(div_camp[2])
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['vlas'] = bas_temp                    
-                    if div_camp[0] == '@referencia':
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['campos'] = div_camp[2]
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['from'] = div_camp[3]
-                        yy['Valor'][yy['pkgrupo']][div_camp[1]]['anexos'] = div_camp[4]                    
-    return ({'dbgrupos':dbgrupos, 'etiquetas':etiquetas, 'panell':panell, 'd_fechas':d_fechas})
+    db_panel = db.traer_panel_por_pk(t_pkpanel)
+    if db_panel[0]['tipo'] != 'Agrupado':
+        dbgrupos = db.traer_paneles_fichaspk(t_pkpanel, usuario)
+        etiquetas = db.traer_paneles_pdf_fichaspk(t_pkpanel)
+        panell = db.traer_panel_por_pk(t_pkpanel)
+        d_fechas = db.traer_paneles_fechas_fichaspk(t_pkpanel, T_valor)
+        for yy in dbgrupos:       
+            yy['vals'] = db.traer_notas_valores(yy["cond_base"].replace('@pk@',T_valor).replace('@fecha@',t_fecha).replace('@user@',t_user))
+            div_roe = str(yy['Valor']).split('//')
+            if len(div_roe) >1:
+                yy['Valor'] = {}
+                yy['Valor'][yy['pkgrupo']] = {}
+                for yyy in div_roe:
+                    if len(yyy) > 0:
+                        div_camp = yyy.split('$')
+                        if div_camp[0] == '@calculo':              
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['base'] = div_camp[1]                      
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['calculo'] = div_camp[2]                      
+                        if div_camp[0] == '@opcion':              
+                            bas_temp = db.traer_sql_directo(div_camp[2])
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['vlas'] = bas_temp    
+                        if div_camp[0] == '@listado':              
+                            bas_temp = db.traer_sql_directo(div_camp[2])
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['vlas'] = bas_temp                    
+                        if div_camp[0] == '@referencia':
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['campos'] = div_camp[2]
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['from'] = div_camp[3]
+                            yy['Valor'][yy['pkgrupo']][div_camp[1]]['anexos'] = div_camp[4]  
+                            if len(div_camp) > 5:
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['distinct'] = div_camp[5]              
+                            else:
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['distinct'] = ''                                     
+        return ({'tipo':'Unico','dbgrupos':dbgrupos, 'etiquetas':etiquetas, 'panell':panell, 'd_fechas':d_fechas})
+    if db_panel[0]['tipo'] == 'Agrupado':
+        dbinternos = db.traer_panel_internos(t_pkpanel)
+        retorno = []
+        d_fechas = db.traer_paneles_fechas_fichaspk(t_pkpanel, T_valor)
+
+        for interno in dbinternos:
+            dbgrupos = db.traer_paneles_fichaspk(interno['pkPanel'])
+            etiquetas = db.traer_paneles_pdf_fichaspk(interno['pkPanel'])
+            panell = db.traer_panel_por_pk(interno['pkPanel'])
+            for yy in dbgrupos:       
+                yy['vals'] = db.traer_notas_valores(yy["cond_base"].replace('@pk@',T_valor).replace('@fecha@',t_fecha))
+                div_roe = str(yy['Valor']).split('//')
+                if len(div_roe) >1:
+                    yy['Valor'] = {}
+                    yy['Valor'][yy['pkgrupo']] = {}
+                    for yyy in div_roe:
+                        if len(yyy) > 0:
+                            div_camp = yyy.split('$')
+                            if div_camp[0] == '@calculo':              
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['base'] = div_camp[1]                      
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['calculo'] = div_camp[2]                      
+                            if div_camp[0] == '@opcion':              
+                                bas_temp = db.traer_sql_directo(div_camp[2])
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['vlas'] = bas_temp    
+                            if div_camp[0] == '@listado':              
+                                bas_temp = db.traer_sql_directo(div_camp[2])
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['vlas'] = bas_temp                    
+                            if div_camp[0] == '@referencia':
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]] = {}
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['tipo'] = div_camp[0]
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['campos'] = div_camp[2]
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['from'] = div_camp[3]
+                                yy['Valor'][yy['pkgrupo']][div_camp[1]]['anexos'] = div_camp[4]  
+                                if len(div_camp) > 5:
+                                    yy['Valor'][yy['pkgrupo']][div_camp[1]]['distinct'] = div_camp[5]              
+                                else:
+                                    yy['Valor'][yy['pkgrupo']][div_camp[1]]['distinct'] = ''                                     
+            retorno.append({'dbgrupos':dbgrupos, 'etiquetas':etiquetas, 'panell':panell, 'Nombre':interno['nombre'], 'pkPanel':interno['pkPanel']})
+        return ({'tipo':'Multiple','retorno':retorno, 'd_fechas':d_fechas})
 
 
 def traer_paneles(request, Id_empresa, usuario): 
@@ -105,7 +156,7 @@ def traer_paneles(request, Id_empresa, usuario):
     paneles = {}
     estados = {}
     notas = {}
-    dbpaneles = db.traer_paneles_por_user(usuario)
+    dbpaneles = db.traer_paneles_por_user(usuario, '0')
     for xx in dbpaneles:
         dbestados = db.traer_estados(xx["pkpanel"])
         estados.update({xx["pkpanel"]:dbestados})
@@ -196,15 +247,18 @@ def tareas_ind_por_modulo_pk(request, Id_empresa):
     return ({ 'dict_tarea':dict_tarea,'list_proyecto':list_proyecto,'listado_user':listado_user, 'list_tareas':list_tareas})
 
 
-def paneles_carga(request, Id_empresa): 
+
+def paneles_carga(request, Id_empresa, pkpanel): 
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    paneles = db.traer_paneles_por_user(request.POST.getlist('usuario')[0]) 
+    
+    paneles = db.traer_paneles_por_user(request.POST.getlist('usuario')[0], pkpanel) 
+        
     grupos = {}
     grupos_datos = {}
     grupos_datos_valor = {}
     
     for a in paneles:
-        grupos[a['pkPanel']] = db.traer_paneles_grupos(a['pkPanel']) 
+        grupos[a['pkPanel']] = db.traer_paneles_grupos(a['pkPanel'], request.POST.getlist('usuario')[0]) 
         grupos_datos[a['pkPanel']] = []
         if a['tipo'] == 'Estado':
             if a['agrupar'] == '$directo':
@@ -218,7 +272,7 @@ def paneles_carga(request, Id_empresa):
                         t_sente = 'select sum(1) as "Display", sum(' + str(mix_campos[1]) + ') as "Suma"  from  ' + str(a['tabla']) + ' where  ' + str(mix_campos[0]) + ' = "' + str(s['Valor']) + '" '+ str(s['cond_base']) +' GROUP BY ' +  str(mix_campos[0])
                     else:
                         t_sente = 'select sum(1) as "Display", 0 as "Suma"  from  ' + str(a['tabla']) + ' where  ' + str(mix_campos[0]) + ' = "' + str(s['Valor']) + '" '+ str(s['cond_base']) +' GROUP BY ' + str(mix_campos[0])
-                    valor = db.traer_sql_directo_cant_registros(t_sente)
+                    valor = db.traer_sql_directo_cant_registros(t_sente.replace("@Usuario@", request.POST.getlist('usuario')[0]))
                     if len(valor)>0:
                         if len(mix_campos) > 1:
                             t_display = str( str(valor[0]['Suma']) + ', ' + str(valor[0]['Display']))
@@ -263,6 +317,16 @@ def traer_condicion_panel_opciones(request, Id_empresa):
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     pan_condi = db.traer_paneles_grupos_opciones(request.POST.getlist('pkpanel')[0]) 
     return pan_condi
+
+def traer_estados_modulo(request, Id_empresa): 
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    estados = db.lista_estados(request.POST.getlist('pkmodulo')[0]) 
+    return estados
+
+def traer_estados_modulo_usuario(request, Id_empresa): 
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    estados = db.lista_estados_por_usuario(request.POST.getlist('pkmodulo')[0], request.POST.getlist('usuario')[0]) 
+    return estados
 
 def tareas_cambio(request, Id_empresa): 
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -339,8 +403,11 @@ def calendar(request, Id_empresa, usuario, fecha):
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     calendarios = db.traer_calendarios(usuario, request.POST.getlist('t_mostrar')[0])
     cal_valores = {}
+    usuarioExterno= ''
+    if len(request.POST.getlist('usuarioExterno')) > 0:
+        usuarioExterno = request.POST.getlist('usuarioExterno')[0]
     for a in calendarios:
-        cal_valores[a['nombre']]= db.traer_calendarios_val(a['senten'], fecha, usuario)
+        cal_valores[a['nombre']]= db.traer_calendarios_val(a['senten'], fecha, usuario, usuarioExterno)
     return {'calendarios':calendarios,'cal_valores':cal_valores}
 def alertas(request, Id_empresa, usuario): 
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 

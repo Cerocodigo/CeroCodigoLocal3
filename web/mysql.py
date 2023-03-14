@@ -3,13 +3,14 @@ import mysql.connector
 
 
 class class_mysql:
-    def __init__(self, v_user, v_password, v_data_base, v_ip  ):
+    def __init__(self, v_user, v_password, v_data_base, v_ip, v_port):
         self.c_user = v_user
         self.c_password = v_password
         self.c_data_base = v_data_base
         self.c_ip = v_ip
+        self.c_port = v_port
     def ejecutar_varios(self, sentence):
-        db  = mysql.connector.connect(host=self.c_ip, user=self.c_user, passwd=self.c_password, db=self.c_data_base, charset='utf8')
+        db  = mysql.connector.connect(host=self.c_ip, user=self.c_user, passwd=self.c_password, db=self.c_data_base, charset='utf8', port=self.c_port)
         cur = db.cursor()
         aaa = 0
         sentemala = ''
@@ -108,7 +109,7 @@ def dictfetchall(cursor):
         db.close()
 
 class class_mysql_trass:
-    def __init__(self, v_user, v_password, v_data_base, v_ip  ):
+    def __init__(self, v_user, v_password, v_data_base, v_ip, v_port  ):
         self.c_user = v_user
         self.c_password = v_password
         self.c_data_base = v_data_base

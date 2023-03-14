@@ -9,7 +9,8 @@ from ast import Try
 import re
 from shutil import register_unpack_format
 import sys
-import smtplib
+import smtplib, ssl
+
 import unicodedata
 import datetime
 import json
@@ -30,11 +31,17 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.files.storage import FileSystemStorage
 
 
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from django.views.decorators.csrf import csrf_exempt
 
 import web.con_db
 import web.funciones_edocs
 import web.electronica_ecuador
+import web.firma_pdf
+import web.pdf
+import web.empaquetado
+
 
 import sys
 
@@ -42,6 +49,149 @@ from dateutil import parser
 from datetime import datetime
 
 from datetime import date
+
+
+def offline_inicial(request, Id_empresa, usuario):
+    db = web.con_db.offline(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+
+    respuestas_pre = db.traer_respuestas_offline() # [{'Pkoffline': 2, 'PkId': '151', 'Valor': '0', 'Nombre': 'Cierre_contable', 'PkModulo': '525'}]
+    estructuras_offLine = db.estructuras_offline() #modulo.Plantilla = 'Offline' [{'PkEstructura': 797, 'PkModulo': 525, 'Nombre': 'Facturacion_punto_venta', 'Descripcion': 'Facturación', 'Anulado': 'N', 'HijaDe': 0, 'X': Decimal('0.00'), 'Y': Decimal('0.00'), 'espacio': 22}]
+    bases_pregargadas = {}
+    for estrutura in estructuras_offLine:
+        listado_cmpreferencias = db.cmpreferecnias(estrutura['PkEstructura']) # [{'PkCampo': 1294, 'Sentencia': 'Nombre', 'TablaOrigen': 'Negocio', 'ModuloOrigen': 'Negocio', 'Condicion': '', 'PkEstructura': 797, 'Nombre': 'Negocio', 'ext': 'No', 'Columnas': 'Nombre, Establecimie... Documento', 'Modo': 'Grid', 'pkmodulo_ingreso': 0, 'predeterminado': 'SRI', 'Tipo_Predeterminado': '0', 'A_acc_automatic': 'No', ...}]
+        for campo in listado_cmpreferencias:
+            condiciones = db.cmpreferencia_condiciones(campo['PkCampo'])    
+            senten = ""
+            if len(condiciones) == 0:
+                senten = "select " + str(campo['Columnas']) + ' from ' +str(campo['TablaOrigen']) + ' Order by ' + str(campo['orden'])
+            else:
+                senten = "select " + str(campo['Columnas']) + ' from ' +str(campo['TablaOrigen']) + ' Where '
+                for condicion in condiciones:
+                    ## solo pega codiicones de c = V // no exister registro previo y v = v o c = c no sentido
+                    if condicion['TipoA'] == 'C' and condicion['TipoB'] == 'V' or condicion['TipoA'] == 'V' and condicion['TipoB'] == 'C':
+                        if condicion['Operador'] == '=':
+                            senten = senten + str(condicion['ElementoA']) + ' = "' + str(condicion['ElementoB']) +'" and '
+                        if condicion['Operador'] == '>':
+                            senten = senten + str(condicion['ElementoA']) + ' > "' + str(condicion['ElementoB']) +'" and '
+                        if condicion['Operador'] == '>=':
+                            senten = senten + str(condicion['ElementoA']) + ' >= "' + str(condicion['ElementoB']) +'" and '                                
+                        if condicion['Operador'] == '<':
+                            senten = senten + str(condicion['ElementoA']) + ' < "' + str(condicion['ElementoB']) +'" and '
+                        if condicion['Operador'] == '<=':
+                            senten = senten + str(condicion['ElementoA']) + ' <= "' + str(condicion['ElementoB']) +'" and '
+                        if condicion['Operador'] == '!=':
+                            senten = senten + str(condicion['ElementoA']) + ' != "' + str(condicion['ElementoB']) +'" and '
+                senten = senten[0:-4] + ' Order by ' + str(campo['orden'])
+            campo['cmpvalor'] = db.sqltabla(senten) 
+            campo['A_Select'] = campo['Columnas'].replace(' ','')
+            bases_pregargadas[campo['Nombre']] = campo
+    offlineResponde = []
+    modulos_offline = db.traer_modulos_offline()
+    for modulo in modulos_offline:
+        resp = {}
+        resp['pkmodulo'] = modulo['PkModulo']
+        resp['data'] = consulta_erp_offline(request,Id_empresa,modulo['PkModulo'], usuario)
+        offlineResponde.append(resp)
+
+    return {'respuestas_pre':respuestas_pre,'bases_pregargadas':bases_pregargadas, 'offlineResponde':offlineResponde}
+
+
+def consulta_erp_offline(request, Id_empresa, t_PkModulo, usuario):
+    if request.session.has_key('conn_ip'):
+        traer_camposoff = traer_campos(request, Id_empresa, t_PkModulo, -1)
+        traer_campos_funciones0ff = traer_campos_funciones(request, Id_empresa, traer_camposoff, t_PkModulo)
+        traer_registrooff = traer_registro(request, Id_empresa, traer_camposoff, t_PkModulo, '0')
+        plantilla_pdfoff = plantilla_pdf(request, Id_empresa, t_PkModulo )
+        plantilla_htmloff = plantilla_html(request, Id_empresa, t_PkModulo )
+        context = traer_camposoff
+        context.update({'valores_cab':traer_registrooff[0]})
+        context.update({'valores_det':traer_registrooff[1]})
+        context.update({'valores_subdet':traer_registrooff[2]})
+        context.update({'func_cab':traer_campos_funciones0ff[0]})
+        context.update({'func_det':traer_campos_funciones0ff[1]})
+        context.update({'func_subdet':traer_campos_funciones0ff[2]})
+        context.update({'plantilla_pdf':plantilla_pdfoff})
+        
+        context.update({'dev_pestalla':'0'})
+        context.update({'t_pkregistro':'0'})
+        acc_rapidooff = acc_rapido(request, Id_empresa, t_PkModulo, usuario)
+        context.update({'acc_rapido':acc_rapidooff})
+        context.update({'plantilla_html':plantilla_htmloff})
+        
+
+        context.update({'datos_edocs':0})
+        context.update({'estados':0})
+        return context
+    
+
+
+def reporte_empaquetado(request, Id_empresa, usuario, pkreporte):
+    db = web.con_db.menu_reportes(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    empaquetador = web.empaquetado
+
+
+
+    MainReprote = db.traer_reporte_html(pkreporte)
+    cabeceraHtml = MainReprote[0]['CabeceraHtml']
+
+    # cabeceraHtml = '''
+    # <div align="center">
+    # <img src="https://www.cerocodigo.com/media/archivos/DLM/logo.png" style="width: 50%;">
+    # <h5>TYD SALUD Y BIENESTAR</h5>
+    # <h2>REPORTE DE CONSULTIVOS</h2>
+    # <h4>Desde el {{FechaIncio}} hasta el {{FechaFin}}</h4>
+    # <h7>Consultivos Sistema: <b>{{TotalConsultivos}}</b> + Consultivos Feria: <b>{{TotalFerias}}</b></h7>
+    # <h4>TOTAL CONSULTIVOS: <b>{{TotalCompleto}}</b></h4>
+    # <hr>
+    # </div>'''
+
+    #cabeceraDatos= [{'tag':'FechaIncio','campo':'FechaIncio'},{'tag':'FechaFin','campo':'FechaFin'},{'tag':'TotalConsultivos','campo':'TotalConsultivos'},{'tag':'TotalFerias','campo':'TotalFerias'},{'tag':'TotalCompleto','campo':'TotalCompleto'}]
+    cabeceraDatos = db.traer_reporte_html_campos(pkreporte, 'Cabecera')
+    
+    #detalleDatos= [{'tag':'Nombre del Paciente', 'campo':'NomPaciente', 'tipo':'normal'},{'tag':'Fecha', 'campo':'Fecha', 'tipo':'normal'},{'tag':'Tratamiento', 'campo':'Tratamiento', 'tipo':'normal'},{'cab':'Patologia', 'campo':'Patologia', 'tipo':'normal'},{'cab':'Imagen Terapia', 'campo':'Imagen', 'tipo':'imagen'},{'cab':'PDF', 'campo':'Pdf', 'tipo':'firma'}]
+    detalleDatos = db.traer_reporte_html_campos(pkreporte, 'Detalle')
+    
+
+    sente_cab =  MainReprote[0]['CabeceraSenten']
+    sente_det =  MainReprote[0]['DetalleSenten']
+    
+    variables = json.loads(request.POST.get('repvariables'))
+    for x in variables:
+        sente_cab = sente_cab.replace(x, "'"+ str(variables[x])+ "'")
+        sente_det = sente_det.replace(x, "'"+ str(variables[x])+ "'")
+
+
+    dataCab =  db.traer_sql_directo(sente_cab)
+    #dataCab = [{'FechaIncio':'2022-12-01','FechaFin':'2022-12-31','TotalConsultivos':'5000','TotalFerias':'1000','TotalCompleto':'6000'}]
+
+    dataDet =  db.traer_sql_directo(sente_det)
+
+    # dataDet = [] # datsode l reprote
+    # dataDet.append({'NomPaciente':'PAiente 1','Fecha':'2022-12-01','Tratamiento':'Tratamiento A','Patologia':'Patologia a','Imagen':'aa.jpg', 'Pdf':'media/firma/DLM_Local/PDF/Fisio699_98signedsigned.pdf'}) 
+    # dataDet.append({'NomPaciente':'PAiente 2','Fecha':'2022-12-01','Tratamiento':'Tratamiento B','Patologia':'Patologia b','Imagen':'sss.jpg', 'Pdf':'media/firma/DLM_Local/PDF/Ordenes20221229231626signed.pdf'})
+    # dataDet.append({'NomPaciente':'PAiente 3','Fecha':'2022-12-01','Tratamiento':'Tratamiento C','Patologia':'Patologia c','Imagen':'aa.jpg', 'Pdf':'media/firma/DLM_Local/PDF/Fisio699_98signed.pdf'})
+    # dataDet.append({'NomPaciente':'PAiente 4','Fecha':'2022-12-01','Tratamiento':'Tratamiento D','Patologia':'Patologia d','Imagen':'xxx.jpg', 'Pdf':'media/firma/DLM_Local/PDF/Ordenes20221229231621.pdf'})
+    adjuntosHtml = db.traer_reporte_htmlsubhtml(pkreporte)
+    adjuntosdatos = {}
+    for adjuntos in adjuntosHtml:
+        for x in variables:
+            adjuntos['senten'] = adjuntos['senten'].replace(x, "'"+ str(variables[x])+ "'")
+        tempoadjuntosdatos = db.traer_sql_directo(adjuntos['senten'])
+        for fila in tempoadjuntosdatos:
+            adjuntosdatos[fila[adjuntos['tag']]] = fila
+
+    archivo = empaquetador.armar_archivo(cabeceraHtml, cabeceraDatos, detalleDatos, dataCab, dataDet, Id_empresa, adjuntosHtml, adjuntosdatos)
+    return {'ok':'Si','archivo':archivo}
+
+
+def Notificaciones(request, Id_empresa, usuario):
+    db = web.con_db.Notificaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    Notis = db.NotificacionesPorUsuario(usuario)
+
+    for Nota in Notis:
+        Nota['datos'] = db.sql_traer_directo(Nota['Sentencia'])
+    return {'Notis':Notis}
+
 
 
 
@@ -65,6 +215,8 @@ def menu_add_proceso(request, Id_empresa, nombre, tipo, cabecera, usuario):
         if tipo == 'Reportes':
             tipo = 'Reporte'
             procesos = db.modulo_crear_modulo(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], tipo) 
+            db.modulo_crear_modulo_Opciones(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], tipo) 
+
         else:
             procesos = db.modulo_crear_modulo(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], 'Registro') 
             db.estruc_crear_tabla(nombre.replace(' ','_')) 
@@ -284,9 +436,9 @@ def arreglo_base(request, Id_empresa):
     return 'Si'
 
 
-def acc_rapido(request, Id_empresa):
+def acc_rapido(request, Id_empresa, pkmodulo, usuario):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    permisos = db.acc_rapido(request.POST.getlist('pkmodulo')[0],request.POST.getlist('usuario')[0])    
+    permisos = db.acc_rapido(pkmodulo, usuario)    
     permisos_lista = {'Nuevo':'No','Modificar':'No','Eliminar':'No' }
     for p in permisos:
         if p['tipo'] == '2':
@@ -323,6 +475,13 @@ def al_errores(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     all_erroes  = db.al_errores()
     return {'respuesta':'ok', 'all_erroes':all_erroes}
+
+
+
+def pdf_ficha_tagElimnar(request, Id_empresa):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    db.panel_grupo_track_eliminar(request.POST.getlist('t_pkpanel')[0],request.POST.getlist('t_user')[0], request.POST.getlist('t_fecha')[0] )
+    return {'respuesta':'ok'}
 
 def pdf_ficha(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -367,23 +526,37 @@ def nuevo_dir_ficha(request, Id_empresa):
     txt_campos = ''
     txt_vals = ''
     for a in v_dict_add:
-        txt_campos = txt_campos + "`" + str(a)+ "`," 
-        if str(v_dict_add[a]) == '':
-            txt_vals = txt_vals + "'',"
+        if str(a) == '@base@':
+            bases = db.traer_plantilla_pdf_bases(v_dict_add[a])
+            for base in bases:
+                sentenncia = str(base['senten']).replace('@now','now()')
+                sentenncia = sentenncia.replace('@user',str(request.POST.getlist('usuario')[0]))
+                sentenncia = sentenncia.replace('@@',request.POST.getlist('t_valor')[0])
+                tempo_db = db.sql_traer_directo(sentenncia)
+                for b in tempo_db:
+                    for c in b:
+                        if str(b[c]) != 'None':
+                            txt_campos = txt_campos + "`" + str(c)+ "`," 
+                            if str(b[c]) == '':
+                                txt_vals = txt_vals + "'',"
+                            else:
+                                txt_vals = txt_vals + "'" + str(b[c])+ "',"        
         else:
-            if str(v_dict_add[a])[0] == '@':
-                if v_dict_add[a] == '@now':
-                        txt_vals = txt_vals + " now(),"      
-                if v_dict_add[a] == '@user':
-                        txt_vals = txt_vals + "'" + str(request.POST.get('usuario'))+ "'," 
-                if str(v_dict_add[a])[:2] == '@@':
-                    tempo_db = db.sql_traer_directo(v_dict_add[a][2:].replace('@pkreges@',str(request.POST.getlist('t_valor')[0])))
-                    txt_vals = txt_vals + "'" + str(tempo_db[0]['Val'])+ "',"
+            txt_campos = txt_campos + "`" + str(a)+ "`," 
+            if str(v_dict_add[a]) == '':
+                txt_vals = txt_vals + "'',"
             else:
-                txt_vals = txt_vals + "'" + str(v_dict_add[a])+ "',"        
+                if str(v_dict_add[a])[0] == '@':
+                    if v_dict_add[a] == '@now':
+                            txt_vals = txt_vals + " now(),"      
+                    if v_dict_add[a] == '@user':
+                            txt_vals = txt_vals + "'" + str(request.POST.getlist('usuario')[0])+ "'," 
+                    if str(v_dict_add[a])[:2] == '@@':
+                        tempo_db = db.sql_traer_directo(v_dict_add[a][2:].replace('@pkreges@',str(request.POST.getlist('t_valor')[0])))
+                        txt_vals = txt_vals + "'" + str(tempo_db[0]['Val'])+ "',"
+                else:
+                    txt_vals = txt_vals + "'" + str(v_dict_add[a])+ "',"        
     senten = "insert into `"+str(pkestruc[0]['Nombre'])+"` ("+txt_campos+"`"+str(request.POST.getlist('t_campo')[0])+"`) VALUES ("+txt_vals+" '"+str(request.POST.getlist('t_valor')[0])+"')"
-    
-
     db.sql_directo(senten)
     return {'respuesta':'ok'}
 
@@ -567,10 +740,10 @@ def grabar_files(request, Id_empresa):
 
 
 
-def traer_registro(request, Id_empresa, campos):
+def traer_registro(request, Id_empresa, campos, pkmodulo, pkregistro):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    tablas  = db.tablas(request.POST.getlist('pkmodulo')[0])
-    valores = db.valores(request.POST.getlist('pkregistro')[0], tablas, campos)
+    tablas  = db.tablas(pkmodulo)
+    valores = db.valores(pkregistro, tablas, campos)
     valores_cab = valores[0]
     valores_det = 0
     valores_subdet = 0
@@ -608,7 +781,7 @@ def traer_estados_desde_panel_directo(request, Id_empresa, int_pkmodulo):
 def traer_registro_desde_panel(request, Id_empresa, campos, candiciones):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     tablas  = db.tablas(request.POST.getlist('pkmodulo')[0])
-    valores = db.valores_codniones(tablas, campos, candiciones)
+    valores = db.valores_codniones(tablas, campos, candiciones, request.POST.getlist('usuario')[0])
     valores_cab = valores[0]
     return [ valores_cab]
 
@@ -631,7 +804,21 @@ def acc_por_mas(request, Id_empresa):
 def traer_registro_estados(request, Id_empresa, campos):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     estados = db.t_estados(request.POST.getlist('pkmodulo')[0],request.POST.getlist('usuario')[0])
+    for estado in estados:
+        estado['variables'] = db.t_estadosVariables(estado['pkweb_estados_doc'])
     return estados
+
+
+
+def plantilla_html(request, Id_empresa, PkModulo):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    plantillashtml = db.plantillasMainhtml(PkModulo)
+    for plantilla in plantillashtml:
+        plantilla['CamposCab'] = db.plantillashtmlCampos(plantilla['PkPlantilla'], 'Cabecera')
+        plantilla['CamposDet'] = db.plantillashtmlCampos(plantilla['PkPlantilla'], 'Detalle')
+    return plantillashtml
+    
+
 
 def plantilla_pdf(request, Id_empresa, PkModulo):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -642,7 +829,11 @@ def plantilla_pdf(request, Id_empresa, PkModulo):
     plantillascamposcabecera = {}
     plantillascondiciones = {}
     plantillasetiquetas = {}
+    firma = web.firma_pdf 
+    plantillasfirmas = 'No'
     for main in plantillasMain:
+        if main['Fuente'] == 'Firma':
+            plantillasfirmas = 'Si'
         plantillassegmentos.update({main["PkPlantilla"]:db.plantillassegmentos(main["PkPlantilla"])})
         plantillascondiciones.update({main["PkPlantilla"]:db.plantillascondiciones(main["PkPlantilla"])})
         for seg in plantillassegmentos[main["PkPlantilla"]]:
@@ -650,10 +841,11 @@ def plantilla_pdf(request, Id_empresa, PkModulo):
             plantillascampos3nivel.update({seg["PkSegmento"]:db.plantillascampos3nivel(seg["PkSegmento"])})
             plantillascamposcabecera.update({seg["PkSegmento"]:db.plantillascamposcabecera(seg["PkSegmento"])})
             plantillasetiquetas.update({seg["PkSegmento"]:db.plantillasetiquetas(seg["PkSegmento"])})
-    return {'plantillasMain':plantillasMain,'plantillassegmentos':plantillassegmentos,'plantillascampos':plantillascampos,'plantillascampos3nivel':plantillascampos3nivel,'plantillascamposcabecera':plantillascamposcabecera,'plantillascondiciones':plantillascondiciones,'plantillasetiquetas':plantillasetiquetas}
+    return {'plantillasfirmas':plantillasfirmas,'plantillasMain':plantillasMain,'plantillassegmentos':plantillassegmentos,'plantillascampos':plantillascampos,'plantillascampos3nivel':plantillascampos3nivel,'plantillascamposcabecera':plantillascamposcabecera,'plantillascondiciones':plantillascondiciones,'plantillasetiquetas':plantillasetiquetas}
 
 def consolidado(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    print(request.POST.getlist('cmpsenten')[0])
     cmpvalor = db.cmpconso_ejecutar(request.POST.getlist('cmpsenten')[0])
     return {'cmpvalor':cmpvalor, 'tag1': request.POST.getlist('tag1')[0], 'tag2': request.POST.getlist('tag2')[0]}
 
@@ -690,11 +882,15 @@ def guardar_base(request, Id_empresa):
     paso = True
     msg = {}
     num_det = 0
+
     if request.POST.getlist('disparador')[0] == "Modificar Registro":
         for z in envio_datset[request.POST.getlist('nom_tabla')[0]]:
             sentencia = "Update " + request.POST.getlist('nom_tabla')[0] + " set " 
             for i in campos_cab:
-                sentencia = sentencia + " " + i["Nombre"] + " = '"  + str(z[i["Nombre"]]).replace("'", " ") + "', "
+                try:
+                    sentencia = sentencia + " " + i["Nombre"] + " = '"  + str(z[i["Nombre"]]).replace("'", " ") + "', "
+                except KeyError:
+                    pass
             pk_cabecera = z["Pk"+ request.POST.getlist('nom_tabla')[0]]
             senten_cab.append( sentencia[:-2] + " where Pk" + request.POST.getlist('nom_tabla')[0] + " = '" + pk_cabecera + "'" )
         num_det = 0
@@ -761,6 +957,7 @@ def guardar_base(request, Id_empresa):
         if (request.POST.getlist('campos_subdet')[0] != "0"):          
             pk_subdetalle = get_max(request, ("Pk"+ request.POST.getlist('nom_tabla')[0] + "DetalleDetalle"), request.POST.getlist('nom_tabla')[0] + "DetalleDetalle", Id_empresa)
         for z in envio_datset[request.POST.getlist('nom_tabla')[0]]:
+            db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa])             
             sentencia = "insert into `" + request.POST.getlist('nom_tabla')[0] +  "` (" 
             Vsentencia = "VALUES ("
             for i in campos_cab:
@@ -770,6 +967,9 @@ def guardar_base(request, Id_empresa):
                     else:
                         z[i["Nombre"]] = get_max(request, (i["Nombre"]), request.POST.getlist('nom_tabla')[0], Id_empresa)
                         actualizar_max(request, (i["Nombre"]), request.POST.getlist('nom_tabla')[0], z[i["Nombre"]], Id_empresa)
+                if i["TablaCampo"] == "cmpconsolidado":
+                    pass
+
                 sentencia = sentencia + "`" + i["Nombre"] + "`, "  
                 txtvalor = str(z[i["Nombre"]]).replace("'", " ")
                 txtvalor = str(txtvalor).replace("Á", "A")
@@ -784,6 +984,9 @@ def guardar_base(request, Id_empresa):
         pkkabecera_subdetalle = 0
         if request.POST.getlist('tiene_detalle')[0] == 'Si':
             fila_int = 0
+            #BTN!
+            
+           
             for z in envio_datset[request.POST.getlist('nom_tabla')[0] + "Detalle"]:
                 fila_int = fila_int + 1
                 sentencia = "insert into `" + request.POST.getlist('nom_tabla')[0] +  "Detalle` (" 
@@ -832,11 +1035,12 @@ def guardar_base(request, Id_empresa):
                             num_subdet = num_subdet + 1
                 num_det = num_det + 1
     if paso == True:
-        senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], request.POST.getlist('disparador')[0], envio_datset)  
+        senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], request.POST.getlist('disparador')[0], envio_datset,{})  
         db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-        if db.ingreso_base(senten_cab, senten_det, senten_acc, request.POST.getlist('pkmodulo')[0], senten_subdet) == True:
+        graboTodo =db.ingreso_base(senten_cab, senten_det, senten_acc, request.POST.getlist('pkmodulo')[0], senten_subdet)
+        if graboTodo[0] == True:
             db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-            senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], "Post " + str(request.POST.getlist('disparador')[0]), envio_datset)  
+            senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], "Post " + str(request.POST.getlist('disparador')[0]), envio_datset,{})  
             db.ingreso_post(senten_acc, request.POST.getlist('pkmodulo')[0])
             db.auditoria_ingresar(envio_datset, request.POST.getlist('usuario')[0], request.POST.getlist('disparador')[0])
             for ax in senten_acc:
@@ -845,10 +1049,10 @@ def guardar_base(request, Id_empresa):
             context = {'grabo':True, 'pkmodulo':request.POST.getlist('pkmodulo')[0], 'pkregistro':pk_cabecera, 'pestalla':request.POST.getlist('pestalla')[0] }
             return context
         else:
-            context = {'grabo':False, 'msg':{'Tipo':'Error en Acciones'}}
+            context = {'grabo':False, 'msg':{'Error':graboTodo[1]}}
             return context
     else:
-        context = {'grabo':False, 'msg':{'Tipo':'Error en ingreso'}}
+        context = {'grabo':False, 'msg':{'Error':graboTodo[1]}}
         return context
 
 def validar_condiciones(request, Id_empresa, v_PkAccion, cabecera):
@@ -860,7 +1064,7 @@ def validar_condiciones(request, Id_empresa, v_PkAccion, cabecera):
     return True
 
             
-def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
+def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, IngVariables):
      
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     datosCabecera = db.TraerAccionesCabecera(pkmodulo)
@@ -898,7 +1102,7 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
 
                     #datosRegistros = db.TraerAccionesNumeroRegistrosCabeceras(z["PkAccion"])
                     datosRegistros = db.TraerAccionesNumeroRegistros(z["PkAccion"])
-      
+                    #BTN!
                     obj_tablas  = db.tablas(z["ModuloAfectado"])
                     obj_campos = db.campos(obj_tablas)
                     obj_funciones_campos = db.funciones_campos_dict_pkestruc(obj_tablas, obj_campos)
@@ -906,10 +1110,13 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                     dataset_ingresar = {}
                     accionescampos = {}
                     
+
+
                     for y in datosRegistros:
                         datos = db.TraerAccionesCampos(y["PkAccionL2"])
                         accionescampos.update({y["PkAccionL2"]:datos})
 
+                    datos_indices_truchos = {}
 
                     for y in datosRegistros:
                         if y["SeREpite"] =="No":
@@ -957,7 +1164,27 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                                         tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]]
                                     if yy["Tipo"] == "Auto":
                                         if yy["Campo"] == 'PKCabecera':
-                                            tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
+                                            ##tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
+                                            Nom_put_tabla =''
+                                            for hh in datosRegistros:
+                                                if hh['PkAccionL2'] == y['PkCabecera']:
+                                                    repetuche = hh['TablaRepetir']
+                                                    for hh2 in obj_tablas:
+                                                        if hh2['PkEstructura'] == hh['PkEstructura']:
+                                                            Nom_put_tabla = hh2['Nombre']
+                                                            break
+                                            if y['PkCabecera'] in dataset_ingresar:
+                                                if len(dataset_ingresar[y['PkCabecera']])== 1:
+                                                    tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][0]['Pk' +Nom_put_tabla]
+                                                else:
+                                                    indice_trucho = 0
+                                                    for hh in envio_datset[repetuche]:
+                                                        if hh['Pk'+repetuche] == xxx['PKCabecera']:
+                                                            tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][indice_trucho]['Pk' +Nom_put_tabla]
+                                                            break
+                                                        indice_trucho = indice_trucho + 1
+                                            else:
+                                                tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
                                         else:
                                             if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
                                                 valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
@@ -1256,7 +1483,10 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                         if y["Tipo"] == "Campo":
                             UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(y["Valor"]) + ", "
                         if y["Tipo"] == "Valor":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = '" + str(y["Valor"]) + "', "
+                            if y["Valor"] == "@Usuario@":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(request.POST.getlist('usuario')[0]) + "', "
+                            else:
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = '" + str(y["Valor"]) + "', "
                         if y["Tipo"] == "Operacion":
                             variables = y["Variables"].split(",")
                             valor_final = y["Valor"]
@@ -1268,6 +1498,9 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                             UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "', "
                         if y["Tipo"] == "Registro sin Comillas":
                             UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + ", "
+                        if y["Tipo"] == "Variable":
+                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(IngVariables[y["Valor"]]) + "', "
+                        
                     UpdateSet = UpdateSet[0:-2]    
                     if UpdateWhere == "WHERE":
                         Update = UpdateFrom + " " + UpdateSet + " " + Updatehaving
@@ -1337,6 +1570,79 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset):
                         Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
                     logger.debug('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
                     senten_acc.append('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
+            if z["Accion"] == "Email":
+                datosCorreo = db.TraerAccionesCorreo(z["PkAccion"])
+                Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
+
+                for correo in datosCorreo:
+                    #De
+                    #Para
+                    #Tema
+                    #Cuerpo
+                    #Variables
+
+                    sender = correo['De']
+                    receivers = str(envio_datset[Nom_tabla_cab][0][correo['Para']])
+
+                    messageCat = correo['CuerpoCab']
+                    messagePie = correo['CuerpoPie']
+
+                    messageDer = ''
+
+                    VarCab = json.loads(correo['VariablesCad']) # {@var1:campo1,@var2:campo2}
+
+                    for var in VarCab:
+                        messageCat = messageCat.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+                        messagePie = messagePie.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+
+                    VarDet = json.loads(correo['VariablesDet']) # {@var1:campo1,@var2:campo2}
+                    if len(VarDet)>0:
+                        Nom_tabla_det = db.ListadoTablas(z["PkModulo"])[1]["Nombre"]
+                        for fila in envio_datset[Nom_tabla_det]:
+                            Linea = correo['CuerpoDet']
+                            for var in VarDet:
+                                Linea = Linea.replace(var,str(fila[VarDet[var]]))
+                            messageDer = messageDer + Linea + '\n'
+
+                    cuerpo = messageCat + '\n' + messageDer + '\n' + messagePie
+
+                    
+                    envio_email(str(envio_datset[Nom_tabla_cab][0][correo['Para']]), cuerpo, correo['De'])
+    return senten_acc
+
+def envio_email(para, msg, por):
+    try:
+        send_mail(por, msg, 'documentos@cerocodigo.com',[para])
+    except:
+        pass
+
+
+def EjecutarAcciones_FirmaPdf(request, Id_empresa, pkmodulo, disparador, envio_datset):
+     
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    datosCabecera = db.TraerAccionesCabecera(pkmodulo)
+    senten_acc = []
+    rowcount = {}
+    tabla_cab = ''
+    for z in datosCabecera:
+        if z["Disparador"] == disparador:
+            if z["Accion"] == "FirmaPdf":
+                
+                firma = web.firma_pdf 
+                #datos_firma = firma.traerdatos(request, request.POST.getlist('usuario')[0], request.POST.getlist('Id_empresa')[0], z["ModuloAfectado"], 'Plantilla')
+                Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
+                datos_pdf = web.pdf.crear_pdf_registro(request, Id_empresa, z["PkModulo"], str(envio_datset[Nom_tabla_cab][0]['Pk'+Nom_tabla_cab]), envio_datset, z["ModuloAfectado"]) 
+                doc_pdf = datos_pdf[0]
+                
+                if len(datos_pdf[1]) > 0:
+                    datos_firma = firma.traerdatos_bloque(request, request.POST.getlist('Id_empresa')[0], datos_pdf[1])
+                    firmado = firma.firmar_conform_nueva(doc_pdf, request.POST.getlist('Id_empresa')[0] , datos_firma, envio_datset, Nom_tabla_cab)
+                    if firmado[1] == 'no':
+                        return ['Error',firmado[2]]
+                    else:
+                        senten_acc.append("Update "+Nom_tabla_cab+" set "+z["con_ext"]+" = '"+firmado[0]+"' where Pk"+Nom_tabla_cab+" = "+str(envio_datset[Nom_tabla_cab][0]['Pk'+Nom_tabla_cab])+" ")
+
+
     return senten_acc
 
 def Acc_TraerDataTable(request, Id_empresa, datatable, query_nom, indice):
@@ -1502,11 +1808,41 @@ def reporte_ejecutar(request, Id_empresa):
             return {'db_msg':db_msg}
     return {'db_msg':0,'reptotales':reptotales, 'label':label, 'repreferencias':repreferencias,'repvariables':repvariables,'repstilo':repstilo,'resutado':resutado, 'pestalla':request.POST.get('pestalla'), 'id':request.POST.get('id'), 'nombre_rep':request.POST.get('nombre_rep')}
 
+
+def buscador_ficha_crear_rapido(request, Id_empresa):
+    db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    #cmpvalor = db.cmpbuscador_ejecutar(request.POST.getlist('cmpsenten')[0], 15)
+    panel = db.panel_web_p_panel_traer(request.POST.getlist('pkpanel')[0])
+    if len(panel) > 0:
+        sente = "INSERT INTO `"+panel[0]['tabla']+"` (`"+panel[0]['grupos_nom']+"`) VALUES ('')" 
+        db.sql_directo(sente)
+        ultimo = db.sql_traer_directo("Select Pk"+panel[0]['tabla']+" from "+panel[0]['tabla']+" order by Pk"+panel[0]['tabla']+" desc limit 1")
+        sente = 'Select ' +panel[0]['agrupar']+ ', Pk'+ panel[0]['tabla'] +' from ' + panel[0]['tabla'] + ' where Pk'+ panel[0]['tabla'] + ' like "' +str(ultimo[0]['Pk'+ panel[0]['tabla']])+ '" '
+        cmpvalor = db.cmpbuscador_ejecutar_sun_limite(sente)
+        cmpvalordistinct = ''
+        if 'cmpdistinct' in request.POST:
+            if request.POST.getlist('cmpdistinct')[0] == '':
+                cmpvalordistinct = ''    
+            else:
+                cmpvalordistinct = db.cmpbuscador_ejecutar_sun_limite(request.POST.getlist('cmpdistinct')[0])
+
+        return {'cmpvalor':cmpvalor, 'namcampo':panel[0]['agrupar'], 'pkpanel':request.POST.getlist('pkpanel')[0], 'cmpvalordistinct':cmpvalordistinct, 'condicion':'Pk'+ panel[0]['tabla']}
+
+
+
+
 def buscador_ficha(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     #cmpvalor = db.cmpbuscador_ejecutar(request.POST.getlist('cmpsenten')[0], 15)
     cmpvalor = db.cmpbuscador_ejecutar_sun_limite(request.POST.getlist('cmpsenten')[0])
-    return {'cmpvalor':cmpvalor, 'namcampo':request.POST.getlist('namcampo')[0], 'pkpanel':request.POST.getlist('pkpanel')[0]}
+    cmpvalordistinct = ''
+    if 'cmpdistinct' in request.POST:
+        if request.POST.getlist('cmpdistinct')[0] == '':
+            cmpvalordistinct = ''    
+        else:
+            cmpvalordistinct = db.cmpbuscador_ejecutar_sun_limite(request.POST.getlist('cmpdistinct')[0])
+
+    return {'cmpvalor':cmpvalor, 'namcampo':request.POST.getlist('namcampo')[0], 'pkpanel':request.POST.getlist('pkpanel')[0], 'cmpvalordistinct':cmpvalordistinct}
 
 def buscador_auditoria(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -1626,7 +1962,8 @@ def traer_campos_int(request, Id_empresa, pkmodulo):
 def traer_campos_desdePanel(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     tablas  = db.tablas(request.POST.getlist('pkmodulo')[0])
-    campos = db.campos(tablas)
+    #campos = db.campos(tablas)
+    campos = db.camposXConsulta(tablas)
     tabla_cab = tablas[0]
     campos_cab = campos[0]
     tabla_det = 0
@@ -1692,10 +2029,10 @@ def traer_campos_panel_directo_pkmodulo(request, Id_empresa, pkmodulo):
     return {'pk_estru':tablas[0]['PkEstructura'], 'tabla_cab' :tabla_cab, 'campos_cab' :campos_cab, 'tabla_det':tabla_det,'campos_det':campos_det,'tabla_subdet':tabla_subdet,'campos_subdet':campos_subdet}
 
 
-def traer_campos(request, Id_empresa):
+def traer_campos(request, Id_empresa, pkmodulo, tpestana):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    tablas  = db.tablas(request.POST.getlist('pkmodulo')[0])
-    tt_modulo  = db.traer_moduloss_porPk(request.POST.getlist('pkmodulo')[0])
+    tablas  = db.tablas(pkmodulo)
+    tt_modulo  = db.traer_moduloss_porPk(pkmodulo)
     campos = db.campos(tablas)
     tabla_cab = tablas[0]
     campos_cab = campos[0]
@@ -1710,11 +2047,11 @@ def traer_campos(request, Id_empresa):
         tabla_subdet = tablas[2]
         campos_subdet = campos[2]
     validaciones = db.validaciones(tablas)
-    return {'exportable':tt_modulo[0]['exportable'], 'pestalla':request.POST.getlist('pestalla')[0], 'tabla_cab' :tabla_cab, 'campos_cab' :campos_cab, 'tabla_det':tabla_det,'campos_det':campos_det,'tabla_subdet':tabla_subdet,'campos_subdet':campos_subdet,'validaciones':validaciones}
+    return {'exportable':tt_modulo[0]['exportable'], 'pestalla':tpestana, 'tabla_cab' :tabla_cab, 'campos_cab' :campos_cab, 'tabla_det':tabla_det,'campos_det':campos_det,'tabla_subdet':tabla_subdet,'campos_subdet':campos_subdet,'validaciones':validaciones}
 
-def traer_campos_funciones(request, Id_empresa, campos):
+def traer_campos_funciones(request, Id_empresa, campos, pkmodulo):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    tablas  = db.tablas(request.POST.getlist('pkmodulo')[0])
+    tablas  = db.tablas(pkmodulo)
     funciones_campos = db.funciones_campos(tablas, campos)
     funciones_cab = funciones_campos[0]
     funciones_det = 0
@@ -1745,6 +2082,7 @@ def registro(request, Id_empresa, user):
     nuevo = 'No'
     modifica = 'No'
     eliminar = 'No'
+    solos = 'No'
     for a in Permisos:
         if a['Nombre'] == 'Ingresar':
             nuevo ='Si'
@@ -1752,7 +2090,9 @@ def registro(request, Id_empresa, user):
             modifica = 'Si'
         if a['Nombre'] == 'Eliminar':
             eliminar = 'Si'
-    respuesta  = db.consulta_orden_web(request.POST.getlist('pk')[0], 10)
+        if a['Nombre'] == 'Solo':
+            solos = 'Si'
+    respuesta  = db.consulta_orden_web(request.POST.getlist('pk')[0], 10, user, solos)
     estru = db.traer_campos_por_pkestr_solo_visible(respuesta[0][0]["PkEstructura"])
     db_inter = web.con_db.inter_login_LOGIN("Mysql") 
     idioma_html = db_inter.traer_platilla('registro',request.POST.getlist('idioma')[0])
@@ -1920,7 +2260,9 @@ def cambio_estado(request, Id_empresa):
                 if str(type(a[b])) =="<class 'datetime.date'>":
                     a[b] = str(a[b])
     d_estado_cond = db.traer_estado_cond(request.POST.getlist('pkestado')[0])
-    d_estado_nomb = db.traer_estado_nombre(request.POST.getlist('pkestado')[0])    
+    d_estado_nomb = db.traer_estado_nombre(request.POST.getlist('pkestado')[0])   
+    d_variables = json.loads(request.POST.get('variables'))
+
     for a in d_estado_cond:
         cond_sente = a['senten']
         cond_sente_var = a['variables'].split(',')
@@ -1931,13 +2273,23 @@ def cambio_estado(request, Id_empresa):
         if str(tvalor[0][cond_sente_val[0]]) != str(cond_sente_val[1]):
             context = {'msg' :a['msg_error'],'resultado' :'mal'}
             return context
-    context = {'msg' :'Cambio Exitoso','resultado' :'bien'}
-    senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], 'Estado='+ str(request.POST.getlist('pkestado')[0]), d_registro)
+    senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], 'Estado='+ str(request.POST.getlist('pkestado')[0]), d_registro, d_variables)
     for a in senten_acc:
         db.sql_directo(a)
+    senten_acc = EjecutarAcciones_FirmaPdf(request, Id_empresa, request.POST.getlist('pkmodulo')[0], 'Estado='+ str(request.POST.getlist('pkestado')[0]), d_registro)
+    if len(senten_acc)>0:
+        if senten_acc[0] == 'Error':
+            context = {'msg' :'Error en acciones' + senten_acc[1],'resultado' :'mal', 'registro':'', 'tabla':d_estructuras[0]['Nombre'], 'pkregistro': request.POST.getlist('pkregistro')[0]}
+            return context
+    for a in senten_acc:
+        db.sql_directo(a)
+
     display = d_estructuras[0]['Nombre']+ ": " + d_estado_nomb[0]['display']
     sente = 'insert into `llankay_log` (`sentencia`, `usuario`, `fecha`, `ip`) VALUES ("'+str(d_registro)+'", "'+str(request.POST.getlist('usuario')[0])+'", now(), "'+str(display)+'")'
     db.sql_directo(sente)
+    regsitro_devuelto = db.traer_registro_est(d_estructuras[0]['Nombre'], request.POST.getlist('pkregistro')[0])
+    context = {'msg' :'Cambio Exitoso','resultado' :'bien', 'registro':regsitro_devuelto, 'tabla':d_estructuras[0]['Nombre'], 'pkregistro': request.POST.getlist('pkregistro')[0]}
+
     return context
 
 def regis_usuario(request, Id_empresa): 
@@ -2119,10 +2471,14 @@ def validar_user_empresa(request, Id_empresa, usuario, clave):
                 request.session['conn_pass'] = {}
                 request.session['conn_base'] = {}
                 request.session['conn_ip'] = {}
+                request.session['conn_port'] = {}
+            if not(request.session.has_key('conn_port')):
+                request.session['conn_port'] = {}
             request.session['conn_user'].update({Id_empresa:dbEmpresa[0]['conn_user']})
             request.session['conn_pass'].update({Id_empresa:dbEmpresa[0]['conn_pass']})
             request.session['conn_base'].update({Id_empresa:dbEmpresa[0]['conn_base']})
-            request.session['conn_ip'].update({Id_empresa:dbEmpresa[0]['conn_ip']})        
+            request.session['conn_ip'].update({Id_empresa:dbEmpresa[0]['conn_ip']})     
+            request.session['conn_port'].update({Id_empresa:dbEmpresa[0]['conn_port']})        
             request.session.save()
             log_empresa = dbEmpresa[0]['Negocio']
             db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -2137,13 +2493,21 @@ def validar_user_empresa(request, Id_empresa, usuario, clave):
                 list_user = db_cliente.carga_list_user()
                 estados = db_cliente.carga_estados()
                 certificado = db_cliente.carga_certificado()
-                tareas = db_cliente.carga_list_areas()
-                datos_cuentas = db_cliente.carga_datos_cuentas() 
-                
-                db_agente_web = dbEmpresa[0]["cc_control"].split(',')
-                #db_agente = web.con_db.agente_central('cerocodigo','AEx_1237458','cliente_nlubkov','107.170.92.160') 
-                db_agente = web.con_db.agente_central(db_agente_web[0],db_agente_web[1],db_agente_web[2],db_agente_web[3]) 
+                #tareas = db_cliente.carga_list_areas()
+                tareas = {}
+                #list_areas =tareas[0]
+                #list_project =tareas[1]
+                list_areas = []
+                list_project =[]
 
+                datos_cuentas = db_cliente.carga_datos_cuentas() 
+
+                if dbEmpresa[0]["cc_control"] == '':
+                    db_agente = web.con_db.agente_central('root','123456789','cliente_dlm','127.0.0.1')    
+                else:
+                    db_agente_web = dbEmpresa[0]["cc_control"].split(',')
+                    db_agente = web.con_db.agente_central(db_agente_web[0],db_agente_web[1],db_agente_web[2],db_agente_web[3]) 
+                        
                 datos_clientes = db_agente.traer_cupo(datos_cuentas[0]['numeroRuc']) 
                 valores_cuentas = db_agente.traer_valores(datos_cuentas[0]['numeroRuc']) 
                 sri_ingreso_rap = db_cliente.carga_sri_ingreso_rap()
@@ -2157,8 +2521,7 @@ def validar_user_empresa(request, Id_empresa, usuario, clave):
                     if dias_pendientes < float(a['Dias']) and a['Estado'] == 'PENDIENTE':
                         val_pendiente = val_pendiente + float(a['Saldo_val']) 
                         dias_pendientes = float(a['Dias'])
-                list_areas =tareas[0]
-                list_project =tareas[1]
+                
                 respuesta.append("1")
                 respuesta.append(usuario_ok)
                 respuesta.append(menu)

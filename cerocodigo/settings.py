@@ -140,7 +140,7 @@ DEFAULT_FROM_EMAIL = 'documentos@cerocodigo.com'
 SERVER_EMAIL = 'documentos@cerocodigo.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.ipage.com'
-EMAIL_PORT = 25
+EMAIL_PORT = 587
 EMAIL_HOST_USER = 'documentos@cerocodigo.com'
 EMAIL_HOST_PASSWORD = '@Dmin1992'
 

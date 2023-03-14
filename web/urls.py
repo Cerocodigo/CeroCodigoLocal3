@@ -1,14 +1,16 @@
+from django.conf import settings
+from django.conf.urls import url
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.views.generic import RedirectView
 from django.views.static import serve
 
-from django.conf.urls import url
-from django.contrib import admin
-from django.conf import settings
-from django.conf.urls.static import static
-from django.views.generic import RedirectView
-
 from . import views
+
 urlpatterns = [     
+    url(r'^ccimagenes_post', views.ccimagenes_post), #'todo.views.edit_lists', name='edit_lists',
     url(r'^ccimagenes', views.ccimagenes), #'todo.views.edit_lists', name='edit_lists',
+    url(r'^ccsubirFirmas', views.ccsubirFirmas), #'todo.views.edit_lists', name='edit_lists',
     #url(r'^', views.aproduccion), #solo con alterno cuando No este jodido produccion 
     #url(r'^(modelos/(?P<v_modelo>[a-z, A-Z, 0-9]+)', views.eshop_bus_solo),          
     url(r'^(?P<idioma>[a-z]+)/demo', views.log_demo),   
@@ -34,6 +36,7 @@ urlpatterns = [
     url(r'^(?P<negocio>[a-z, A-Z, 0-9]+)/eshop/(?P<v_cat>[a-z, A-Z, 0-9]+)/(?P<v_busca>[a-z, A-Z, 0-9]+)', views.eshop_bus_solo_cat),                    
     url(r'^(?P<negocio>[a-z, A-Z, 0-9]+)/eshop/(?P<v_cat>[a-z, A-Z, 0-9]+)', views.eshop_bus_solo),          
     url(r'^(?P<negocio>[a-z, A-Z, 0-9]+)/eshop', views.eshop),  
+    url(r'^ext/(?P<negocio>[a-z, A-Z, 0-9, _]+)', views.externo),          
     url(r'^aa', views.aa),
     url(r'^activar/(?P<Clave_act>[0-9]+)/', views.activar_usuario),    
     url(r'^myfunction', views.myfunction), 
@@ -59,6 +62,7 @@ urlpatterns = [
     url(r'^buscador_auditoria', views.buscador_auditoria),   #prueba de chrtas   
     url(r'^buscador_auto_enter', views.buscador_auto_enter),   #prueba de chrtas
     url(r'^buscador_filtro', views.buscador_filtro),   #prueba de chrtas
+    url(r'^buscador_ficha_crear_rapido', views.buscador_ficha_crear_rapido),   #prueba de chrtas        
     url(r'^buscador_ficha', views.buscador_ficha),   #prueba de chrtas        
     url(r'^buscador_filt_rep', views.buscador_filt_rep),   #prueba de chrtas
     url(r'^buscador_nota_doc', views.buscador_nota_doc),   #prueba de chrtas
@@ -105,6 +109,8 @@ urlpatterns = [
     url(r'^expertos', views.expertos),
     url(r'^eliminar_error', views.eliminar_error), 
     url(r'^ficha_new', views.ficha_new),          
+    url(r'^firma_usuario', views.firma_usuario),  
+    url(r'^firma_grabar', views.firma_grabar),          
     url(r'^factura/(?P<Clave_doc>[0-9]+)/', views.Factura),
     url(r'^file_upload', views.simple_upload), #'todo.views.edit_lists', name='edit_lists'      
     url(r'^guia/(?P<Clave_doc>[0-9]+)/', views.Guia),
@@ -117,7 +123,8 @@ urlpatterns = [
     url(r'^insert_rap_det', views.insert_rap_det),
     url(r'^log_fast', views.log_fast),            
     url(r'^logrep', views.logrep),            
-    url(r'^logweb', views.logweb),            
+    url(r'^logweb', views.logweb),    
+    url(r'^logExterno', views.logExterno),            
     url(r'^mensajes', views.mensajes),   
     url(r'^menu_proceso_editar_orden', views.menu_proceso_editar_orden),   
     url(r'^menu_eliminar_modulo', views.menu_eliminar_modulo),    
@@ -138,21 +145,28 @@ urlpatterns = [
     url(r'^mod_grabar_datosuser', views.mod_grabar_datosuser),     
     url(r'^mover_dir_ficha', views.mover_dir_ficha),     
     url(r'^nota_guardar_doc', views.nota_guardar_doc),
-    url(r'^notasload', views.notasload), #'todo.views.edit_lists', name='edit_lists'
+    url(r'^notificaciones_buscar', views.notificaciones_buscar),
+    url(r'^notasload', views.notasload), 
     url(r'^nota_add_text', views.nota_add_text),    
+    url(r'^offline_inicial', views.offline_inicial),          
     url(r'^pre_ejecutados', views.pre_ejecutados),          
     url(r'^perfil/(?P<Id_experto>[0-9]+)/', views.Perfil),
+    url(r'^paneles_carga_pkpanel', views.paneles_carga_pkpanel),
     url(r'^paneles_carga', views.paneles_carga),
     url(r'^paneles_items', views.paneles_items),
     url(r'^procesar_import_previa', views.procesar_import_previa),
     url(r'^procesar_import_proceso', views.procesar_import_proceso),
+    url(r'^email_ficha_server', views.email_ficha_server),
+    url(r'^pdf_ficha_tagElimnar', views.pdf_ficha_tagElimnar),
+    url(r'^pdf_ficha_server_continua', views.pdf_ficha_server_continua),
     url(r'^pdf_ficha_server_test', views.pdf_ficha_server_test),
     url(r'^pdf_ficha_server', views.pdf_ficha_server),
     url(r'^pdf_ficha', views.pdf_ficha),
     url(r'^promo', views.crear_usuario_promo),      
     url(r'^regis_guardar', views.regis_guardar),   
     url(r'^retencion/(?P<Clave_doc>[0-9]+)/', views.Retencion),
-    url(r'^reporte_ejecutar', views.reporte_ejecutar),                    
+    url(r'^reporte_empaquetado', views.reporte_empaquetado),                    
+    url(r'^reporte_ejecutar', views.reporte_ejecutar),                        
     url(r'^registro', views.registro),
     url(r'^regis_usuario', views.regis_usuario),  
     url(r'^tareas_finalizar', views.tareas_finalizar),  

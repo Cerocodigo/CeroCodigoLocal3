@@ -9,8 +9,8 @@ class inter_login_LOGIN:
         self.V_base=V_base
         #self.mysql_con = web.mysql.class_mysql( "root", "123456789", "cerocodigoweb", "127.0.0.1")
         #self.mysql_int = web.mysql.class_mysql( "root", "123456789", "mysql", "127.0.0.1")
-        self.mysql_con = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "cerocodigoweb", "107.170.92.160")
-        self.mysql_int = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "mysql", "107.170.92.160")
+        self.mysql_con = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "cerocodigoweb", "107.170.92.160", '3306')
+        self.mysql_int = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "mysql", "107.170.92.160", '3306')
     def traer_negocio(self, V_negocio):
         if self.V_base == "Mysql":
             sentencia = 'select * from empresas_erp where empresas_erp.Negocio = "'+ V_negocio +'"'
@@ -164,7 +164,22 @@ class inter_login_LOGIN:
 
 class externo_cliente:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
+    
+    def paneles_externo_tabla(self, sentencia):
+        return self.mysql_con.cursor_tabla(sentencia)
+    def traer_paneles_externo(self, V_PkExterno):
+        sentencia = 'select * from web_externo_panel where PkExterno = "'+ str(V_PkExterno) +'"'
+        return self.mysql_con.table(sentencia)
+    def traer_log_externo(self, V_tabla, C_user, V_user, C_clave, V_clave):
+        if V_clave == 'hidden':
+            sentencia = 'select * from '+ str(V_tabla) +' where '+ str(C_user) + ' = "'+ str(V_user) +'"'
+        else:
+            sentencia = 'select * from '+ str(V_tabla) +' where '+ str(C_user) + ' = "'+ str(V_user) +'" and ' + str(C_clave) + ' = "'+ str(V_clave) +'"'
+        return self.mysql_con.table(sentencia)
+    def acceso_externo(self, V_tipo):
+        sentencia = 'select * from web_externo_acceso where Tipo = "'+ V_tipo +'"'
+        return self.mysql_con.table(sentencia)
     def devolver_ingresados(self, sentencia, str_pendientes):
         sentencia = sentencia.replace("@documento", str_pendientes)
         return self.mysql_con.table(sentencia)
@@ -194,7 +209,7 @@ class externo_cliente:
     def carga_reportes(self, V_user):
         return self.mysql_con.table('select DISTINCT M.tipo as "formtipo", M.PkModulo as "Pkmodulo", RE.PkReporte,  RE.PkReporte as "id", lower(REPLACE(RE.Nombre," ","")) as "nombre", RE.Nombre as "diplay", RE.Descripcion as "descripcion", RE.formato as "formato", RE.posicion as "posicion", RE.Arch_Excell as "arch_excell", RE.Con_detalle as "con_detalle", RE.Tipo as "tipo", s.icono from web_a_permisos WE, sysmodulogeneral S, reportesmain RE, modulo M where WE.usuario = "'+str(V_user)+'" and WE.pkmodulo = M.PkModulo and M.Cabecera = S.PkModGen and M.PkModulo = RE.PkModulo and M.tipo = "Reporte" and M.anulado LIKE "N" and RE.anulado = "N" ORDER BY  RE.Nombre')
     def carga_list_user(self):
-        return self.mysql_con.table('select DISTINCT usuario from usuario')
+        return self.mysql_con.table('select DISTINCT usuario from usuario order by usuario')
     def cal_accrap(self, V_user):
         return self.mysql_con.table('select * from web_c_accrap where (usuario = "'+str(V_user)+'" or usuario = "Todos")')
     def carga_list_areas(self):
@@ -217,12 +232,16 @@ class externo_cliente:
         return self.mysql_con.table('select * from web_edocs_traspaso where pkmodulo = '+str(tpkmodulo))
     def sql_traer_directo(self,V_sentencia):
         return self.mysql_con.table(V_sentencia)
-
+    def sql_ejecutar_directo(self,V_sentencia):
+        self.mysql_con.ejecutar(V_sentencia)
+    def traer_caledarioExternos(self):
+        t_sentencia = "SELECT * from web_p_calendar where usuario like '%Externo%'"
+        return self.mysql_con.table(t_sentencia)
 
         
 class inter_reporte_var:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def variables_reprotes(self, V_pkrepo):
         sentencia = 'select CAST( CASE    WHEN Tipo = "Fecha" THEN concat(date(NOW()))    WHEN Tipo = "FechaMes" THEN concat(year(NOW()),"-", if(MONTH(NOW())>9,MONTH(NOW()),concat("0", MONTH(NOW()))),"-01")    WHEN Tipo = "FechaAnio" THEN concat(year(NOW()),"-01-01")    ELSE "0"  END AS char) as "valor",PkVariable as "id", PkReporte as "pkreporte", Id as "id_rep", Glosa as "glosa", Tipo as "tipo", nivel as "nivel" from reportesvariables where pkreporte = '+ str(V_pkrepo) +' and nivel = 1'
         return self.mysql_con.table(sentencia)
@@ -259,7 +278,7 @@ class inter_reporte_var:
 
 class agente_central:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def traer_valores(self, t_id):
         base_query = self.mysql_con.table('select * from web_x_estado')
         return self.mysql_con.table(str(base_query[0]['estado']).replace('@ruc@',str(t_id)))
@@ -269,7 +288,7 @@ class agente_central:
 
 class inter_ref_buscar:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def reportesreferencias(self, V_pkrefer):
         sentencia = 'select PkReferencia as "id", PkReporte as "pkreporte", Id as "id_rep", Campo as "campo", Columnas as "columnas", Tabla as "tabla", Glosa as "glosa", Nivel as "nivel", Multi as "multi" from reportesreferencias where PkReferencia = '+ V_pkrefer +' and nivel = 1'
         return self.mysql_con.table(sentencia)
@@ -279,7 +298,7 @@ class inter_ref_buscar:
 
 class menu_modulos:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)      
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')      
     def traer_sysmodulogeneral_update(self, str_atributo, str_PkModGen, str_valor):
         sentencia = "UPDATE sysmodulogeneral set "+str(str_atributo)+" = '"+str(str_valor)+"' where PkModGen = " +str(str_PkModGen)
         self.mysql_con.ejecutar(sentencia)  
@@ -323,6 +342,34 @@ class menu_modulos:
         sentencia = "INSERT INTO `modulo` (`Nombre`, `Descripcion`, `Anulado`, `Cabecera`, `Orden`, `Plantilla`, `Imp_rap`, `ing_rap`, `modificable`, `exportable`, `mod_detalle`, `tipo`) VALUES ('"+str(str_Nombre)+"', '"+str(str_Descripcion)+"', 'N', '"+str(str_Cabecera)+"', '"+str(str_Orden)+"', 'def', 'NO', 'NO', 'Si', '', '', '"+str(str_tipo)+"')" 
         self.mysql_con.ejecutar(sentencia)
         return self.mysql_con.table("Select * from modulo where Nombre = '"+(str_Nombre)+"'")  
+    def modulo_crear_modulo_Opciones(self, pkmodulo, str_tipo):
+        if str_tipo == "Reporte":
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Admin. Reportes', 'Administrar Los Reportes del modulo', 'N', 'N', 'R')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Ejecutar Reportes', 'Ejecutar Los Reportes del modulo', 'N', 'N', 'D')"
+            self.mysql_con.ejecutar(sentencia)
+        else:
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Admin. Campos', 'Define la estructura del modulo', 'N', 'N', 'E')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Ingresar', 'Ingresa Regstros del modulo', 'N', 'N', 'I')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Modificar', 'Modifica los registros del modulo', 'N', 'N', 'M')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Consulta', 'Consulta los registros del modulo', 'N', 'N', 'C')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Admin. Condiciones', 'Administrar Condiciones del modulo', 'N', 'N', 'A')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Admin. Acciones', 'Administrar Acciones del modulo', 'N', 'N', 'B')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Admin. Plantillas', 'Las Plantillas del modulo', 'N', 'N', 'P')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Eliminar', 'Eliminar Registros', 'N', 'N', 'Z')"
+            self.mysql_con.ejecutar(sentencia)
+            sentencia = "INSERT INTO `opciones` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`,`Estructura` ) VALUES ('" + pkmodulo + "', 'Importar', 'Importar Registros', 'N', 'N', 'G')"
+
+
+
+
     def estruc_crear_tabla(self, str_Nombre):
         sentencia = "CREATE TABLE " + str(str_Nombre) + "(Pk" + str(str_Nombre) + " int NOT NULL AUTO_INCREMENT,PRIMARY KEY (Pk" + str(str_Nombre) + "))"
         self.mysql_con.ejecutar(sentencia)
@@ -336,9 +383,51 @@ class menu_modulos:
     def modulo_devolver_estructura(self, str_PkEstructura):
         return self.mysql_con.table("Select * from estructura where PkEstructura = '"+(str_PkEstructura)+"'")  
 
+
+
+class offline:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306') 
+    def sqltabla(self, senten):
+        return self.mysql_con.table(senten) 
+    def traer_respuestas_offline(self):
+        sentencia = "SELECT * from web_offline_prerespuestas"
+        return self.mysql_con.table(sentencia) 
+    def traer_modulos_offline(self):
+        sentencia = "SELECT * from web_offline_modulos"
+        return self.mysql_con.table(sentencia) 
+    def traer_respuestas_offline_bases(self, t_pkmodulo):
+        sentencia = "SELECT * from camposxestructura where PkModulo = "+str(t_pkmodulo)+" and tablacampo = 'cmpreferencia'"
+        return self.mysql_con.table(sentencia) 
+    def cmpreferencia_condiciones(self, t_pkcampo):
+        sentencia = "select * from cmpreferenciacondicion where pkcampo = '"+str(t_pkcampo)+"'"
+        return self.mysql_con.table(sentencia) 
+    def estructuras_offline(self):
+        sentencia = "SELECT estructura.* from modulo, estructura where modulo.PkModulo = estructura.PkModulo and modulo.Plantilla = 'Offline'"
+        return self.mysql_con.table(sentencia) 
+    def cmpreferecnias(self, t_pkestructura):
+        sentencia = "select * from cmpreferencia where pkestructura = " + str(t_pkestructura)
+        return self.mysql_con.table(sentencia) 
+
+        
+
 class menu_reportes:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip) 
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306') 
+    def traer_sql_directo(self, t_senten):
+        return self.mysql_con.table(t_senten)    
+    def traer_reporte_html_campos(self, t_PkReporte, t_seccion):
+        sentencia= "SELECT * from reportesmainhtml_campos where PkReporte = '"+str(t_PkReporte)+"' and seccion = '"+str(t_seccion)+"'"
+        return self.mysql_con.table(sentencia)    
+    def traer_reporte_html_cabecera(self, t_PkReporte):
+        sentencia= "SELECT * from reportesmainhtml where PkReporte = '"+str(t_PkReporte)+"'"
+        return self.mysql_con.table(sentencia)    
+    def traer_reporte_htmlsubhtml(self, t_PkReporte):
+        sentencia= "SELECT * from reportesmainhtml_subhtml where PkReporte = '"+str(t_PkReporte)+"'"
+        return self.mysql_con.table(sentencia)    
+    def traer_reporte_html(self, t_PkReporte):
+        sentencia= "SELECT * from reportesmainhtml where PkReporte = '"+str(t_PkReporte)+"'"
+        return self.mysql_con.table(sentencia)    
     def traer_reporte_por_nombre(self, t_Nombre, t_PkModulo):
         return self.mysql_con.table("select * from reportesmain where Nombre like '"+str(t_Nombre)+"' and PkModulo = "+str(t_PkModulo)+" ")
     def crear_reporte(self, t_Nombre, t_PkModulo):
@@ -357,9 +446,22 @@ class menu_reportes:
         self.mysql_con.ejecutar(sentencia)      
         return t_Reporte
 
+class Notificaciones:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')      
+    def NotificacionesPorUsuario(self, str_usuario):
+        return self.mysql_con.table("Select * from acciones_notificaciones where Usuario like '%("+str(str_usuario)+")%'")  
+    def sql_traer_directo(self,V_sentencia):
+        return self.mysql_con.table(V_sentencia)
+
 class inter_registro:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)      
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')      
+    def panel_web_p_panel_traer(self, str_pkpanel):
+        return self.mysql_con.table("Select * from web_p_panel where pkPanel = '"+str(str_pkpanel)+"'")  
+    def modulo_devolver_estructura_pornombre(self, str_Estructura):
+        return self.mysql_con.table("Select * from estructura where Nombre = '"+(str_Estructura)+"'")  
+
     def eliminar_error(self, tpk_modulo, tpkregistro):
         self.mysql_con.ejecutar("delete from web_aut_errores where modulo = '"+str(tpk_modulo)+"' and pk = '"+str(tpkregistro)+"'")
     def log_aut(self):
@@ -377,14 +479,43 @@ class inter_registro:
     def al_errores(self):
         sentencia = "select * from web_aut_errores where checkk =0"
         return self.mysql_con.table(sentencia)
+    
+    def traer_plantilla_pdf_fechas(self,t_pkpaneL_g, t_valor, t_fecha):
+        sentencia = "select * from web_p_panel_grupo_track where pkPanel = '"+str(t_pkpaneL_g)+"' and pk_valor = '"+str(t_valor)+"' and date(fecha) <= date('"+str(t_fecha)+"')"
+        return self.mysql_con.table(sentencia)        
+    def traer_plantilla_pdf_solo_fecha(self,t_pkpaneL_g, t_valor, t_fecha, t_user):
+        if t_user != '%':
+            sentencia = "select * from web_p_panel_grupo_track where UPPER(usuario) = UPPER('"+str(t_user)+"') and pkPanel = '"+str(t_pkpaneL_g)+"' and pk_valor = '"+str(t_valor)+"' and date(fecha) = date('"+str(t_fecha)+"')"
+        else:
+            sentencia = "select * from web_p_panel_grupo_track where pkPanel = '"+str(t_pkpaneL_g)+"' and pk_valor = '"+str(t_valor)+"' and date(fecha) = date('"+str(t_fecha)+"')"
+        return self.mysql_con.table(sentencia)        
     def traer_plantilla_pdf_bases(self,t_pkpaneL_g):
         sentencia = "select * from web_p_panel_plantilla_seg_bases where pkgrupo ="+ str(t_pkpaneL_g)
         return self.mysql_con.table(sentencia)        
+    def traer_plantilla_pdf_hojas(self,t_pkpaneL_g):
+        sentencia = "select * from web_p_panel_plantilla_hojas where pkgrupo ="+ str(t_pkpaneL_g)
+        return self.mysql_con.table(sentencia)    
+    def traer_plantilla_pdf_seg_porhoja(self,t_pkhoja , t_pkpaneL_g):
+        sentencia = "select * from web_p_panel_plantilla_seg where pkgrupo = "+str(t_pkpaneL_g)+" and pkhoja ="+ str(t_pkhoja)
+        return self.mysql_con.table(sentencia)        
+        
+    def traer_plantilla_pdf_seg_tipo(self,t_pkpaneL_g, t_tipo):
+        sentencia = "select * from web_p_panel_plantilla_seg where tipo = '"+str(t_tipo)+"' and pkgrupo ="+ str(t_pkpaneL_g) + " order by pkhoja"
+        return self.mysql_con.table(sentencia)       
+    def traer_plantilla_pdf_seg_tipo_porsegmento(self,t_pkpaneL_g, t_tipo):
+        sentencia = "select * from web_p_panel_plantilla_seg where tipo = '"+str(t_tipo)+"' and pkgrupo ="+ str(t_pkpaneL_g) + " order by pksegmento"
+        return self.mysql_con.table(sentencia)               
+    def panel_grupo_track_eliminar(self,t_pkpanel, t_user, t_fecha ):
+        sentencia = "delete from web_p_panel_grupo_track where fecha = '"+str(t_fecha)+"' and usuario = '"+str(t_user)+"' and pkpanel = '"+str(t_pkpanel)+"'"
+        self.mysql_con.ejecutar(sentencia)       
     def traer_plantilla_pdf_seg(self,t_pkpaneL_g):
         sentencia = "select * from web_p_panel_plantilla_seg where pkgrupo ="+ str(t_pkpaneL_g)
         return self.mysql_con.table(sentencia)        
     def traer_plantilla_pdf_valor(self,t_pksegmento):
         sentencia = "select * from web_p_panel_plantilla_seg_valor where pksegmento ="+ str(t_pksegmento)
+        return self.mysql_con.table(sentencia)        
+    def traer_estructuras_porPkmodulo(self,strpk):
+        sentencia = "select Nombre from estructura where pkmodulo ="+ str(strpk)
         return self.mysql_con.table(sentencia)        
     def traer_estructuras_porPk(self,strpk):
         sentencia = "select Nombre from estructura where PkEstructura ="+ str(strpk)
@@ -433,6 +564,9 @@ class inter_registro:
         return self.mysql_con.table(sentencia)  
     def lista_estados(self, str_pkmodulo):
         sentencia = "select * from web_estados_doc where PkModulo ="+ str(str_pkmodulo)
+        return self.mysql_con.table(sentencia)   
+    def lista_estados_por_usuario(self, str_pkmodulo, str_usuario):
+        sentencia = "select * from web_estados_doc where usuarios like '%("+str_usuario+")%' and PkModulo = "+ str(str_pkmodulo)
         return self.mysql_con.table(sentencia)   
     def lista_pdf(self, str_pkmodulo):
         sentencia = "select * from plantillas where PkModulo ="+ str(str_pkmodulo)
@@ -498,7 +632,9 @@ class inter_registro:
         self.mysql_con.ejecutar(sentencia)     
     def new_usuario(self, t_us_cla1, str_pk,t_us_use,t_us_nom,t_us_ape,t_us_car,t_us_cor,t_us_sri,t_us_adm,t_us_anu):
         sentencia = "insert into `usuario` (`Usuario`, `hash`, `Clave`, `Nombre`, `Apellido`, `Apellido2`, `Anulado`, `FechaExpiracion`, `Admin`, `Sri`, `Reportes`, `Campos`, `Plantillas`, `Acciones`, `Procesos_Modulos`, `Eliminar_Importar`, `Usuarios`, `Cargo`, `Correo`, `Telefono`) VALUES ('"+str(t_us_use)+"', '"+str(t_us_cla1)+"', '', '"+str(t_us_nom)+"', '"+str(t_us_ape)+"', 'ape2', '"+t_us_anu+"', '2019-12-27', '"+t_us_adm+"', '"+t_us_sri+"', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '"+str(t_us_car)+"', '"+str(t_us_cor)+"', '0')"
-        self.mysql_con.ejecutar(sentencia)  
+        self.mysql_con.ejecutar(sentencia) 
+        sentencia = "INSERT INTO `web_firmas` (`uso`, `certificado`, `clave`, `usuario`, `expiracion`, `x`, `y`, `display`, `pk`, `firma`, `tipo`, `fuente`) VALUES ('panel', '', '', '"+str(t_us_use)+"', '2022-09-30', '8', '7', 'Firmado por "+str(t_us_nom)+" "+str(t_us_ape)+" https://www.firmadigital.gob.ec/', '72', '"+str(t_us_nom)+" "+str(t_us_ape)+"', 'Usuario', '"+str(t_us_use)+"')" 
+        self.mysql_con.ejecutar(sentencia) 
     def del_usuario(self, str_pk):
         sentencia = 'delete from usuario where usuario.PkUsuario = "'+ str_pk +'"'
         self.mysql_con.ejecutar(sentencia)     
@@ -536,7 +672,7 @@ class inter_registro:
     def traer_registro_est_det(self, v_tabla, v_registro):
         return self.mysql_con.table('select * from '+ str(v_tabla)+' where Pkcabecera = '+ str(v_registro))
     def permisos(self, V_user, V_pkmodulo):
-        return self.mysql_con.table('select DISTINCT m.PkModulo AS "PkModulo",  WE.pk AS "id", WE.pk AS "PkOpciones", CASE WHEN WE.tipo = 1 THEN    "Consulta" WHEN WE.tipo = 2 THEN    "Ingresar" WHEN WE.tipo = 3 THEN    "Modificar" WHEN WE.tipo = 4 THEN   "Eliminar" END AS "Nombre" FROM web_a_permisos WE,  modulo M,   sysmodulogeneral S WHERE    WE.pkmodulo = M.PkModulo AND S.PkModGen = M.Cabecera and    WE.usuario = "' + V_user +'" AND M.PkModulo = "' + V_pkmodulo +'" AND M.anulado LIKE "N" ORDER BY   s.orden,    m.orden')
+        return self.mysql_con.table('select DISTINCT m.PkModulo AS "PkModulo",  WE.pk AS "id", WE.pk AS "PkOpciones", CASE WHEN WE.tipo = 1 THEN    "Consulta" WHEN WE.tipo = 2 THEN    "Ingresar" WHEN WE.tipo = 3 THEN    "Modificar" WHEN WE.tipo = 4 THEN   "Eliminar" WHEN WE.tipo = 5 THEN   "Solo" END AS "Nombre" FROM web_a_permisos WE,  modulo M,   sysmodulogeneral S WHERE    WE.pkmodulo = M.PkModulo AND S.PkModGen = M.Cabecera and    WE.usuario = "' + V_user +'" AND M.PkModulo = "' + V_pkmodulo +'" AND M.anulado LIKE "N" ORDER BY   s.orden,    m.orden')
     def consulta(self, V_pkmodulo, V_top):
         tabla = self.mysql_con.table('select * from estructura where PkModulo = "' + V_pkmodulo +'" and hijade = 0')
         tabla_campos = self.mysql_con.table('select nombre from camposxestructura where PkEstructura = "' + str(tabla[0]['PkEstructura']) +'" and visible = "Y" and anulado = "N" order by posicion, x, y')
@@ -548,7 +684,7 @@ class inter_registro:
         sentencia = 'select ' + txt_taer +' from ' + tabla[0]['Nombre'] + ' order by pk' + tabla[0]['Nombre'] + ' desc limit ' + str(V_top) 
         registros =  self.mysql_con.cursor_tabla(sentencia)
         return [tabla, tabla_campos, registros[0], registros[1], sentencia_rebuscar]    
-    def consulta_orden_web(self, V_pkmodulo, V_top):
+    def consulta_orden_web(self, V_pkmodulo, V_top, v_usuario, v_solo):
         tabla = self.mysql_con.table('select * from estructura where PkModulo = "' + V_pkmodulo +'" and hijade = 0')
         tabla_campos = self.mysql_con.table('select nombre from camposxestructura where PkEstructura = "' + str(tabla[0]['PkEstructura']) +'" and visible = "Y" and anulado = "N" and Eliminable = "Y" order by PosicionConsulta')
         txt_taer = 'Pk'+ tabla[0]['Nombre'] + ', '
@@ -556,7 +692,14 @@ class inter_registro:
             txt_taer = txt_taer + ' cast(' + a['nombre'] + ' as char) as "' + a['nombre'] + '" , '
         txt_taer = txt_taer[:-2]
         sentencia_rebuscar = 'select ' + txt_taer +' from ' + tabla[0]['Nombre']
-        sentencia = 'select ' + txt_taer +' from ' + tabla[0]['Nombre'] + ' order by pk' + tabla[0]['Nombre'] + ' desc limit ' + str(V_top) 
+        if v_solo == 'Si':
+            campos_sistema = self.mysql_con.table('SELECT * from cmpsistema where PkEstructura = ' + str(tabla[0]['PkEstructura']) +' and pkid = 2')
+            if len(campos_sistema)> 0:
+                sentencia = 'select ' + txt_taer +' from ' + tabla[0]['Nombre'] + ' where '+str(campos_sistema[0]['Nombre'])+' = "'+str(v_usuario)+'" order by pk' + tabla[0]['Nombre'] + ' desc limit ' + str(V_top) 
+            else:
+                sentencia = 'select ' + txt_taer +' from ' + tabla[0]['Nombre'] + ' order by pk' + tabla[0]['Nombre'] + ' desc limit ' + str(V_top) 
+        else:
+            sentencia = 'select ' + txt_taer +' from ' + tabla[0]['Nombre'] + ' order by pk' + tabla[0]['Nombre'] + ' desc limit ' + str(V_top) 
         registros =  self.mysql_con.cursor_tabla(sentencia)
         return [tabla, tabla_campos, registros[0], registros[1], sentencia_rebuscar]        
     def eliminar(self, V_pkmodulo, V_pkregistro, t_usuario):
@@ -593,7 +736,15 @@ class inter_registro:
     def t_estados(self, V_pkmodulo, V_usuario):
         t_sentencia = 'select * from web_estados_doc, usuario where ((usuario.Usuario = "' + str(V_usuario) +'" and usuario.Admin = "Y") or (web_estados_doc.usuarios like "%(' + str(V_usuario) +')%" and usuario.Usuario = "' + str(V_usuario) +'")) and PkModulo = "' + V_pkmodulo +'"'              
         tablas = self.mysql_con.table(t_sentencia)
-        return tablas        
+        return tablas       
+    def t_estadosVariables(self, V_pkestado):
+        t_sentencia = 'select * from web_estados_doc_var where pkestado = "' + str(V_pkestado) +'"' 
+        try:             
+            tablas = self.mysql_con.table(t_sentencia)
+        except:
+            self.mysql_con.ejecutar("CREATE TABLE `web_estados_doc_var` (  `pkvariable` int(11) NOT NULL AUTO_INCREMENT,  `pkestado` int(11) DEFAULT NULL,  `Nombre` varchar(255) DEFAULT NULL,  `Tipo` varchar(255) DEFAULT NULL,  PRIMARY KEY (`pkvariable`)) ENGINE=InnoDB DEFAULT CHARSET=latin1")
+            tablas = self.mysql_con.table(t_sentencia)
+        return tablas       
     def traer_campos_por_pkestr_solo_visible(self, PkEstructura):
         Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" and (visible = "Y" or Eliminable = "N") order by posicion, x, y')
         return Campos   
@@ -609,6 +760,16 @@ class inter_registro:
     def traer_campos_por_pkestr(self, PkEstructura):
         Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" order by posicion, x, y')
         return Campos    
+    def camposXConsulta(self, tablas):
+        Campos_cabecera = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(tablas[0]['PkEstructura']) +'" and anulado = "N" order by posicionConsulta, x, y')
+        Campos_detalle= 0
+        Campos_subdetalle = 0
+        if len(tablas) > 1:
+            Campos_detalle = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(tablas[1]['PkEstructura']) +'" and anulado = "N" order by posicionConsulta, x, y')
+            if len(tablas) > 2:
+                Campos_subdetalle = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(tablas[2]['PkEstructura']) +'" and anulado = "N" order by posicionConsulta, x, y')
+        return [Campos_cabecera, Campos_detalle, Campos_subdetalle]  
+
     def campos(self, tablas):
         Campos_cabecera = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(tablas[0]['PkEstructura']) +'" and anulado = "N" order by posicion, x, y')
         Campos_detalle= 0
@@ -623,7 +784,7 @@ class inter_registro:
         for a in campos["campos_cab"]:
             select = select + a['Nombre'] + ', '
         select = select[:-2]
-        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where Pk' + str(tablas[0]['Nombre']) +' = "' + V_pkregistro +'"'
+        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where Pk' + str(tablas[0]['Nombre']) +' = "' + str(V_pkregistro) +'"'
         val_cabecera = self.mysql_con.table(senten)
         val_detalle= 0
         val_subdetalle = 0
@@ -632,7 +793,7 @@ class inter_registro:
             for a in campos["campos_det"]:
                 select = select + a['Nombre'] + ', '
             select = select[:-2]
-            val_detalle = self.mysql_con.table('select '+ select +' from ' + str(tablas[1]['Nombre']) +' where PKCabecera = "' + V_pkregistro +'" order by pk'+str(tablas[1]['Nombre']) + ' ') #desc
+            val_detalle = self.mysql_con.table('select '+ select +' from ' + str(tablas[1]['Nombre']) +' where PKCabecera = "' + str(V_pkregistro) +'" order by pk'+str(tablas[1]['Nombre']) + ' ') #desc
             if len(tablas) > 2:
                 select = ""
                 for a in campos["campos_subdet"]:
@@ -641,13 +802,13 @@ class inter_registro:
                 val_subdetalle = self.mysql_con.table('select '+ select +' from ' + str(tablas[2]['Nombre']) +' where PKCabecera in(select PK' + str(tablas[1]['Nombre']) +' from ' + str(tablas[1]['Nombre']) +' where PKCabecera = "' + V_pkregistro +'")')
         return [val_cabecera, val_detalle, val_subdetalle]  
     
-    def valores_codniones(self, tablas, campos, condiciones):
+    def valores_codniones(self, tablas, campos, condiciones, usuario):
         select = ""
         t_mix = condiciones[0]['Campo'].split(';')
         for a in campos["campos_cab"]:
             select = select + a['Nombre'] + ', '
         select = select[:-2]
-        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base'])+' order by pk' + str(tablas[0]['Nombre']) +' '  #desc
+        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base']).replace("@Usuario@", usuario)+' order by pk' + str(tablas[0]['Nombre']) +' desc'  #desc
         val_cabecera = self.mysql_con.table(senten)
         return [val_cabecera]
     def cmpconso_ejecutar(self, cmpsenten):
@@ -795,6 +956,9 @@ class inter_registro:
                 if temp0[0]["Tipo"] == "Retencion":
                     temp3 = self.mysql_con.table("select * from cmpelect_ret_impuestos where pkcampo =  "+ str(i["PkCampo"]))
                     temp4 = self.mysql_con.table("select * from cmpelect_ret_infocompretencion where pkcampo =  "+ str(i["PkCampo"]))
+                if temp0[0]["Tipo"] == "RetencionV2":
+                    temp3 = self.mysql_con.table("select * from cmpelect_ret_impuestosdocsustento where pkcampo =  "+ str(i["PkCampo"]))
+                    temp4 = self.mysql_con.table("select * from cmpelect_ret_infocompretencion where pkcampo =  "+ str(i["PkCampo"]))                                        
                 if temp0[0]["Tipo"] == "Nota credito":
                     temp3 = self.mysql_con.table("select * from cmpelect_notacredito_detalles where pkcampo =  "+ str(i["PkCampo"]))
                     temp4 = self.mysql_con.table("select * from cmpelect_notacredito_info where pkcampo =  "+ str(i["PkCampo"]))
@@ -841,6 +1005,15 @@ class inter_registro:
     def TraerAccionesCampos(self, V_PkAccionL2):
         sentencia = "select * from accionescampos where PkAccionL2 = '" + str(V_PkAccionL2) + "'"
         return self.mysql_con.table(sentencia)
+    def TraerAccionesCorreo(self, V_PkAccionL2):
+        try:
+            sentencia = "select * from acciones_email where PkAccion = '" + str(V_PkAccionL2) + "'"
+            return self.mysql_con.table(sentencia)        
+        except:
+            sentencia = "CREATE TABLE `acciones_email` (  `PkAccionEmail` int(255) NOT NULL AUTO_INCREMENT,  `PkAccion` varchar(255) DEFAULT NULL,  `De` text DEFAULT NULL,  `Para` text DEFAULT NULL,  `Tema` text DEFAULT NULL,  `CuerpoCab` text DEFAULT NULL,  `VariablesCad` text DEFAULT NULL,  `CuerpoDet` text DEFAULT NULL,  `VariablesDet` text DEFAULT NULL,  `CuerpoPie` text DEFAULT NULL,  PRIMARY KEY (`PkAccionEmail`)) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1"
+            self.mysql_con.ejecutar(sentencia)   
+            sentencia = "select * from acciones_email where PkAccion = '" + str(V_PkAccionL2) + "'"
+            return self.mysql_con.table(sentencia)        
     def TraerAccionesNumeroRegistros(self, V_PkAccion):
         sentencia = "select * from accionesnumregistros where PkAccion = '" + str(V_PkAccion) + "' order by PkCabecera"
         return self.mysql_con.table(sentencia)
@@ -862,6 +1035,18 @@ class inter_registro:
     def traer_campos_ref_rep(self, V_pkcampo):
         sentencia = "select * from reportesreferencias where PkReferencia = '" + str(V_pkcampo) + "'"
         return self.mysql_con.table(sentencia)
+    def plantillashtmlCampos(self, t_PkPlantilla, t_Tipo):
+        sentencia = "select * from plantillashtmlCampos where PkPlantilla = '" + str(t_PkPlantilla) + "' and Tipo = '"+str(t_Tipo)+"'"
+        return self.mysql_con.table(sentencia)
+    def plantillasMainhtml(self, V_PkModulo):
+        try:
+            sentencia = "select * from plantillashtml where PkModulo = '" + str(V_PkModulo) + "'"
+            return self.mysql_con.table(sentencia)
+        except Exception as e: 
+            self.mysql_con.ejecutar('CREATE TABLE `plantillashtml` (  `PkPlantilla` int(11) NOT NULL AUTO_INCREMENT,  `Nombre` text DEFAULT NULL,  `PkModulo` int(11) DEFAULT NULL,  `Cabecera` text DEFAULT NULL,  `Pie` text DEFAULT NULL,  `DetalleLinea` text DEFAULT NULL,  `DetalleCabecera` text DEFAULT NULL,  PRIMARY KEY (`PkPlantilla`)) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=latin1')
+            self.mysql_con.ejecutar('CREATE TABLE `plantillashtmlcampos` (  `PkCampoCabecera` int(11) NOT NULL AUTO_INCREMENT,  `PkPlantilla` int(11) NOT NULL,  `Tag` text DEFAULT NULL,  `Valor` text DEFAULT NULL,  `Tipo` varchar(255) DEFAULT NULL,  PRIMARY KEY (`PkCampoCabecera`)) ENGINE=InnoDB AUTO_INCREMENT=10928 DEFAULT CHARSET=latin1')            
+            sentencia = "select * from plantillashtml where PkModulo = '" + str(V_PkModulo) + "'"
+            return self.mysql_con.table(sentencia)
     def plantillasMain(self, V_PkModulo):
         sentencia = "select * from plantillas where PkModulo = '" + str(V_PkModulo) + "'"
         return self.mysql_con.table(sentencia)
@@ -934,27 +1119,28 @@ class inter_registro:
 
 class transsaciones:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql_trass(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql_trass(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def ingreso_base(self, senten_cab, senten_det, senten_acc, pkmodulo, senten_subdet):
         self.mysql_con.empiza()
         for i in senten_cab:
             if self.mysql_con.ejecutar(i) == False:
                 self.mysql_con.rollback()
-                return False
+                return [False,i]
         for i in senten_det:
             if self.mysql_con.ejecutar(i) == False:
                 self.mysql_con.rollback()
-                return False
+                return [False,i]
         for i in senten_subdet:
             if self.mysql_con.ejecutar(i) == False:
                 self.mysql_con.rollback()
-                return False
+                return [False,i]
         for i in senten_acc:
             if self.mysql_con.ejecutar(i) == False:
                 self.mysql_con.rollback()
-                return False
+                return [False,i]
         self.mysql_con.commit()
-        return True
+        return [True,'']
+        
     def ingreso_impot(self, senten):
         self.mysql_con.empiza()
         for i in senten:
@@ -990,7 +1176,36 @@ class firmas:
         Input: conn_user: Usuario de base de datos, conn_pass: Clave de base de datos, conn_base: NOmbre de base de datos, conn_ip: Ip del host de la base de datos
         Return: Nada
         """
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
+
+
+
+    def Firma_por_bloque(self, t_usuario_bloque):
+        """
+        t_usuario_bloque = ['user1','user2','usern']
+        Firma_por_Usuario: Devuelve Listado de firmas a realiar sobre Pdf por usuario y Uso en web_firmas
+        Input:  t_usuario: Usuarrio Actual, t_uso: (variable entre {panel: "Para PDF ejecutados desde panel creados en server", modulo: Para Pdf creados desde regitros o acciones en server}), t_pk: Indicador Priamry key del panel o modulo segun sea el caso
+        Variables de Uso: 
+        mysql_con: Clase intanciaa de base de datos Mysql
+        Return: Tabla Multi registro en diccionario
+            `pkfirma` : Clave Primaria
+            `uso`: (panel: Para PDF ejecutados desde panel creados en server , modulo: Para Pdf creados desde regitros o acciones en server)
+            `certificado : Nombre del archivo P12 de firma electronica
+            `clave` : Clave del archivo P12 de firma electronica
+            `usuario` : Usuario vincula a ese certificado,
+            `expiracion`: FEcha de caducidad de dicho certificado
+            `x` : Posicion x de la firma (Codigo barras) x crece de izquierda a derecha
+            `y` : Posicion y de la firma (Codigo barras) y crece de arriba para abajo 
+            `display` : Texto que sobrepone a codigo de barras firma 
+            `pk` : Primarykey del registro de origen (Panel, Modulo, Plantilla)
+            `firma` Texto que sobrepone a codigo de barras firma
+        """
+        sentencia = "select * from web_firmas where usuario in("
+        for valor in t_usuario_bloque:
+            sentencia = sentencia + "'" + str(valor) + "',"
+        sentencia = sentencia[:-1] + ")"
+        return self.mysql_con.table(sentencia)
+
     def Firma_por_Usuario(self, t_usuario, t_uso, t_pk):
         """
         Firma_por_Usuario: Devuelve Listado de firmas a realiar sobre Pdf por usuario y Uso en web_firmas
@@ -1010,29 +1225,83 @@ class firmas:
             `pk` : Primarykey del registro de origen (Panel, Modulo, Plantilla)
             `firma` Texto que sobrepone a codigo de barras firma
         """
-        sentencia = "select * from web_firmas where usuario = '"+str(t_usuario)+"' and uso = '"+str(t_uso)+"' and pk = '"+str(t_pk)+"'"
+        sentencia = "select * from web_firmas where usuario = '"+str(t_usuario)+"'"
+        sentencia = sentencia + "union all "
+        sentencia = sentencia + "select * from web_firmas where uso = '"+str(t_uso)+"' and pk = '"+str(t_pk)+"' and tipo = 'Formulario'"
         return self.mysql_con.table(sentencia)
+
+    def Firma_por_Usuario_directo(self, t_usuario):
+        """
+        Firma_por_Usuario: Devuelve Listado de firmas a realiar sobre Pdf por usuario y Uso en web_firmas
+        Input:  t_usuario: Usuarrio Actual, t_uso: (variable entre {panel: "Para PDF ejecutados desde panel creados en server", modulo: Para Pdf creados desde regitros o acciones en server}), t_pk: Indicador Priamry key del panel o modulo segun sea el caso
+        Variables de Uso: 
+        mysql_con: Clase intanciaa de base de datos Mysql
+        Return: Tabla Multi registro en diccionario
+            `pkfirma` : Clave Primaria
+            `uso`: (panel: Para PDF ejecutados desde panel creados en server , modulo: Para Pdf creados desde regitros o acciones en server)
+            `certificado : Nombre del archivo P12 de firma electronica
+            `clave` : Clave del archivo P12 de firma electronica
+            `usuario` : Usuario vincula a ese certificado,
+            `expiracion`: FEcha de caducidad de dicho certificado
+            `x` : Posicion x de la firma (Codigo barras) x crece de izquierda a derecha
+            `y` : Posicion y de la firma (Codigo barras) y crece de arriba para abajo 
+            `display` : Texto que sobrepone a codigo de barras firma 
+            `pk` : Primarykey del registro de origen (Panel, Modulo, Plantilla)
+            `firma` Texto que sobrepone a codigo de barras firma
+        """
+        sentencia = "select * from web_firmas where usuario = '"+str(t_usuario)+"'"
+        return self.mysql_con.table(sentencia)
+    def Firma_por_Usuario_admin(self, t_usuario):
+        """
+        Firma_por_Usuario: Devuelve Listado de firmas a realiar sobre Pdf por usuario y Uso en web_firmas
+        Input:  t_usuario: Usuarrio Actual, t_uso: (variable entre {panel: "Para PDF ejecutados desde panel creados en server", modulo: Para Pdf creados desde regitros o acciones en server}), t_pk: Indicador Priamry key del panel o modulo segun sea el caso
+        Variables de Uso: 
+        mysql_con: Clase intanciaa de base de datos Mysql
+        Return: Tabla Multi registro en diccionario
+            `pkfirma` : Clave Primaria
+            `uso`: (panel: Para PDF ejecutados desde panel creados en server , modulo: Para Pdf creados desde regitros o acciones en server)
+            `certificado : Nombre del archivo P12 de firma electronica
+            `clave` : Clave del archivo P12 de firma electronica
+            `usuario` : Usuario vincula a ese certificado,
+            `expiracion`: FEcha de caducidad de dicho certificado
+            `x` : Posicion x de la firma (Codigo barras) x crece de izquierda a derecha
+            `y` : Posicion y de la firma (Codigo barras) y crece de arriba para abajo 
+            `display` : Texto que sobrepone a codigo de barras firma 
+            `pk` : Primarykey del registro de origen (Panel, Modulo, Plantilla)
+            `firma` Texto que sobrepone a codigo de barras firma
+        """
+        sentencia = "select DISTINCT certificado, clave, expiracion from web_firmas where fuente = '"+str(t_usuario)+"'"
+        return self.mysql_con.table(sentencia)
+    def Firma_actualizar(self, t_Certy,t_Clave,t_Usuario):
+        sentencia = "UPDATE web_firmas set certificado ='"+str(t_Certy).replace('\n','').replace('\r','')+"', clave = '"+str(t_Clave)+"' where fuente = '"+str(t_Usuario)+"'"
+        self.mysql_con.ejecutar(sentencia)        
+
 
 class paneles:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
-    def ficha_existe(self, t_pkpanle, t_fecha, t_pkval):
-        sentencia = "select * from web_p_panel_grupo_track where pkpanel = '"+str(t_pkpanle)+"' and fecha = '"+str(t_fecha)+"' and pk_valor = '"+str(t_pkval)+"'order by fecha desc"
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
+    def ficha_existe(self, t_pkpanle, t_fecha, t_pkval, t_usuario):
+        sentencia = "select * from web_p_panel_grupo_track where usuario = '"+str(t_usuario)+"' and pkpanel = '"+str(t_pkpanle)+"' and fecha = '"+str(t_fecha)+"' and pk_valor = '"+str(t_pkval)+"'order by fecha desc"
         return self.mysql_con.table(sentencia)
-    def ficha_new(self, t_pkpanle, t_fecha, t_pkval):
-        sentencia = "insert into `web_p_panel_grupo_track` (`pkpanel`, `fecha`, `pk_valor`) VALUES ('"+str(t_pkpanle)+"', '"+str(t_fecha)+"', '"+str(t_pkval)+"')"
+    def ficha_new(self, t_pkpanle, t_fecha, t_pkval, t_usuario):
+        sentencia = "insert into `web_p_panel_grupo_track` (`pkpanel`, `fecha`, `pk_valor`, `usuario`) VALUES ('"+str(t_pkpanle)+"', '"+str(t_fecha)+"', '"+str(t_pkval)+"', '"+str(t_usuario)+"')"
         self.mysql_con.ejecutar(sentencia)  
+        
+    def traer_panel_internos(self, pk):
+        sentencia = 'select * from  web_p_panel where tipo = "Interno" and web_p_panel.adicional2 = "'+ str(pk) +'" order by new'
+        return self.mysql_con.table(sentencia)
+
     def traer_panel_por_pk(self, pk):
         sentencia = 'select * from  web_p_panel where  web_p_panel.pkPanel = "'+ str(pk) +'"'
         return self.mysql_con.table(sentencia)
     def traer_paneles_fechas_fichaspk(self, pkPanel, pkvalor):
-        sentencia = 'select * from web_p_panel_grupo_track where web_p_panel_grupo_track.pkpanel = "'+ str(pkPanel) +'" and web_p_panel_grupo_track.pk_valor = "'+str(pkvalor)+'"'
+        sentencia = 'select * from web_p_panel_grupo_track where web_p_panel_grupo_track.pkpanel = "'+ str(pkPanel) +'" and web_p_panel_grupo_track.pk_valor = "'+str(pkvalor)+'" order by date(fecha) desc'
         return self.mysql_con.table(sentencia)
     def traer_paneles_pdf_fichaspk(self, pk):
         sentencia = 'select * from  web_p_panel_plantilla_panel_valor where  web_p_panel_plantilla_panel_valor.pkpanel = "'+ str(pk) +'"'
         return self.mysql_con.table(sentencia)
-    def traer_paneles_fichaspk(self, pk):
-        sentencia = 'select * from  web_p_panel_grupos where  web_p_panel_grupos.pkpanel = "'+ str(pk) +'" ORDER BY orderby'
+    def traer_paneles_fichaspk(self, pk, usuario):
+        sentencia = 'select * from  web_p_panel_grupos where (web_p_panel_grupos.uslectura = "Todos" or web_p_panel_grupos.uslectura like "%('+usuario+')%") and web_p_panel_grupos.pkpanel = "'+ str(pk) +'" ORDER BY orderby'
         return self.mysql_con.table(sentencia)
     def traer_estados(self, pkpanel):
         sentencia = 'select * from web_p_estado where web_p_estado.pkpanel = '+ str(pkpanel)
@@ -1151,9 +1420,10 @@ class paneles:
     def traer_calendarios(self, usuario, t_mostrar):
         sentencia =  "select * from web_p_calendar where usuario like '%" + str(usuario) + "%' and (nombre like '"+str(t_mostrar)+"' or 'todos' = '"+str(t_mostrar)+"')"
         return self.mysql_con.table(sentencia)
-    def traer_calendarios_val(self, sentencia, fecha, usuario):
+    def traer_calendarios_val(self, sentencia, fecha, usuario,Externo):
         sentencia = sentencia.replace('@fecha',fecha) 
         sentencia = sentencia.replace('@usuario',usuario) 
+        sentencia = sentencia.replace('@Externo@',Externo) 
         return self.mysql_con.table(sentencia)
     def carga_alertas(self, V_user):
         return self.mysql_con.table('select * from web_a_alertas where usuario = "'+ str(V_user) +'"')
@@ -1161,10 +1431,17 @@ class paneles:
         return self.mysql_con.table(senten)
     def update_sub_alertas(self, senten):
         self.mysql_con.ejecutar(senten)
-    def traer_paneles_por_user(self, usuario):
-        return self.mysql_con.table('select now() as "fehca_act", web_p_panel.*, web_p_panel_user.* from  web_p_panel, web_p_panel_user where  web_p_panel.pkPanel = web_p_panel_user.pkpanel and web_p_panel_user.usuario = "'+ str(usuario) +'"')
-    def traer_paneles_grupos(self, pk):
-        return self.mysql_con.table('select * from  web_p_panel_grupos where  web_p_panel_grupos.pkpanel = "'+ str(pk) +'" ORDER BY orderby ')
+
+
+    def traer_paneles_por_user(self, usuario, pkpanel):
+        if pkpanel == "0":
+            return self.mysql_con.table('select now() as "fehca_act", web_p_panel.*, web_p_panel_user.* from  web_p_panel, web_p_panel_user where  web_p_panel.pkPanel = web_p_panel_user.pkpanel and web_p_panel_user.usuario = "'+ str(usuario) +'"')
+        else:
+            return self.mysql_con.table('select now() as "fehca_act", web_p_panel.*, web_p_panel_user.* from  web_p_panel, web_p_panel_user where  web_p_panel.pkPanel = web_p_panel_user.pkpanel and web_p_panel_user.usuario = "'+ str(usuario) +'" and web_p_panel.pkPanel = "'+str(pkpanel)+'"')
+
+
+    def traer_paneles_grupos(self, pk, t_usuario):
+        return self.mysql_con.table('select * from  web_p_panel_grupos where  web_p_panel_grupos.pkpanel = "'+ str(pk) +'" and (uslectura = "todos" or uslectura like "%('+str(t_usuario)+')%") ORDER BY orderby ')
     def traer_sql_directo_cant_registros(self, senten):
         return self.mysql_con.table(senten)
     def traer_sql_directo(self, senten):
@@ -1193,7 +1470,7 @@ class paneles:
 
 class charts:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def traer_charts(self, usuario):
         sentencia = 'select * from web_c_charts where usuario like "%'+ str(usuario) +'%" or usuario like "todos" order by orden'
         return self.mysql_con.table(sentencia)
@@ -1202,7 +1479,7 @@ class charts:
 
 class eshop:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def traer_item(self, senten):
         return self.mysql_con.table(senten)        
     def traer_datos_contactos(self):
@@ -1242,7 +1519,7 @@ class eshop:
 
 class edocs:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     def traer_edocs_traspaso(self, t_pkestructura ):
         senten = 'select * from web_edocs_traspaso where pkestructura = ' + str(t_pkestructura)
         return self.mysql_con.table(senten)   
@@ -1254,7 +1531,9 @@ class edocs:
         return self.mysql_con.table(senten)   
     def traer_edocs_pendientes(self, t_fecha, t_orden, t_filtro, t_docu):
         senten = '' 
-        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "'+ str(t_docu) +'" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and sri_compras.PkSri_compras IS NULL and web_edocs_main.TIPO_EMISION = "0" and web_edocs_main.comprobante like "'+ str(t_docu) +'"'
+        senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and sri_compras.PkSri_compras IS NULL and web_edocs_main.TIPO_EMISION = "0" and web_edocs_main.comprobante like "'+ str(t_docu) +'"'
+        senten = senten + ' union all '
+        senten = senten + 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Notas de Credito" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and sri_compras.PkSri_compras IS NULL and web_edocs_main.TIPO_EMISION = "0" and web_edocs_main.comprobante like "'+ str(t_docu) +'"'
         senten = senten + ' union all '
         senten = senten + ' select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(ingresoretenciones.PkIngresoretenciones is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN ingresoretenciones on (ingresoretenciones.Estado != "anulado" and ingresoretenciones.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and ingresoretenciones.Id_cliente = web_edocs_main.RUC_EMISOR ) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Comprobante de Retencion" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and ingresoretenciones.PkIngresoretenciones IS NULL and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'"  limit 199'
 
@@ -1262,7 +1541,8 @@ class edocs:
     def traer_edocs_ingresados(self, t_fecha, t_orden, t_filtro, t_docu):
         #senten = 'select web_edocs_main.pkid, web_edocs_main.COMPROBANTE, web_edocs_main.TIPO_EMISION, web_edocs_main.SERIE_COMPROBANTE, web_edocs_main.RUC_EMISOR, web_edocs_main.RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.FECHA_AUTORIZACION, web_edocs_main.CLAVE_ACCESO, web_edocs_main.NUMERO_AUTORIZACION, web_edocs_main.IMPORTE_TOTAL, if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and YEAR(sri_compras.Fecha_emision) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day))) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR(DATE_ADD("'+str(t_fecha)+'",INTERVAL 1 day)) order by RAZON_SOCIAL_EMISOR, web_edocs_main.FECHA_EMISION, web_edocs_main.pkid'
         senten = 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Factura" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and not(sri_compras.PkSri_compras IS NULL) and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'" '
-
+        senten = senten + ' union all '
+        senten = senten + 'select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(sri_compras.PkSri_compras is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN sri_compras on (sri_compras.DXP_estado != "anulado" and sri_compras.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and sri_compras.Prov_id = web_edocs_main.RUC_EMISOR and MONTH(sri_compras.Fecha_emision) = MONTH("'+str(t_fecha)+'") and YEAR(sri_compras.Fecha_emision) = YEAR("'+str(t_fecha)+'")) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Notas de Credito" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and not(sri_compras.PkSri_compras IS NULL) and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'" '
         senten = senten + ' union all '
         senten = senten + ' select cast(web_edocs_main.pkid as char) as "pkid", cast(web_edocs_main.COMPROBANTE as char) as "COMPROBANTE", cast(web_edocs_main.TIPO_EMISION as char) as "TIPO_EMISION", cast(web_edocs_main.SERIE_COMPROBANTE as char) as "SERIE_COMPROBANTE", cast(web_edocs_main.RUC_EMISOR as char) as "RUC_EMISOR", cast(web_edocs_main.RAZON_SOCIAL_EMISOR as char) as "RAZON_SOCIAL_EMISOR", cast(web_edocs_main.FECHA_EMISION as char) as "FECHA_EMISION", cast(web_edocs_main.FECHA_AUTORIZACION as char) as "FECHA_AUTORIZACION", cast(web_edocs_main.CLAVE_ACCESO as char) as "CLAVE_ACCESO", cast(web_edocs_main.NUMERO_AUTORIZACION as char) as "NUMERO_AUTORIZACION", cast(web_edocs_main.IMPORTE_TOTAL as char) as "IMPORTE_TOTAL", cast(if(ingresoretenciones.PkIngresoretenciones is null,"Pendiente","Ingresado") as char) as "Estado" from web_edocs_main LEFT JOIN ingresoretenciones on (ingresoretenciones.Estado != "anulado" and ingresoretenciones.Autorizacion = web_edocs_main.NUMERO_AUTORIZACION and ingresoretenciones.Id_cliente = web_edocs_main.RUC_EMISOR ) where MONTH(web_edocs_main.FECHA_EMISION) = MONTH("'+str(t_fecha)+'") and COMPROBANTE = "Comprobante de Retencion" and YEAR(web_edocs_main.FECHA_EMISION) = YEAR("'+str(t_fecha)+'") and (web_edocs_main.RAZON_SOCIAL_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.SERIE_COMPROBANTE like "%'+str(t_filtro)+'%" or web_edocs_main.RUC_EMISOR like "%'+str(t_filtro)+'%" or web_edocs_main.IMPORTE_TOTAL like "%'+str(t_filtro)+'%" or web_edocs_main.CLAVE_ACCESO like "%'+str(t_filtro)+'%" ) and not(ingresoretenciones.PkIngresoretenciones IS NULL) and web_edocs_main.TIPO_EMISION = "0"  and web_edocs_main.comprobante like "'+ str(t_docu) +'" limit 199'
 
@@ -1302,7 +1582,7 @@ class edocs:
 
 class cmpcampos:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
-        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip)
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
         
     def crear_camposxestructura(self, t_pkmodulo, t_pkcampo, t_fuente ,t_pkestructura, t_dataX ):
         sentencia = "INSERT INTO `camposxestructura` (`PkModulo`, `PkEstructura`, `PkCampo`, `TablaCampo`, `Posicion`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`, `Visible`, `X`, `Y`, `tamano`, `estilo`, `Modificable`, `Largo`, `largoweb`,`saltoweb`,`posicionweb`,`posicionConsulta` ) VALUES ('" + str(t_pkmodulo) + "', '" + str(t_pkestructura) + "', '" + str(t_pkcampo) + "', '"+str(t_fuente)+"', '" + str(t_dataX['Posicion']) + "', '" + str(t_dataX['Nombre']) + "', '" + str(t_dataX['Descripcion']) + "', '" + str(t_dataX['Anulado']) + "', '"+str(t_dataX['Eliminable'])+"', '"+str(t_dataX['Visible'])+"', '" + str(t_dataX['X']) + "', '" + str(t_dataX['Y']) + "', '" + str(t_dataX['tamano']) + "', '" + str(t_dataX['estilo']) + "', '" + str(t_dataX['Modificable']) + "', '" + str(t_dataX['largo']) + "', '" + str(t_dataX['largoweb']) + "', '" + str(t_dataX['saltoweb']) + "', '" + str(t_dataX['posicionweb']) + "', '" + str(t_dataX['posicionConsulta']) + "')"

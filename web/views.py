@@ -5,6 +5,7 @@
 #import xml.elementtree as ET2 # Python 2.5
 #import xml.etree.elementtree as ET2 # Python 2.5
 #import urllib2
+import filecmp
 import sys
 import smtplib
 import unicodedata
@@ -12,7 +13,6 @@ import datetime
 import json
 import random
 import logging
-
 logger = logging.getLogger(__name__)
 
 from django.core.mail import EmailMessage
@@ -29,6 +29,9 @@ from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponse, HttpResponseRedirect
 import xml.etree.ElementTree as ET # Python 2.5
 from lxml import etree
+from datetime import datetime
+
+
 
 from django.views.decorators.csrf import csrf_exempt
 import urllib.request  #pyhton3
@@ -42,6 +45,10 @@ import web.charts
 import web.cmpadmin
 import web.firma_pdf
 import web.pdf
+import web.externo
+import web.empaquetado
+
+
 
 import os
 
@@ -57,6 +64,9 @@ from django.core.files.storage import default_storage
 import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+from os.path import basename
+
 from django.shortcuts import redirect
 
 
@@ -65,6 +75,134 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 
 from django.contrib.humanize.templatetags.humanize import intcomma
+
+
+
+def offline_inicial(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            erp_data = web.erp_log_menu
+            Respuesta = erp_data.offline_inicial(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0])
+            context = Respuesta
+            return JsonResponse(context)
+
+
+
+def reporte_empaquetado(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            erp_data = web.erp_log_menu
+            Respuesta = erp_data.reporte_empaquetado(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0], request.POST.getlist('t_pkreporte')[0])
+            context = Respuesta
+            return JsonResponse(context)
+
+def notificaciones_buscar(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':            
+            erp_data = web.erp_log_menu
+            notificaciones = erp_data.Notificaciones(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0])            
+            return JsonResponse(notificaciones)
+
+
+def logExterno(request):
+    db = web.con_db.inter_login_LOGIN("Mysql") 
+    ext = web.externo
+    if request.method == 'POST':
+        #erp_data = web.erp_log_menu
+        #Respuesta = erp_data.validar_user_empresa(request, l_inputEmpresa, l_inputUsuario, l_inputPassword)
+        if request.POST.getlist('ingreso')[0] == 'crear':
+            negocio_nom = db.traer_negocio(negocio)
+            acceso = ext.acceso_externo(request, negocio_nom, negocio)
+            Respuesta = ext.validar_user_externo(request, negocio, request.POST.getlist(acceso[0]['Usuario'])[0], 'hidden')
+            if Respuesta['Existe'] == 'No': ##log in raro
+                #insertar directo usuerio externo y lo busca
+                acceso = ext.acceso_externo_insertar(request, negocio_nom)            
+                Respuesta = ext.validar_user_externo(request, negocio, request.POST.getlist(acceso[0]['Usuario'])[0], 'hidden')
+                if Respuesta['Existe'] == 'Si': ##log in raro
+                    #acceso = ext.acceso_externo(request, negocio)
+                    dd = datetime.datetime.now().strftime("%Y-%m-%d")
+                    context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'fecha':dd}
+                    return render(request, 'home_erp_externo.html', context)
+            if Respuesta['Existe'] == 'Si': ##log in raro
+                #acceso = ext.acceso_externo(request, negocio)
+                dd = datetime.datetime.now().strftime("%Y-%m-%d")
+                context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'fecha':dd}
+                return render(request, 'home_erp_externo.html', context)
+        if request.POST.getlist('ingreso')[0] == 'directo':
+            #busca directo el usuario sobre lat abla 
+            Respuesta = ext.validar_user_externo(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_inputUsuario')[0], request.POST.getlist('t_inputPassword')[0])
+            if Respuesta['Existe'] == 'Si': ##log in raro
+                #acceso = ext.acceso_externo(request, negocio)
+                negocio_nom = db.traer_negocio(request.POST.getlist('Id_empresa')[0])
+                dd = datetime.datetime.now().strftime("%Y-%m-%d")
+                web_calendar = ext.acceso_externoCalen_inicio(request, negocio_nom, request.POST.getlist('Id_empresa')[0])
+                context = {'web_calendar':web_calendar, 'Existe':'Si','usuarioExterno':request.POST.getlist('t_inputUsuario')[0],'cal_accrap':Respuesta['cal_accrap'], 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'fecha':dd}
+                return JsonResponse(context)
+
+            if Respuesta['Existe'] == 'No':     
+                ##negocio_nom = db.traer_negocio(request.POST.getlist('Id_empresa')[0])
+                ##acceso = ext.acceso_externo(request, negocio_nom, request.POST.getlist('Id_empresa')[0])
+                context = {'Existe':'No'}
+                return JsonResponse(context)
+
+
+
+def externo(request, negocio):
+    db = web.con_db.inter_login_LOGIN("Mysql") 
+    ext = web.externo
+    if request.method == 'GET':
+        negocio_nom = db.traer_negocio(negocio)
+        if len(negocio_nom) == 1:
+            acceso = ext.acceso_externo(request, negocio_nom, negocio)
+            web_calendar = ext.acceso_externoCalen_inicio(request, negocio_nom, negocio)
+            context = {'Empresa':negocio, 'msg':'', 'acceso':acceso[0], 'web_calendar':web_calendar}
+            return render(request, 'login_ext.html', context)
+        else:
+            context = {'msg':'Negocio no existe'}
+            return render(request, 'page_404.html', context)
+    if request.method == 'POST':
+        #erp_data = web.erp_log_menu
+        #Respuesta = erp_data.validar_user_empresa(request, l_inputEmpresa, l_inputUsuario, l_inputPassword)
+        if request.POST.getlist('ingreso')[0] == 'crear':
+            negocio_nom = db.traer_negocio(negocio)
+            acceso = ext.acceso_externo(request, negocio_nom, negocio)
+            #Respuesta = ext.validar_user_externo(request, negocio, request.POST.getlist(acceso[0]['Usuario'])[0], 'hidden')
+            t_usuario = request.POST.getlist(acceso[0]['Usuario'])[0]
+            Respuesta = ext.validar_user_externo(request, negocio, t_usuario, 'hidden')
+            if Respuesta['Existe'] == 'No': ##log in raro
+                #insertar directo usuerio externo y lo busca
+                acceso = ext.acceso_externo_insertar(request, negocio_nom)            
+                Respuesta = ext.validar_user_externo(request, negocio, t_usuario, 'hidden')
+                if Respuesta['Existe'] == 'Si': ##log in raro
+                    #acceso = ext.acceso_externo(request, negocio)
+                    from datetime import datetime
+                    fechaCalendario = datetime.strptime(request.POST.getlist('fecha')[0].replace('T', ' '), '%Y-%m-%d') 
+                    context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0]}
+                    return render(request, 'home_erp_externo.html', context)
+            if Respuesta['Existe'] == 'Si': ##log in raro
+                #acceso = ext.acceso_externo(request, negocio)
+                from datetime import datetime
+                fechaCalendario = datetime.strptime(request.POST.getlist('fecha')[0].replace('T', ' '), '%Y-%m-%d')
+                context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0]}
+                return render(request, 'home_erp_externo.html', context)
+        if request.POST.getlist('ingreso')[0] == 'directo':
+            #busca directo el usuario sobre lat abla 
+            Respuesta = ext.validar_user_externo(request, request.POST.getlist('negocio')[0], request.POST.getlist('t_inputUsuario')[0], request.POST.getlist('t_inputPassword')[0])
+            if Respuesta['Existe'] == 'Si': ##log in raro
+                #acceso = ext.acceso_externo(request, negocio)
+                #ni idea porque no sale directo
+                from datetime import datetime
+
+                fechaCalendario = datetime.strptime(request.POST.getlist('fecha')[0].replace('T', ' '), '%Y-%m-%d')
+                #dd = datetime.datetime.now().strftime("%Y-%m-%d")
+                context = {'usuarioExterno':request.POST.getlist('t_inputUsuario')[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0]}
+                return render(request, 'home_erp_externo.html', context)
+            if Respuesta['Existe'] == 'No':     
+                negocio_nom = db.traer_negocio(negocio)
+                acceso = ext.acceso_externo(request, negocio_nom, negocio)
+                context = {'Empresa':negocio, 'msg':'No existe', 'acceso':acceso[0]}
+                return render(request, 'login_ext.html', context)
+
 
 def myfunction(request):
 	logger.debug("this is a debug message!")
@@ -153,13 +291,40 @@ def mediaPeso(request, negocio):
     context = {'peso':peso}
     return JsonResponse(context)
 
+
 @csrf_exempt
-def ccimagenes(request):
+def ccimagenes_post(request):
     myfile = request.FILES['files']
-    path = default_storage.save('archivos/'+ str(request.POST.getlist('Id_empresa')[0]) + '/' + str(myfile), ContentFile(myfile.read()))
+    path = default_storage.save('archivos/'+ str(request.POST.getlist('Id_empresa')[0]) + '/' + str(request.POST.getlist('id_archivo')[0]), ContentFile(myfile.read()))
     tmp_file = os.path.join(settings.STATIC_URL, path)
     context = {'ok':''}
     return JsonResponse(context)
+
+@csrf_exempt
+def ccimagenes(request):
+    myfile = request.FILES['files']
+    filename = str(myfile)
+    filename = filename.replace('Ñ','N')
+    filename = filename.replace('ñ','n')
+    filename = filename.replace('á','a')
+    filename = filename.replace('é','e')
+    filename = filename.replace('í','i')
+    filename = filename.replace('ó','o')
+    filename = filename.replace('ú','u')
+
+    path = default_storage.save('archivos/'+ str(request.POST.getlist('Id_empresa')[0]) + '/' + filename, ContentFile(myfile.read()))
+    tmp_file = os.path.join(settings.STATIC_URL, path)
+    context = {'ok':''}
+    return JsonResponse(context)
+
+@csrf_exempt
+def ccsubirFirmas(request):
+    myfile = request.FILES['files']
+    path = default_storage.save('firma/'+ str(request.POST.getlist('Id_empresa')[0]) + '/' + str(myfile), ContentFile(myfile.read()))
+    tmp_file = os.path.join(settings.STATIC_URL, path)
+    context = {'ok':''}
+    return JsonResponse(context)
+    
 
 def procesar_import_proceso(request):
     if request.session.has_key('conn_ip'):
@@ -438,6 +603,21 @@ def arreglo_base(request):
             context = erp_data.arreglo_base(request, request.POST.getlist('Id_empresa')[0])
             return JsonResponse(context)
 
+
+def firma_grabar(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            firmas = web.firma_pdf
+            context = firmas.firmasxGrabar(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0])         
+            return JsonResponse(context)
+
+def firma_usuario(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            firmas = web.firma_pdf
+            context = firmas.firmasxUsuarios(request, request.POST.getlist('usuario')[0], request.POST.getlist('Id_empresa')[0])         
+            return JsonResponse(context)
+
 def ficha_new(request):
     if request.method == 'POST':
         if request.session.has_key('conn_ip'):
@@ -483,6 +663,148 @@ def pdf_ficha_server_test(request):
     context = {'msg':'Crear Cliente base'}             
     return render(request, 'auto_clave.html',context)
 
+def email_ficha_server(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            if request.POST.getlist('modelo')[0] == 'Hoja':
+                respuesta =pdf_ficha_server(request)
+            if request.POST.getlist('modelo')[0] == 'Continua':
+                respuesta =pdf_ficha_server_continua(request)
+            ##doc = respuesta['pdf_fianl']
+            pdf = json.loads(respuesta.content.decode("utf-8") )              
+            envio_email_pdf2(request.POST.getlist('para')[0], request.POST.getlist('nombre')[0], pdf['pdf_fianl'],  request.POST.getlist('Id_empresa')[0])
+            context = {'ok':'Si'}             
+            return JsonResponse(context)
+
+def envio_email_pdf2(para, por, pdf, negocio):
+    msg = """
+    Envio Automatico de $cod1$. 
+    Adjunto Pdf https://www.cerocodigo.com/$cod2$.
+
+    No responda a este correo
+    """
+    msg= str(msg).replace("$cod1$",str(negocio))
+    msg= str(msg).replace("$cod2$",str(pdf))
+
+    #send_mail(por, msg, 'documentos@cerocodigo.com',[para])
+
+    mail = EmailMessage(por, msg, 'documentos@cerocodigo.com', [para])
+    pdffile = open(pdf, "rb").read()
+    mail.attach('archivo.pdf', pdffile, 'application/pdf')
+    mail.send()
+
+
+
+
+
+
+def envio_emailPdf(para, por, pdf, negocio):
+    sender_email = "documentos@cerocodigo.com"
+    receiver_email = para
+    password = '@Dmin1992'
+
+    message = MIMEMultipart("alternative")
+    message["Subject"] = por
+    message["From"] = sender_email
+    message["To"] = receiver_email
+
+    # Create the plain-text and HTML version of your message
+    text = """\
+    Envio Automatico de $cod1$. 
+    Adjunto Pdf $cod2$.
+
+    No responde a este correo
+    """
+    html = """\
+    <html>
+      <body>
+        <p>Envio Automatico de $cod1$.<br>
+           Adjunto Pdf $cod2$. <a href="https://www.cerocodigo.com/media/firma/DLM/$cod2$"> Click aqui </a>
+        </p>
+      </body>
+    </html>
+    """
+
+    # Turn these into plain/html MIMEText objects
+    html= str(html).replace("$cod2$",str(pdf))
+    text= str(text).replace("$cod2$",str(pdf))
+    html= str(html).replace("$cod1$",str(negocio))
+    text= str(text).replace("$cod1$",str(negocio))
+
+    part1 = MIMEText(text, "plain")
+    part2 = MIMEText(html, "html")
+
+    # Add HTML/plain-text parts to MIMEMultipart message
+    # The email client will try to render the last part first
+    message.attach(part1)
+    message.attach(part2)
+            
+    # with open(pdf, "rb") as fil:
+    #     part = MIMEApplication(
+    #         fil.read(),
+    #         Name=basename(pdf)
+    #     )
+    # # After the file is closed
+    # part['Content-Disposition'] = 'attachment; filename="%s"' % basename(pdf)
+    # message.attach(part)
+
+    # Create secure connection with server and send email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.ipage.com", 465, context=context) as server:  #465
+        server.login(sender_email, password)
+        server.sendmail(
+            sender_email, receiver_email, message.as_string()
+        )
+
+
+def pdf_ficha_tagElimnar(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.pdf_ficha_tagElimnar(request, request.POST.getlist('Id_empresa')[0])
+            return JsonResponse(context)
+
+def pdf_ficha_server_continua(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            #erp_data = web.erp_log_menu        
+            #data_pdf = erp_data.pdf_ficha(request, request.POST.getlist('Id_empresa')[0])
+            pdf = web.pdf
+            firma = web.firma_pdf 
+            #datos_firma = firma.traerdatos(request, request.POST.getlist('usuario')[0], request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_pkpaneL_g')[0], 'panel')
+
+            datos_pdf = pdf.crear_pdf_panel_continua(request, request.POST.getlist('Id_empresa')[0])
+            pdffile = datos_pdf[0]
+            if len(datos_pdf[1]) > 0:
+                datos_firma = firma.traerdatos_bloque(request, request.POST.getlist('Id_empresa')[0], datos_pdf[1])
+                pdf_fianl = firma.firmar(pdffile, request.POST.getlist('Id_empresa')[0] , datos_firma)     
+                if pdf_fianl[1] == 'ok':
+                    #existe file de adjuntos
+                    archi_zip = ''
+                    if len(datos_pdf) == 3:
+                        #hay adjuntos
+                        if len(datos_pdf[2]) > 0:
+                            ##armarcarpeta de zip descarga con todo....
+                            empaquetador = web.empaquetado
+                            archi_zip = empaquetador.armar_empaquetadoAdjuntos(request.POST.getlist('Id_empresa')[0], datos_pdf[2])
+                    context = {'pdf_fianl':pdf_fianl[0], 'ok':'Si', 'archi_zip':archi_zip}             
+                    return JsonResponse(context)                
+                else:
+                    context = {'pdf_fianl':pdf_fianl[0], 'ok':'No','msg':'Invalid password or PKCS12 data'}             
+                    return JsonResponse(context)   
+            else:
+                archi_zip = ''
+                if len(datos_pdf) == 3:
+                    #hay adjuntos
+                    if len(datos_pdf[2]) > 0:
+                        ##armarcarpeta de zip descarga con todo....
+                        empaquetador = web.empaquetado
+                        archi_zip = empaquetador.armar_empaquetadoAdjuntos(request.POST.getlist('Id_empresa')[0], datos_pdf[2])                            
+                context = {'pdf_fianl':pdffile, 'ok':'Si', 'archi_zip':archi_zip}             
+                return JsonResponse(context)
+
+
+
 def pdf_ficha_server(request):
     if request.method == 'POST':
         if request.session.has_key('conn_ip'):
@@ -490,15 +812,22 @@ def pdf_ficha_server(request):
             #data_pdf = erp_data.pdf_ficha(request, request.POST.getlist('Id_empresa')[0])
             pdf = web.pdf
             firma = web.firma_pdf 
-            datos_firma = firma.traerdatos(request, request.POST.getlist('usuario')[0], request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_pkpaneL_g')[0])
+            #datos_firma = firma.traerdatos(request, request.POST.getlist('usuario')[0], request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_pkpaneL_g')[0], 'panel')
 
-            pdffile = pdf.crear(request, request.POST.getlist('Id_empresa')[0], datos_firma)
-            if len(datos_firma) > 0:
-                pdf_fianl = firma.firmar(pdffile, request.POST.getlist('Id_empresa')[0] , datos_firma)
-                context = {'pdf_fianl':pdf_fianl}             
-                return JsonResponse(context)                
+            datos_pdf = pdf.crear_pdf_panel(request, request.POST.getlist('Id_empresa')[0])
+            pdffile = datos_pdf[0]
+            if len(datos_pdf[1]) > 0:
+                datos_firma = firma.traerdatos_bloque(request, request.POST.getlist('Id_empresa')[0], datos_pdf[1])
+
+                pdf_fianl = firma.firmar(pdffile, request.POST.getlist('Id_empresa')[0] , datos_firma)     
+                if pdf_fianl[1] == 'ok':
+                    context = {'pdf_fianl':pdf_fianl[0], 'ok':'Si'}             
+                    return JsonResponse(context)                
+                else:
+                    context = {'pdf_fianl':pdf_fianl[0], 'ok':'No','msg':pdf_fianl[2]}             
+                    return JsonResponse(context)   
             else:
-                context = {'pdf_fianl':pdffile}             
+                context = {'pdf_fianl':pdffile, 'ok':'Si'}             
                 return JsonResponse(context)
 
 def pdf_ficha(request):
@@ -538,7 +867,7 @@ def traer_ficha_valores(request):
     if request.method == 'POST':
         if request.session.has_key('conn_ip'):
             paneles_data = web.paneles
-            Respuesta = paneles_data.traer_sub_paneles(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0], request.POST.getlist('t_pkpanel')[0], request.POST.getlist('pkvalor')[0], request.POST.getlist('v_fecha')[0])
+            Respuesta = paneles_data.traer_sub_paneles(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0], request.POST.getlist('t_pkpanel')[0], request.POST.getlist('pkvalor')[0], request.POST.getlist('v_fecha')[0], request.POST.getlist('v_user')[0])  
             context = Respuesta
             return JsonResponse(context)
 
@@ -644,6 +973,7 @@ def enviar_mensaje(request):
             sender_email, receiver_email, message.as_string()
         )
     return HttpResponse("Mensaje Enviado")
+
 
 
 def envio_email(para, msg, por, val):
@@ -1238,11 +1568,27 @@ def nota_add_text(request):
             context = {'texto':request.POST.getlist('texto')[0],'date':datetime.datetime.now()}
             return JsonResponse(context)
 
+def paneles_cambio_estado(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.paneles_cambio_estado(request, request.POST.getlist('Id_empresa')[0])
+            return JsonResponse(context)
+
+
+
+def paneles_carga_pkpanel(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            paneles_data = web.paneles        
+            context = paneles_data.paneles_carga(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkpanel')[0])
+            return JsonResponse(context)
+
 def paneles_carga(request):
     if request.session.has_key('conn_ip'):
         if request.method == 'POST':
             paneles_data = web.paneles        
-            context = paneles_data.paneles_carga(request, request.POST.getlist('Id_empresa')[0])
+            context = paneles_data.paneles_carga(request, request.POST.getlist('Id_empresa')[0], '0')
             return JsonResponse(context)
 
 def traer_rapido(request):
@@ -1250,8 +1596,8 @@ def traer_rapido(request):
         if request.method == 'POST':
             erp_data = web.erp_log_menu        
             traer_campos = erp_data.traer_campos_panel_directo_Det(request, request.POST.getlist('Id_empresa')[0])
-            traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos)
-            traer_registro = erp_data.traer_registro(request, request.POST.getlist('Id_empresa')[0], traer_campos)
+            traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('pkmodulo')[0])
+            traer_registro = erp_data.traer_registro(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('pkmodulo')[0], request.POST.getlist('pkregistro')[0])
             context = traer_campos
             context.update({'valores_det':traer_registro[1]})
             context.update({'func_det':traer_campos_funciones[1]})
@@ -1266,6 +1612,7 @@ def paneles_items(request):
             paneles_data = web.paneles
             panel_grupo =  paneles_data.traer_condicion_panel_grupo(request, request.POST.getlist('Id_empresa')[0])
             panel_opciones = paneles_data.traer_condicion_panel_opciones(request, request.POST.getlist('Id_empresa')[0])
+            acc_estados = paneles_data.traer_estados_modulo_usuario(request, request.POST.getlist('Id_empresa')[0])
             campo_fix = [0,[]]
             campo_fix[0]= panel_opciones[0]['campo']
             erp_data = web.erp_log_menu    
@@ -1279,12 +1626,13 @@ def paneles_items(request):
                     context.update({'dire_estados':traer_estados})
                     context.update({'estado':panel_grupo[0]})
                     context.update({'xE':request.POST.getlist('xE')[0]})  
+                    context.update({'acc_estados':acc_estados})  
                     return JsonResponse(context)
                 if panel_grupo[0]['tipo'] == 'tabla':
                     for a in panel_opciones:
                         campo_fix[1].append(a['valor'])
                     traer_campos = erp_data.traer_campos_desdePanel(request, request.POST.getlist('Id_empresa')[0])
-                    traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos)
+                    traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('pkmodulo')[0])
                     traer_registro = erp_data.traer_registro_desde_panel(request, request.POST.getlist('Id_empresa')[0], traer_campos, panel_grupo)
                     context = traer_campos
                     context.update({'tipo':'tabla'})
@@ -1293,6 +1641,7 @@ def paneles_items(request):
                     context.update({'estado':panel_grupo[0]})
                     context.update({'campo_fix':campo_fix})
                     context.update({'xE':request.POST.getlist('xE')[0]})  
+                    context.update({'acc_estados':acc_estados})  
                     return JsonResponse(context)
         return JsonResponse({'no':0})
 
@@ -1301,6 +1650,14 @@ def cambio_rapido(request):
         if request.method == 'POST':
             paneles_data = web.paneles        
             context = paneles_data.cambio_rapido(request, request.POST.getlist('Id_empresa')[0])
+            return JsonResponse(context)
+
+
+def buscador_ficha_crear_rapido(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.buscador_ficha_crear_rapido(request, request.POST.getlist('Id_empresa')[0])
             return JsonResponse(context)
 
 def buscador_ficha(request):
@@ -1461,13 +1818,6 @@ def buscador_filtro(request):
             context = erp_data.buscador_filtro(request, request.POST.getlist('Id_empresa')[0])
             return JsonResponse(context)
 
-def buscador(request):
-    if request.session.has_key('conn_ip'):
-        if request.method == 'POST':
-            erp_data = web.erp_log_menu        
-            context = erp_data.buscador(request, request.POST.getlist('Id_empresa')[0])
-            return JsonResponse(context)
-
 def modi_fast(request):
     if request.session.has_key('conn_ip'):
         if request.method == 'POST':
@@ -1508,10 +1858,12 @@ def consulta_erp(request, idioma):
     if request.session.has_key('conn_ip'):
         if request.method == 'POST':
             erp_data = web.erp_log_menu        
-            traer_campos = erp_data.traer_campos(request, request.POST.getlist('Id_empresa')[0])
-            traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos)
-            traer_registro = erp_data.traer_registro(request, request.POST.getlist('Id_empresa')[0], traer_campos)
+
+            traer_campos = erp_data.traer_campos(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkmodulo')[0], request.POST.getlist('pestalla')[0] )
+            traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('pkmodulo')[0])
+            traer_registro = erp_data.traer_registro(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('pkmodulo')[0], request.POST.getlist('pkregistro')[0])
             plantilla_pdf = erp_data.plantilla_pdf(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkmodulo')[0] )
+            plantilla_html = erp_data.plantilla_html(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkmodulo')[0] )
             context = traer_campos
             context.update({'valores_cab':traer_registro[0]})
             context.update({'valores_det':traer_registro[1]})
@@ -1520,10 +1872,13 @@ def consulta_erp(request, idioma):
             context.update({'func_det':traer_campos_funciones[1]})
             context.update({'func_subdet':traer_campos_funciones[2]})
             context.update({'plantilla_pdf':plantilla_pdf})
+            
             context.update({'dev_pestalla':request.POST.getlist('pestalla')[0]})
             context.update({'t_pkregistro':request.POST.getlist('pkregistro')[0]})
-            acc_rapido = erp_data.acc_rapido(request, request.POST.getlist('Id_empresa')[0])
+            acc_rapido = erp_data.acc_rapido(request, request.POST.getlist('Id_empresa')[0],request.POST.getlist('pkmodulo')[0],request.POST.getlist('usuario')[0])
             context.update({'acc_rapido':acc_rapido})
+            context.update({'plantilla_html':plantilla_html})
+            
             #context.update({'modrapido':erp_data.modrapido(request, request.POST.getlist('Id_empresa')[0])})
             #context.update({'newrapido':erp_data.newrapido(request, request.POST.getlist('Id_empresa')[0])})
             #context.update({'elirapido':erp_data.elirapido(request, request.POST.getlist('Id_empresa')[0])})
@@ -1759,7 +2114,7 @@ def log_erp(request, idioma):
     erp_data = web.erp_log_menu
     if request.method == 'POST':
         l_inputEmpresa = request.POST.getlist('inputEmpresa')[0]
-        l_inputUsuario = request.POST.getlist('inputUsuario')[0]
+        l_inputUsuario = request.POST.getlist('inputUsuario')[0].replace('ñ','n').replace('Ñ','N')
         l_inputPassword = request.POST.getlist('inputPassword')[0]
 
         Respuesta = erp_data.validar_user_empresa(request, l_inputEmpresa, l_inputUsuario, l_inputPassword)
@@ -1767,7 +2122,7 @@ def log_erp(request, idioma):
             dd = datetime.datetime.now().strftime("%Y-%m-%d")
             idioma_html = db.traer_platilla('menu', request.POST.getlist('idioma')[0])    
             datos_cuenta = {'datos_cuentas':Respuesta[13],'valores_cuentas':Respuesta[14],'val_pendiente':Respuesta[15],'dias_pendientes':Respuesta[16]}            
-            context = {'disco_usado':Respuesta[18], 'sri_rap':Respuesta[17], 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'datos_cuenta':datos_cuenta,'acc_calen':Respuesta[12],'fecha':dd,'Es_Sri':Respuesta[1][0]['Sri'],'Es_admin':Respuesta[1][0]['Admin'], 'idioma_html':idioma_html,'datos_user':Respuesta[1],'certificado':Respuesta[8], 'idioma':idioma, 'usuario':l_inputUsuario ,'Id_empresa':Respuesta[9],'Ruc' :'xyz00' , 'menu' : Respuesta[2], 'modulos' : Respuesta[3], 'opciones' : Respuesta[4], 'reportes' : Respuesta[5], 'list_user' : Respuesta[6], 'estados' : Respuesta[7], 'list_areas' : Respuesta[10], 'list_proyect' : Respuesta[11], 'Es_Usuarios':Respuesta[1][0]['Usuarios']}
+            context = {'web_usuarioExterno':'','disco_usado':Respuesta[18], 'sri_rap':Respuesta[17], 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'datos_cuenta':datos_cuenta,'acc_calen':Respuesta[12],'fecha':dd,'Es_Sri':Respuesta[1][0]['Sri'],'Es_admin':Respuesta[1][0]['Admin'], 'idioma_html':idioma_html,'datos_user':Respuesta[1],'certificado':Respuesta[8], 'idioma':idioma, 'usuario':l_inputUsuario ,'Id_empresa':Respuesta[9],'Ruc' :'xyz00' , 'menu' : Respuesta[2], 'modulos' : Respuesta[3], 'opciones' : Respuesta[4], 'reportes' : Respuesta[5], 'list_user' : Respuesta[6], 'estados' : Respuesta[7], 'list_areas' : Respuesta[10], 'list_proyect' : Respuesta[11], 'Es_Usuarios':Respuesta[1][0]['Usuarios']}
             return render(request, 'home_erp4.html', context)  
         if (Respuesta[0] == "2"):
             idioma_html = db.traer_platilla('log',idioma)

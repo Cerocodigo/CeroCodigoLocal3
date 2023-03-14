@@ -150,8 +150,9 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
                 arr_cab[a['Nombre']] = 0
 
         #trasapsomos xml
-        for desg in desglose_cab:  
-            arr_cab[desg['campo']] = e_data[desg['xml_cab']][desg['xml']]
+        for desg in desglose_cab:
+            if desg['xml'] in e_data[desg['xml_cab']]:  
+                arr_cab[desg['campo']] = e_data[desg['xml_cab']][desg['xml']]
 
         print('#arr_cab ------')
         print(arr_cab)
@@ -774,7 +775,7 @@ def edocs_ingresos_masivos(request, Id_empresa, l_usuarios):
             senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('t_pkmodulo')[0], 'Guardar Registro Nuevo', envio_datset, tabla_cabecera)  
 
             db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-            if db.ingreso_base(senten_cab, senten_det, senten_acc, request.POST.getlist('t_pkmodulo')[0], senten_subdet) == True:
+            if db.ingreso_base(senten_cab, senten_det, senten_acc, request.POST.getlist('t_pkmodulo')[0], senten_subdet)[0] == True:
                 db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
                 senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('t_pkmodulo')[0], "Post Guardar Registro Nuevo", envio_datset, tabla_cabecera)  
                 db.ingreso_post(senten_acc, request.POST.getlist('t_pkmodulo')[0])
@@ -1630,7 +1631,7 @@ def Factura_ingreso_rap(Clave_doc):
         #comprobante_xml = respuestaInterna2[4]   
         comprobante_xml = ET.fromstring(respuestaInterna2[4]  )
 
-        compro_pasar = {'infoNotaCredito':{}, 'infoTributaria':{},'infoFactura':{},'detalle':[],'infoAdicional':{}, 'infoCompRetencion':{}, 'impuestos':[], 'msg':'si'}
+        compro_pasar = {'docsSustento':{}, 'infoNotaCredito':{}, 'infoTributaria':{},'infoFactura':{},'detalle':[],'infoAdicional':{}, 'infoCompRetencion':{}, 'impuestos':[], 'msg':'si'}
 
         
         for child in comprobante_xml:
@@ -1653,9 +1654,26 @@ def Factura_ingreso_rap(Clave_doc):
             if child.tag == "infoCompRetencion":
                 for child in child:
                     if child.tag  == 'fechaEmision':
-                        compro_pasar['infoCompRetencion'][child.tag] = datetime.datetime.strptime(child.text, '%d/%m/%Y').strftime('%Y-%m-%d')     
+                        compro_pasar['infoCompRetencion'][child.tag] = datetime.datetime.strptime(child.text, '%d/%m/%Y')     
                     else:
                         compro_pasar['infoCompRetencion'][child.tag] = child.text     
+            if child.tag == "docsSustento":
+                for child2 in child:
+                    for child3 in child2:
+                        if child3.tag  == 'fechaEmisionDocSustento':
+                            compro_pasar['docsSustento'][child3.tag] = datetime.datetime.strptime(child3.text, '%d/%m/%Y')     
+                        elif child3.tag  == 'fechaRegistroContable':
+                            compro_pasar['docsSustento'][child3.tag] = datetime.datetime.strptime(child3.text, '%d/%m/%Y')    
+                        elif child3.tag  == 'retenciones':
+                            for child4 in child3:
+                                tempo = {'numDocSustento':compro_pasar['docsSustento']['numDocSustento']}
+                                for child5 in child4:
+                                    tempo[child5.tag] = child5.text
+                                compro_pasar['impuestos'].append(tempo)
+                        else:
+                            compro_pasar['docsSustento'][child3.tag] = child3.text  
+
+
             if child.tag == "impuestos":
                 for child in child:
                     tempo = {}
@@ -1713,7 +1731,7 @@ def Factura(Clave_doc):
         try:
             respuestaInterna = respuestaBruta[0]
         except IndexError:
-            context = {'Clave_doc': Clave_doc}
+            context = {'Clave_doc': Clave_doc, 'Estado':'Anulado'}
             return context
 
         respuestaInterna2 = respuestaInterna[0]
@@ -1875,7 +1893,7 @@ def Factura(Clave_doc):
                     
         #Receptor = usuarios.objects.get(receptor_id=val_fijos['ruc'] )
         val_fijos['Codigo_int'] = val_fijos['ruc']
-        context = {'val_fijos': val_fijos, 'html_Datelle': html_Datelle, 'html_Adicional': html_Adicional, 'Val_Totales': Val_Totales, 'JVcodigoPrincipal' : JVcodigoPrincipal, 'JVcodigoAuxiliar' : JVcodigoAuxiliar, 'JVdescripcion' : JVdescripcion, 'JVcantidad' : JVcantidad, 'JVprecioUnitario' : JVprecioUnitario, 'JVdescuento' : JVdescuento, 'JVprecioTotalSinImpuesto' : JVprecioTotalSinImpuesto, 'JVinfoAdicional_nombre' : JVinfoAdicional_nombre, 'JVinfoAdicional_valor' : JVinfoAdicional_valor  }
+        context = {'Estado':'', 'val_fijos': val_fijos, 'html_Datelle': html_Datelle, 'html_Adicional': html_Adicional, 'Val_Totales': Val_Totales, 'JVcodigoPrincipal' : JVcodigoPrincipal, 'JVcodigoAuxiliar' : JVcodigoAuxiliar, 'JVdescripcion' : JVdescripcion, 'JVcantidad' : JVcantidad, 'JVprecioUnitario' : JVprecioUnitario, 'JVdescuento' : JVdescuento, 'JVprecioTotalSinImpuesto' : JVprecioTotalSinImpuesto, 'JVinfoAdicional_nombre' : JVinfoAdicional_nombre, 'JVinfoAdicional_valor' : JVinfoAdicional_valor  }
         return context
 
 def Retencion(Clave_doc):
@@ -1946,7 +1964,9 @@ def Retencion(Clave_doc):
         val_infoCompRetencion = {'fechaAuto' : "", 'fechaEmision' : "", 'dirEstablecimiento' : "", 'contribuyenteEspecial' : "", 'obligadoContabilidad' : "", 'tipoIdentificacionSujetoRetenido' : "", 'razonSocialSujetoRetenido' : "", 'identificacionSujetoRetenido' : "", 'periodoFiscal' : "",}
         val_impuestos = {'codigo': [], 'codigoRetencion': [], 'baseImponible': [], 'porcentajeRetener': [], 'valorRetenido': [], 'codDocSustento': [], 'numDocSustento': [], 'fechaEmisionDocSustento': []   }
         val_infoAdicional_nombre =  {'Nombre': [], 'Valor': []}
-        
+        val_docsSustento = [] 
+        val_docSustento = {'codSustento' : "",'codDocSustento' : "",'numDocSustento' : "",'fechaEmisionDocSustento' : "",'fechaRegistroContable' : "",'numAutDocSustento' : "",'pagoLocExt' : "",'totalSinImpuestos' : "",'importeTotal' : "", 'retenciones':[],'impuestosDocSustento':[] }
+
 
         JVNumero = []
         JVFecha = []
@@ -1959,6 +1979,8 @@ def Retencion(Clave_doc):
         val_fijos['fechaAuto'] =  str(respuestaInterna2[2])
         JVinfoAdicional_nombre = []
         JVinfoAdicional_valor = []
+        version = '1'
+
 
         for child in comprobante_xml:
             if child.tag == "infoTributaria":
@@ -1970,6 +1992,29 @@ def Retencion(Clave_doc):
                         val_infoCompRetencion[child.tag] = "Contribuyente Especial:" + child.text
                     else:
                         val_infoCompRetencion[child.tag] = child.text
+            if child.tag == "docsSustento":   
+                version = '2'
+                for child2 in child:
+                    for child3 in child2:
+                        if child3.tag == "retenciones":
+                            for child4 in child3:
+                                val_retenciones = { 'codigo': '', 'codigoRetencion': '', 'baseImponible': '', 'porcentajeRetener': '', 'valorRetenido': '' }
+                                for child5 in child4:
+                                    val_retenciones[child5.tag] = child5.text
+                                val_docSustento['retenciones'].append(val_retenciones)    
+                        elif child3.tag == "impuestosDocSustento":
+                            for child4 in child3:
+                                val_impuestosDocSustento = {'codImpuestoDocSustento': '', 'codigoPorcentaje': '', 'baseImponible': '', 'tarifa': '', 'valorImpuesto': ''}
+                                for child5 in child4:
+                                    val_impuestosDocSustento[child5.tag] = child5.text
+                                val_docSustento['impuestosDocSustento'].append(val_impuestosDocSustento)   
+                        elif child3.tag == "reembolsos":
+                            pass
+                        elif child3.tag == "pagos":
+                            pass
+                        else:
+                            val_docSustento[child3.tag] = child3.text
+                    val_docsSustento.append(val_docSustento)
             if child.tag == "impuestos":
                 for child in child:
                     for child in child:
@@ -1979,63 +2024,112 @@ def Retencion(Clave_doc):
                     val_infoAdicional_nombre['Nombre'].append(child.attrib['nombre'])
                     val_infoAdicional_nombre['Valor'].append(child.text)
         html_Datelle =''
+ 
+        if version == '2':
+            html_Datelle
+            for hijo in val_docsSustento:
+                
+                for reten in hijo['retenciones']:
+                    try:
+                        html_Datelle += "<tr> <td>" + hijo['numDocSustento'] + "<br></td>"
+                        JVNumero.append(hijo['numDocSustento'])
+                    except IndexError:
+                        html_Datelle += "<tr> <td> <br></td>"
+                        JVNumero.append("0")
 
-        if len(val_impuestos['numDocSustento']) == 0:
-            val_impuestos['numDocSustento'].append("0")
-        for i in range(0,len(val_impuestos['codigo'])):
+                    if len(hijo['fechaEmisionDocSustento']) > 0:
+                        JVFecha.append(hijo['fechaEmisionDocSustento'])
+                        JVEjercicio.append(str(hijo['fechaEmisionDocSustento'][3:]))
+                    else:
+                        JVFecha.append('')
+                        JVEjercicio.append('')
+                    if reten['codigo'] == "1":
+                        html_Datelle += "<td>" + reten['codigoRetencion'] + "<br></td>"
+                        html_Datelle += "<td>" + reten['baseImponible'] + "<br></td>"
+                        html_Datelle += "<td> Renta <br></td>"
+                        html_Datelle += "<td>" + reten['porcentajeRetener'] + "<br></td>"
+                        html_Datelle += "<td>" + reten['valorRetenido'] + "<br></td>"
+                        
+                        JVCodigo.append(reten['codigoRetencion'])
+                        JVBase_Imponible.append(reten['baseImponible'])
+                        JVImpuesto.append("Renta")
+                        JVProcentaje.append(reten['porcentajeRetener'])
+                        JVValor.append(reten['valorRetenido'])
+                        
+                    if reten['codigo'] == "2":
+                        html_Datelle += "<td>" + devulevo_CodigoRete_iva(reten['codigoRetencion']) + "<br></td>"
+                        html_Datelle += "<td>" + reten['baseImponible'] + "<br></td>"
+                        html_Datelle += "<td> Iva <br></td>"
+                        html_Datelle += "<td>" + reten['porcentajeRetener'] + "<br></td>"
+                        html_Datelle += "<td>" + reten['valorRetenido'] + "<br></td>"
+                        
+                        JVCodigo.append(devulevo_CodigoRete_iva(reten['codigoRetencion']))
+                        JVBase_Imponible.append(reten['baseImponible'])
+                        JVImpuesto.append("Iva")
+                        JVProcentaje.append(reten['porcentajeRetener'])
+                        JVValor.append(reten['valorRetenido'])          
+                    html_Datelle += "</tr>"
 
-            try:
-                html_Datelle += "<tr> <td>" + val_impuestos['numDocSustento'][i] + "<br></td>"
-                JVNumero.append(val_impuestos['numDocSustento'][i])
 
-            except IndexError:
-                html_Datelle += "<tr> <td> <br></td>"
-                JVNumero.append("0")
+        if version == '1':
+            if len(val_impuestos['numDocSustento']) == 0:
+                val_impuestos['numDocSustento'].append("0")
+            for i in range(0,len(val_impuestos['codigo'])):
+
+                try:
+                    html_Datelle += "<tr> <td>" + val_impuestos['numDocSustento'][i] + "<br></td>"
+                    JVNumero.append(val_impuestos['numDocSustento'][i])
+
+                except IndexError:
+                    html_Datelle += "<tr> <td> <br></td>"
+                    JVNumero.append("0")
 
 
 
-            #html_Datelle += "<td>" + val_impuestos['fechaEmisionDocSustento'][i] + "<br></td>"
-            if 'fechaEmisionDocSustento' in val_impuestos:
-                if len(val_impuestos['fechaEmisionDocSustento']) > 0:
-                    JVFecha.append(val_impuestos['fechaEmisionDocSustento'][i])
-                    JVEjercicio.append(str(val_impuestos['fechaEmisionDocSustento'][i][3:]))
+                #html_Datelle += "<td>" + val_impuestos['fechaEmisionDocSustento'][i] + "<br></td>"
+                if 'fechaEmisionDocSustento' in val_impuestos:
+                    if len(val_impuestos['fechaEmisionDocSustento']) > 0:
+                        JVFecha.append(val_impuestos['fechaEmisionDocSustento'][i])
+                        JVEjercicio.append(str(val_impuestos['fechaEmisionDocSustento'][i][3:]))
+                    else:
+                        JVFecha.append('')
+                        JVEjercicio.append('')
                 else:
                     JVFecha.append('')
                     JVEjercicio.append('')
-            else:
-                JVFecha.append('')
-                JVEjercicio.append('')
 
+                
+                #html_Datelle += "<td>" + val_impuestos['fechaEmisionDocSustento'][i][3:] + "<br></td>"
+                if val_impuestos['codigo'][i] == "1":
+                    html_Datelle += "<td>" + val_impuestos['codigoRetencion'][i] + "<br></td>"
+                    html_Datelle += "<td>" + val_impuestos['baseImponible'][i] + "<br></td>"
+                    html_Datelle += "<td> Renta <br></td>"
+                    html_Datelle += "<td>" + val_impuestos['porcentajeRetener'][i] + "<br></td>"
+                    html_Datelle += "<td>" + val_impuestos['valorRetenido'][i] + "<br></td>"
+                    
+                    JVCodigo.append(val_impuestos['codigoRetencion'][i])
+                    JVBase_Imponible.append(val_impuestos['baseImponible'][i])
+                    JVImpuesto.append("Renta")
+                    JVProcentaje.append(val_impuestos['porcentajeRetener'][i])
+                    JVValor.append(val_impuestos['valorRetenido'][i])
+                    
+                if val_impuestos['codigo'][i] == "2":
+                    html_Datelle += "<td>" + devulevo_CodigoRete_iva(val_impuestos['codigoRetencion'][i]) + "<br></td>"
+                    html_Datelle += "<td>" + val_impuestos['baseImponible'][i] + "<br></td>"
+                    html_Datelle += "<td> Iva <br></td>"
+                    html_Datelle += "<td>" + val_impuestos['porcentajeRetener'][i] + "<br></td>"
+                    html_Datelle += "<td>" + val_impuestos['valorRetenido'][i] + "<br></td>"
+                    
+                    JVCodigo.append(devulevo_CodigoRete_iva(val_impuestos['codigoRetencion'][i]))
+                    JVBase_Imponible.append(val_impuestos['baseImponible'][i])
+                    JVImpuesto.append("Iva")
+                    JVProcentaje.append(val_impuestos['porcentajeRetener'][i])
+                    JVValor.append(val_impuestos['valorRetenido'][i])
             
-            #html_Datelle += "<td>" + val_impuestos['fechaEmisionDocSustento'][i][3:] + "<br></td>"
-            if val_impuestos['codigo'][i] == "1":
-                html_Datelle += "<td>" + val_impuestos['codigoRetencion'][i] + "<br></td>"
-                html_Datelle += "<td>" + val_impuestos['baseImponible'][i] + "<br></td>"
-                html_Datelle += "<td> Renta <br></td>"
-                html_Datelle += "<td>" + val_impuestos['porcentajeRetener'][i] + "<br></td>"
-                html_Datelle += "<td>" + val_impuestos['valorRetenido'][i] + "<br></td>"
-                
-                JVCodigo.append(val_impuestos['codigoRetencion'][i])
-                JVBase_Imponible.append(val_impuestos['baseImponible'][i])
-                JVImpuesto.append("Renta")
-                JVProcentaje.append(val_impuestos['porcentajeRetener'][i])
-                JVValor.append(val_impuestos['valorRetenido'][i])
-                
-            if val_impuestos['codigo'][i] == "2":
-                html_Datelle += "<td>" + devulevo_CodigoRete_iva(val_impuestos['codigoRetencion'][i]) + "<br></td>"
-                html_Datelle += "<td>" + val_impuestos['baseImponible'][i] + "<br></td>"
-                html_Datelle += "<td> Iva <br></td>"
-                html_Datelle += "<td>" + val_impuestos['porcentajeRetener'][i] + "<br></td>"
-                html_Datelle += "<td>" + val_impuestos['valorRetenido'][i] + "<br></td>"
-                
-                JVCodigo.append(devulevo_CodigoRete_iva(val_impuestos['codigoRetencion'][i]))
-                JVBase_Imponible.append(val_impuestos['baseImponible'][i])
-                JVImpuesto.append("Iva")
-                JVProcentaje.append(val_impuestos['porcentajeRetener'][i])
-                JVValor.append(val_impuestos['valorRetenido'][i])
-          
-            html_Datelle += "</tr>"
-  
+                html_Datelle += "</tr>"
+
+
+
         html_Adicional =''
    
         for xx in range(0,len(val_infoAdicional_nombre['Nombre'])):
@@ -2047,7 +2141,7 @@ def Retencion(Clave_doc):
         
         val_fijos['Codigo_int'] = val_fijos['ruc']
         #print Receptor
-        context = {'val_impuestos': val_impuestos, 'val_infoCompRetencion': val_infoCompRetencion, 'val_fijos': val_fijos, 'html_Datelle': html_Datelle, 'html_Adicional': html_Adicional, 'JVNumero' : JVNumero, 'JVFecha' : JVFecha, 'JVEjercicio' : JVEjercicio, 'JVCodigo' : JVCodigo, 'JVBase_Imponible' : JVBase_Imponible, 'JVImpuesto' : JVImpuesto, 'JVProcentaje' : JVProcentaje, 'JVValor' :JVValor, 'JVinfoAdicional_nombre' : JVinfoAdicional_nombre, 'JVinfoAdicional_valor' : JVinfoAdicional_valor  }
+        context = {'val_impuestos': val_impuestos, 'val_infoCompRetencion': val_infoCompRetencion, 'val_fijos': val_fijos, 'html_Datelle': html_Datelle, 'html_Adicional': html_Adicional, 'JVNumero' : JVNumero, 'JVFecha' : JVFecha, 'JVEjercicio' : JVEjercicio, 'JVCodigo' : JVCodigo, 'JVBase_Imponible' : JVBase_Imponible, 'JVImpuesto' : JVImpuesto, 'JVProcentaje' : JVProcentaje, 'JVValor' :JVValor, 'JVinfoAdicional_nombre' : JVinfoAdicional_nombre, 'JVinfoAdicional_valor' : JVinfoAdicional_valor, 'version':version}
         return context
 
 def Credito(Clave_doc):
