@@ -7,9 +7,12 @@ logger = logging.getLogger(__name__)
 class inter_login_LOGIN:
     def __init__(self,V_base):
         self.V_base=V_base
-        self.mysql_con = web.mysql.class_mysql( "root", "123456789", "cerocodigoweb", "127.0.0.1")
-        self.mysql_int = web.mysql.class_mysql( "root", "123456789", "mysql", "127.0.0.1")
-        
+        #self.mysql_con = web.mysql.class_mysql( "root", "123456789", "cerocodigoweb", "127.0.0.1")
+        #self.mysql_int = web.mysql.class_mysql( "root", "123456789", "mysql", "127.0.0.1")
+        self.mysql_con = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "cerocodigoweb", "107.170.92.160", '3306')
+        self.mysql_int = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "mysql", "107.170.92.160", '3306')
+        #test de branch
+
             
     def traer_negocio(self, V_negocio):
         if self.V_base == "Mysql":
