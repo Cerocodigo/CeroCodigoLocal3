@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <!-- Meta, title, CSS, favicons, etc. -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{{idioma_html.titulo}} </title>
+  <link rel="icon" href="/static/img/New_Logo_solo.ico">
+
+  <!-- Bootstrap -->
+  <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+  <!-- NProgress -->
+  <link href="/static/vendors/nprogress/nprogress.css" rel="stylesheet">
+  <!-- Animate.css -->
+  <link href="/static/vendors/animate.css/animate.min.css" rel="stylesheet">
+
+  <!-- Custom Theme Style -->
+  <link href="/static/build/css/custom.min.css" rel="stylesheet">
+
+  <script type="text/javascript">
+
+
+
+    function crear_externo() {
+      var columnas = '{{acceso.campos}}'.split(',')
+
+      html_crear = `
+      <section class="login_content">
+          <form method="post">
+            {% csrf_token %}
+            <fieldset>
+              <h1>Crear Usuario</h1>
+              <input type="hidden" name="ingreso" value="crear" />
+
+
+      `
+      for (x = 0; x < columnas.length; x++) {
+        html_crear = html_crear + '<div><input type="text" class="form-control" placeholder="'+columnas[x]+'" required="" name="'+columnas[x]+'" value="" /></div>'
+      }
+      html_crear = html_crear + `
+        <button class="btn btn-success submit">Crear</button>
+        </fieldset>
+        </form>
+        </section>
+      `
+      divi = document.getElementById('divInicial')
+
+      divi.innerHTML = html_crear 
+    
+
+    }
+  </script>
+
+
+</head>
+
+<body class="login">
+  <div>
+    <a class="hiddenanchor" id="signup"></a>
+    <a class="hiddenanchor" id="signin"></a>
+
+    <div class="login_wrapper">
+      <div class="animate form login_form" id="divInicial">
+        <section class="login_content">
+          <form method="post">
+            {% csrf_token %}
+            <fieldset>
+              <h1>{{Empresa}}</h1>
+              <h1>{{acceso.Display}}</h1>
+              <div>
+                <input type="text" class="form-control" placeholder="{{acceso.Usuario}}" required="" name="inputUsuario"
+                  value="" />
+              </div>
+              <div>
+                {% if acceso.Usuario == acceso.Clave %}
+                <input type="hidden" class="form-control" placeholder="{{acceso.Clave}}" required=""
+                  name="inputPassword" value="hidden" />
+                {% else %}
+                <input type="password" class="form-control" placeholder="{{acceso.Clave}}" required=""
+                  name="inputPassword" value="" />
+                {% endif %}
+                <input type="hidden" name="Empresa" value="{{Empresa}}" />
+                <input type="hidden" name="ingreso" value="directo" />
+
+
+              </div>
+              <div>
+                <p style="color: red;">{{msg}}</p>
+
+              </div>
+              <div>
+                <button class="btn btn-success submit">Ingresar</button>
+                {% if acceso.Crear == "Si" %}
+
+                <button class="btn btn-info" onclick="crear_externo()">Crear Cuenta</button>
+                {% endif %}
+
+              </div>
+              <div class="clearfix"></div>
+              <div>
+                <h1><i class="fa fa-bar-chart"></i> CeroCodigo</h1>
+                <p>©2016 All Rights Reserved.</p>
+              </div>
+              </div>
+            </fieldset>
+          </form>
+      </section>
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>

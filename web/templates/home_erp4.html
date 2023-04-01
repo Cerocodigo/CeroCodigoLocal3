@@ -64,26 +64,26 @@
 <!-- Main canvg code -->
 <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
 
-<script src="/static/ccmain/28/main_script.js"></script>
-<script src="/static/ccmain/28/menu_general.js"></script>
-<script src="/static/ccmain/28/validaciones.js"></script>
-<script src="/static/ccmain/28/imagenes.js"></script>
-<script src="/static/ccmain/28/admin_campos.js"></script>
-<script src="/static/ccmain/28/sri.js"></script>
-<script src="/static/ccmain/28/paneles.js"></script>
-<script src="/static/ccmain/28/Dibujo.js"></script>
-<script src="/static/ccmain/28/panel_estados.js"></script>
-<script src="/static/ccmain/28/usuarios.js"></script>
-<script src="/static/ccmain/28/PDF.js"></script>
-<script src="/static/ccmain/28/cmpreferencia.js"></script>
-<script src="/static/ccmain/28/calendario.js"></script>
-<script src="/static/ccmain/28/Notificaciones.js"></script>
-<script src="/static/ccmain/28/reportes.js"></script>
-<script src="/static/ccmain/28/offline.js"></script>
-<script src="/static/ccmain/28/registro.js"></script>
-<script src="/static/ccmain/28/buscadoresCab.js"></script>
-<script src="/static/ccmain/28/cmpcalculos.js"></script>
-<script src="/static/ccmain/28/electronico.js"></script>
+<script src="/static/ccmain/32/main_script.js"></script>
+<script src="/static/ccmain/32/menu_general.js"></script>
+<script src="/static/ccmain/32/validaciones.js"></script>
+<script src="/static/ccmain/32/imagenes.js"></script>
+<script src="/static/ccmain/32/admin_campos.js"></script>
+<script src="/static/ccmain/32/sri.js"></script>
+<script src="/static/ccmain/32/paneles.js"></script>
+<script src="/static/ccmain/32/Dibujo.js"></script>
+<script src="/static/ccmain/32/panel_estados.js"></script>
+<script src="/static/ccmain/32/usuarios.js"></script>
+<script src="/static/ccmain/32/PDF.js"></script>
+<script src="/static/ccmain/32/cmpreferencia.js"></script>
+<script src="/static/ccmain/32/calendario.js"></script>
+<script src="/static/ccmain/32/Notificaciones.js"></script>
+<script src="/static/ccmain/32/reportes.js"></script>
+<script src="/static/ccmain/32/offline.js"></script>
+<script src="/static/ccmain/32/registro.js"></script>
+<script src="/static/ccmain/32/buscadoresCab.js"></script>
+<script src="/static/ccmain/32/cmpcalculos.js"></script>
+<script src="/static/ccmain/32/electronico.js"></script>
 
 <style>
   google.charts.load('current', {'packages':['corechart']});
@@ -254,7 +254,9 @@ $(window).load(function() {
 
         document.getElementById('calendar-tab').click();
 
-              {% if datos_cuenta.dias_pendientes > 50 %}   document.getElementById('a_default_pagos').click()           {% endif %}
+        if(web_esAdmin == 'Y'){
+          {% if datos_cuenta.dias_pendientes >= 60 %}   document.getElementById('a_default_pagos').click()           {% endif %}
+        }
     
         Notificaciones_buscar_nuevas()
         cragar_offlines()
@@ -320,6 +322,8 @@ function nueva_tareas() {
   savemode = false
   web_usuarioExterno = ''// '{{usuarioExterno}}'
   
+
+
 const CSS_COLOR_NAMES = [
   "AliceBlue",
   "AntiqueWhite",
@@ -523,6 +527,11 @@ const CSS_COLOR_NAMES = [
                 <i class="fa fa-lock"></i>
                  <span class="label label-danger" id="div_offline">inline</span>
               </a>
+            </li>
+
+            
+            <li class="dropdown messages-menu" style="display: none;">
+              <a data-toggle="modal" id="a_default_grabando" data-target="#modal-default_grabando"></a>
             </li>
 
             {% if Es_admin == "Y" %}
@@ -941,7 +950,7 @@ const CSS_COLOR_NAMES = [
                     <div class="box box-primary direct-chat direct-chat-primary">
                       <div class="box-body" style="text-align: center;">
                         <div class="row">
-                          <label style="color: black;font-weight: bold;">Selecionar  <i class="fa fa-hand-o-right"></i></label>
+                          <!-- <label style="color: black;font-weight: bold;">Selecionar  <i class="fa fa-hand-o-right"></i></label> -->
 
 
                           <select class="btn btn-info dropdown-toggle" id="calendar_tipo" style="width: 200px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;color: black;" onchange="calendario()" ><option>Todos</option> 
@@ -2130,6 +2139,53 @@ const CSS_COLOR_NAMES = [
 
 
 
+  
+  <div class="modal fade" id="modal-default_grabando">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div id="intwait"> 
+  
+          <div class="box box-info">
+            <div class="box-header ui-sortable-handle" style="cursor: move;">
+  
+  
+  
+  
+              <h3 class="box-title"> </h3>
+  
+  
+              <div class="box-tools">
+                <button type="button" id="cerrar_rap_grabando" class="close" data-dismiss="modal" style="padding-left: 10px;display: none;"><span aria-hidden="true">×</span></button>
+              </div>
+  
+            </div>
+  
+  
+            <div class="box-body">
+              <div class="overlay">
+                <i class="fa fa-refresh fa-spin"></i>
+              </div>
+
+      
+            </div>
+  
+       
+  
+            </div>
+  
+  
+  
+  
+  
+  
+          </div>
+          
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+  </div>
+
 <div class="modal fade" id="modal-default_pagos">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -2172,10 +2228,10 @@ const CSS_COLOR_NAMES = [
                     {% if valores.Dias < 30 %}
                       <tr style="background: lightgreen;">
                     {% endif %}
-                    {% if valores.Dias > 30 and valores.Dias < 75 %}
+                    {% if valores.Dias > 29 and valores.Dias < 60 %}
                       <tr style="background: yellow;">
                     {% endif %}
-                    {% if valores.Dias > 75 %}
+                    {% if valores.Dias > 59 %}
                       <tr style="background: orange;">
                     {% endif %}
                   {% else %}
@@ -2731,16 +2787,57 @@ const CSS_COLOR_NAMES = [
 
                 <div class="col-sm-4">
                   <label class="control-label" style="font-size: 12px;font-weight: bold;">Origen</label>
-                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                    <select class="form-control col-sm-3" id="cmpreferenciaOrigen" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" onchange="cmpreferenciaTraerTablas(this)"></select> 
                 </div>
                 <div class="col-sm-4">
-                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Nivel</label>
-                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Tabla</label>
+                    <select class="form-control col-sm-3" id="cmpreferenciaTabla" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" onchange="cmpreferenciaTraerCampo(this)"></select> 
                 </div>
                 <div class="col-sm-4">
                   <label class="control-label" style="font-size: 12px;font-weight: bold;">Campo</label>
-                    <select class="form-control col-sm-3" id="cmpformuladetalle_operacion" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="">Suma</option><option>Promedio</option><option>Maximo</option><option>Minimo</option><option>Contar</option></select> 
+                    <select class="form-control col-sm-3" id="cmpreferenciaCampo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
                 </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Columnas</label>
+                    <input class="form-control col-sm-3" id="cmpreferenciaColumnas" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" >
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Visibles</label>
+                    <input class="form-control col-sm-3" id="cmpreferenciaVisibles" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" >
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Puede Escribir?</label>
+                    <select class="form-control col-sm-3" id="cmpreferenciaEscribir" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="" value="Y">Si</option><option value="N">No</option></select> 
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Ingreso Rapido</label>
+                    <select class="form-control col-sm-3" id="cmpreferenciaIngRapido" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="" value="Y">Si</option><option value="N">No</option></select> 
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Permite Nulo</label>
+                    <select class="form-control col-sm-3" id="cmpreferenciaNulo" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ><option selected="" value="Y">Si</option><option value="N">No</option></select> 
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Disparador</label>
+                    <select class="form-control col-sm-3" id="cmpreferenciaDisparador" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></select> 
+                </div>
+                <div class="col-sm-4">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Valor Predeterminado</label>
+                    <datalist class="form-control col-sm-3" id="cmpreferenciaPredeterminado" style="height: 25px;font-size: 11px;padding-top: 0px;padding-bottom: 0px;" ></datalist> 
+
+                </div>
+
+                <div class="col-sm-12">
+                  <label class="control-label" style="font-size: 12px;font-weight: bold;">Condiciones</label>                  
+                </div>
+
+
+
 
               </div>
 

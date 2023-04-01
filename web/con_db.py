@@ -11,6 +11,8 @@ class inter_login_LOGIN:
         #self.mysql_int = web.mysql.class_mysql( "root", "123456789", "mysql", "127.0.0.1")
         self.mysql_con = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "cerocodigoweb", "107.170.92.160", '3306')
         self.mysql_int = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "mysql", "107.170.92.160", '3306')
+
+            
     def traer_negocio(self, V_negocio):
         if self.V_base == "Mysql":
             sentencia = 'select * from empresas_erp where empresas_erp.Negocio = "'+ V_negocio +'"'
@@ -374,8 +376,30 @@ class menu_modulos:
         sentencia = "CREATE TABLE " + str(str_Nombre) + "(Pk" + str(str_Nombre) + " int NOT NULL AUTO_INCREMENT,PRIMARY KEY (Pk" + str(str_Nombre) + "))"
         self.mysql_con.ejecutar(sentencia)
 
-    def modulo_crear_estructura(self, str_pkmodulo, str_Nombre, str_Descripcion):
-        sentencia = "INSERT INTO `estructura` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`,`HijaDe`,`X`,`Y`, `espacio` ) VALUES ('" +str(str_pkmodulo )+ "', '" +str( str_Nombre )+ "', '" +str( str_Descripcion )+ "', 'N','0','0','0','22')"
+    def estruc_crear_Campo(self, str_tabla, str_Nombre, str_tipo, Adcional):
+        if str_tipo == 'Texto':
+            sentencia = "alter table " +str(str_tabla)+ " add COLUMN " +str(str_Nombre)+ " text"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("UPDATE " +str(str_tabla)+ " set " +str(str_Nombre)+ " = ''")
+        if str_tipo == 'Fecha':
+            sentencia = "alter table " +str(str_tabla)+ " add COLUMN " +str(str_Nombre)+ " date"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("UPDATE " +str(str_tabla)+ " set " +str(str_Nombre)+ " = now()")
+        if str_tipo == 'Fechatiempo':
+            sentencia = "alter table " +str(str_tabla)+ " add COLUMN " +str(str_Nombre)+ " datetime"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("UPDATE " +str(str_tabla)+ " set " +str(str_Nombre)+ " = now()")
+        if str_tipo == 'Decimal':
+            sentencia = "alter table " +str(str_tabla)+ " add COLUMN " +str(str_Nombre)+ " DECIMAL (12," +str(Adcional)+")"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("UPDATE " +str(str_tabla)+ " set " +str(str_Nombre)+ " = 0")
+        if str_tipo == 'Entero':
+            sentencia = "alter table " +str(str_tabla)+ " add COLUMN " +str(str_Nombre)+ " int"
+            self.mysql_con.ejecutar(sentencia)
+            self.mysql_con.ejecutar("UPDATE " +str(str_tabla)+ " set " +str(str_Nombre)+ " = 0")
+
+    def modulo_crear_estructura(self, str_pkmodulo, str_Nombre, str_Descripcion, str_HijaDe):
+        sentencia = "INSERT INTO `estructura` (`PkModulo`, `Nombre`, `Descripcion`, `Anulado`,`HijaDe`,`X`,`Y`, `espacio` ) VALUES ('" +str(str_pkmodulo )+ "', '" +str( str_Nombre )+ "', '" +str( str_Descripcion )+ "', 'N','"+str(str_HijaDe)+"','0','0','22')"
         self.mysql_con.ejecutar(sentencia)
         return self.mysql_con.table("Select * from estructura where Nombre = '"+(str_Nombre)+"'")  
 
@@ -383,7 +407,27 @@ class menu_modulos:
     def modulo_devolver_estructura(self, str_PkEstructura):
         return self.mysql_con.table("Select * from estructura where PkEstructura = '"+(str_PkEstructura)+"'")  
 
+class versiones:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306') 
 
+    def actualizar(self):
+        dbversion = 0
+        version = self.mysql_con.table("SELECT * from llankay_datos_clientes")
+        if not('versionWeb' in version[0]):
+            self.mysql_con.ejecutar("ALTER table llankay_datos_clientes add COLUMN versionWeb text")
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '0'")
+            dbversion = 0
+        else:
+            dbversion =  int(version[0]['versionWeb'])
+
+        if dbversion == 0:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '1'")
+            self.mysql_con.ejecutar("ALTER table web_externo_acceso add COLUMN DisplayCalendario text")
+            self.mysql_con.ejecutar("update web_externo_acceso set  DisplayCalendario = ''")
+            dbversion = dbversion + 1
+
+        
 
 class offline:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
@@ -643,9 +687,9 @@ class inter_registro:
     def carga_list_user_paneles_user(self):
         return self.mysql_con.table('select * from web_p_panel_user') 
     def carga_list_user_completa_para_estado(self):
-        return self.mysql_con.table('select * from usuario') 
+        return self.mysql_con.table('select * from usuario order by Usuario') 
     def carga_list_user_completa(self):
-        return self.mysql_con.table('select * from usuario') 
+        return self.mysql_con.table('select * from usuario order by Usuario') 
     def traer_acc_usuario(self,t_user):
         return self.mysql_con.table('select * from web_a_permisos where usuario = "'+str(t_user)+'"')         
     def carga_secciones_ats(self, str_tipo):
@@ -1280,11 +1324,27 @@ class firmas:
 class paneles:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
-    def ficha_existe(self, t_pkpanle, t_fecha, t_pkval, t_usuario):
-        sentencia = "select * from web_p_panel_grupo_track where usuario = '"+str(t_usuario)+"' and pkpanel = '"+str(t_pkpanle)+"' and fecha = '"+str(t_fecha)+"' and pk_valor = '"+str(t_pkval)+"'order by fecha desc"
+    def ejecutar_scrips(self, t_senten):
+        try:
+            self.mysql_con.ejecutar(t_senten)
+        except:
+            pass        
+
+    def traer_cambiotag(self, t_pkpanel):
+        try:
+            sentencia = "select pkpanel, pkgrupo, cambiotag  from web_p_panel_grupos where pkpanel = '"+str(t_pkpanel)+"'"
+            return self.mysql_con.table(sentencia)
+        except:
+            self.mysql_con.ejecutar('alter table web_p_panel_grupos  add COLUMN cambiotag text')
+            self.mysql_con.ejecutar('UPDATE web_p_panel_grupos set cambiotag = ""')
+            sentencia = "select pkpanel, pkgrupo, cambiotag  from web_p_panel_grupos where pkpanel = '"+str(t_pkpanel)+"'"
+            return self.mysql_con.table(sentencia)
+
+    def ficha_existe(self, t_pkpanel, t_fecha, t_pkval, t_usuario):
+        sentencia = "select * from web_p_panel_grupo_track where usuario = '"+str(t_usuario)+"' and pkpanel = '"+str(t_pkpanel)+"' and fecha = '"+str(t_fecha)+"' and pk_valor = '"+str(t_pkval)+"'order by fecha desc"
         return self.mysql_con.table(sentencia)
-    def ficha_new(self, t_pkpanle, t_fecha, t_pkval, t_usuario):
-        sentencia = "insert into `web_p_panel_grupo_track` (`pkpanel`, `fecha`, `pk_valor`, `usuario`) VALUES ('"+str(t_pkpanle)+"', '"+str(t_fecha)+"', '"+str(t_pkval)+"', '"+str(t_usuario)+"')"
+    def ficha_new(self, t_pkpanel, t_fecha, t_pkval, t_usuario):
+        sentencia = "insert into `web_p_panel_grupo_track` (`pkpanel`, `fecha`, `pk_valor`, `usuario`) VALUES ('"+str(t_pkpanel)+"', '"+str(t_fecha)+"', '"+str(t_pkval)+"', '"+str(t_usuario)+"')"
         self.mysql_con.ejecutar(sentencia)  
         
     def traer_panel_internos(self, pk):
@@ -1379,7 +1439,7 @@ class paneles:
         sentencia = "insert into `web_p_tareas_indi` (`pktarea`, `tarea`, `estado`, `user_destino`, `fecha`,`fecha_entrega`, `area`, `aprovado`) VALUES ('"+str(pktarea)+"', '"+str(tarea)+"', '0', '"+str(user_destino)+"', '"+str(fecha_ini)+"', '"+str(fecha_ent)+"', '"+str(area)+"', '0')"
         self.mysql_con.ejecutar(sentencia)    
     def traer_usuarios(self):
-        sentencia = 'select Usuario from usuario'
+        sentencia = 'select Usuario from usuario order by Usuario'
         return self.mysql_con.table(sentencia)        
     def traer_web_p_com_file(self, pknota):
         sentencia = 'select * from web_p_com_file where web_p_com_file.pknota = '+ str(pknota) + ' order by fecha'
@@ -1583,7 +1643,20 @@ class edocs:
 class cmpcampos:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
+
+
+    def camposXtabla(self, strEstructura):
+        sentencia = "SELECT camposxestructura .* from estructura, camposxestructura where camposxestructura.PkEstructura = estructura.PkEstructura and estructura.Nombre = '"+ str(strEstructura)+"'"
+        return self.mysql_con.table(sentencia)  
+
+    def tablasXmodulo(self, strmodulo):
+        sentencia = "SELECT estructura.* from estructura, modulo where modulo.PkModulo =estructura.PkModulo and modulo.Nombre = '"+str(strmodulo)+"'"
+        return self.mysql_con.table(sentencia)  
         
+    def procesos(self):
+        sentencia = "select * from modulo"
+        return self.mysql_con.table(sentencia)  
+
     def crear_camposxestructura(self, t_pkmodulo, t_pkcampo, t_fuente ,t_pkestructura, t_dataX ):
         sentencia = "INSERT INTO `camposxestructura` (`PkModulo`, `PkEstructura`, `PkCampo`, `TablaCampo`, `Posicion`, `Nombre`, `Descripcion`, `Anulado`, `Eliminable`, `Visible`, `X`, `Y`, `tamano`, `estilo`, `Modificable`, `Largo`, `largoweb`,`saltoweb`,`posicionweb`,`posicionConsulta` ) VALUES ('" + str(t_pkmodulo) + "', '" + str(t_pkestructura) + "', '" + str(t_pkcampo) + "', '"+str(t_fuente)+"', '" + str(t_dataX['Posicion']) + "', '" + str(t_dataX['Nombre']) + "', '" + str(t_dataX['Descripcion']) + "', '" + str(t_dataX['Anulado']) + "', '"+str(t_dataX['Eliminable'])+"', '"+str(t_dataX['Visible'])+"', '" + str(t_dataX['X']) + "', '" + str(t_dataX['Y']) + "', '" + str(t_dataX['tamano']) + "', '" + str(t_dataX['estilo']) + "', '" + str(t_dataX['Modificable']) + "', '" + str(t_dataX['largo']) + "', '" + str(t_dataX['largoweb']) + "', '" + str(t_dataX['saltoweb']) + "', '" + str(t_dataX['posicionweb']) + "', '" + str(t_dataX['posicionConsulta']) + "')"
         self.mysql_con.ejecutar(sentencia)
@@ -1629,10 +1702,16 @@ class cmpcampos:
 
 
 
-    def crear_cmpnumsimple(self, t_pkestructura, t_dataCampo ):
-        sentencia = "INSERT INTO `cmpnumsimple` (`NumDecimales`, `Menor`, `Mayor`, `Unico`, `PkEstructura`, `Nombre`, `Descripcion`, `Predeterminado`) VALUES ('" + str(t_dataCampo['NumDecimales']) + "', '" + str(t_dataCampo['Menor']) + "', '" + str(t_dataCampo['Mayor']) + "', '" + str(t_dataCampo['Unico']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_dataCampo['Predeterminado']) + "')"
-        self.mysql_con.ejecutar(sentencia)
+    def crear_cmpnumsimple_agregarPredeterminado(self, t_pkestructura, t_dataCampo ):
+        self.mysql_con.ejecutar('alter table cmpnumsimple add COLUMN Predeterminado DECIMAL(12,2)')
 
+
+    def crear_cmpnumsimple(self, t_pkestructura, t_dataCampo ):
+        try:
+            sentencia = "INSERT INTO `cmpnumsimple` (`NumDecimales`, `Menor`, `Mayor`, `Unico`, `PkEstructura`, `Nombre`, `Descripcion`, `Predeterminado`) VALUES ('" + str(t_dataCampo['NumDecimales']) + "', '" + str(t_dataCampo['Menor']) + "', '" + str(t_dataCampo['Mayor']) + "', '" + str(t_dataCampo['Unico']) + "', '" + str(t_pkestructura) + "', '" + str(t_dataCampo['Nombre']) + "', '" + str(t_dataCampo['Descripcion']) + "', '" + str(t_dataCampo['Predeterminado']) + "')"
+            self.mysql_con.ejecutar(sentencia)
+        except:
+            pass
         return self.mysql_con.table("Select * from cmpnumsimple where PkEstructura = '"+ str(t_pkestructura)+"' and Nombre = '"+ str(t_dataCampo['Nombre'])+"'")  
 
     def crear_cmpnumsecuencial(self, t_pkestructura, t_dataCampo ):
@@ -1664,6 +1743,7 @@ class cmpcampos:
 
         for a in t_dataCampo['condiciones']:
             sentencia = "INSERT INTO `cmpformuladetallecondicion` (`PkCampo`, `TablaOrigen`, `Campo`, `Operador`, `Valor`, `Tipo`) VALUES ('" + str(pkcampo[0]['PkCampo']) + "', '" + str(a['TablaOrigen']) + "', '" + str(a['Campo']) + "', '" + str(a['Operador']) + "', '" + str(a['Valor']) + "', '" + str(a['Tipo']) + "')"
+            self.mysql_con.ejecutar(sentencia)
         return pkcampo
 
     def crear_cmpfecha(self, t_pkestructura, t_dataCampo ):

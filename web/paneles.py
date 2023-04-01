@@ -31,6 +31,29 @@ import sys
 
 from dateutil import parser
 
+
+
+def cambiarfechaTag(request, Id_empresa, usuario, t_pkpanel, fecha_new, fecha_old, T_usuario, T_valor): 
+    db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+
+    # se deberia mover el tag en web_p_panel_grupo_track de la fecha a la nueva hay usuario y pkpanel
+    #borrar las fechas en web_p_panel_grupo_track
+    db.ejecutar_scrips("delete from web_p_panel_grupo_track where fecha = '"+str(fecha_old)+"' and upper(usuario) = upper('"+str(T_usuario)+"') and pk_valor  = '"+str(T_valor)+"' and pkpanel  = '"+str(t_pkpanel)+"'")
+    db.ejecutar_scrips("delete from web_p_panel_grupo_track where fecha = '"+str(fecha_new)+"' and upper(usuario) = upper('"+str(T_usuario)+"') and pk_valor  = '"+str(T_valor)+"' and pkpanel  = '"+str(t_pkpanel)+"'")
+    ## insertar nuevo tag
+    db.ejecutar_scrips("INSERT INTO `web_p_panel_grupo_track` (`pkpanel`, `fecha`, `pk_valor`, `usuario`) VALUES ('"+str(t_pkpanel)+"', '"+str(fecha_new)+"', '"+str(T_valor)+"', '"+str(T_usuario)+"')")
+
+    # traer los script de actualizar tag de la tabla *web_p_panel_grupos*
+    srcips = db.traer_cambiotag(t_pkpanel)
+
+    for query in srcips:
+        if query['cambiotag'] != '':
+            senten = str(query['cambiotag']).replace('@fecha_new@',fecha_new).replace('@fecha_old@',fecha_old).replace('@user@',T_usuario).replace('@pk@',T_valor)
+            db.ejecutar_scrips(senten)
+
+    return {'t_pkpanel':t_pkpanel, 'fecha_new':fecha_new, 'fecha_old':fecha_old, 'T_usuario':T_usuario, 'T_valor':T_valor}
+
+
 def ficha_new(request, Id_empresa): 
     db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     fichaprevia = db.ficha_existe(request.POST.getlist('t_pkpanle')[0],request.POST.getlist('t_fecha')[0],request.POST.getlist('t_pkval')[0], request.POST.getlist('usuario')[0])

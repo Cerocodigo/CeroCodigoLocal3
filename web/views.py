@@ -78,6 +78,39 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 
 
 
+
+def PanelCambioTag(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            panel = web.paneles
+            Respuesta = panel.cambiarfechaTag(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0], request.POST.getlist('t_pkpanel')[0], request.POST.getlist('fecha_new')[0], request.POST.getlist('fecha_old')[0], request.POST.getlist('T_usuario')[0], request.POST.getlist('T_valor')[0])
+            context = Respuesta
+            return JsonResponse(context)
+
+def actualizar_campos(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            erp_data = web.cmpadmin
+            Respuesta = erp_data.CampoXTabla(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('tabla')[0])
+            context = Respuesta
+            return JsonResponse(context)
+
+def actualizar_tablas(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            erp_data = web.cmpadmin
+            Respuesta = erp_data.tablasXmodulo(request,request.POST.getlist('Id_empresa')[0], request.POST.getlist('modulo')[0])
+            context = Respuesta
+            return JsonResponse(context)
+
+def actualizar_procesos(request):
+    if request.method == 'POST':
+        if request.session.has_key('conn_ip'):
+            erp_data = web.cmpadmin
+            Respuesta = erp_data.procesos_todos(request, request.POST.getlist('Id_empresa')[0])
+            context = Respuesta
+            return JsonResponse(context)
+
 def offline_inicial(request):
     if request.method == 'POST':
         if request.session.has_key('conn_ip'):
@@ -136,7 +169,7 @@ def logExterno(request):
                 negocio_nom = db.traer_negocio(request.POST.getlist('Id_empresa')[0])
                 dd = datetime.datetime.now().strftime("%Y-%m-%d")
                 web_calendar = ext.acceso_externoCalen_inicio(request, negocio_nom, request.POST.getlist('Id_empresa')[0])
-                context = {'web_calendar':web_calendar, 'Existe':'Si','usuarioExterno':request.POST.getlist('t_inputUsuario')[0],'cal_accrap':Respuesta['cal_accrap'], 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'fecha':dd}
+                context = {'web_calendar':web_calendar, 'Existe':'Si','usuarioExterno':request.POST.getlist('t_inputUsuario')[0],'cal_accrap':Respuesta['cal_accrap'], 't_anio':str(datetime.datetime.now().strftime("%Y")),'t_mes':str(datetime.datetime.now().strftime("%m")), 'fecha':dd, 'datos_accose':Respuesta['datos_accose']}
                 return JsonResponse(context)
 
             if Respuesta['Existe'] == 'No':     
@@ -177,13 +210,13 @@ def externo(request, negocio):
                     #acceso = ext.acceso_externo(request, negocio)
                     from datetime import datetime
                     fechaCalendario = datetime.strptime(request.POST.getlist('fecha')[0].replace('T', ' '), '%Y-%m-%d') 
-                    context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0]}
+                    context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0], 'DisplayCalendario':Respuesta['datos_accose'][0]['DisplayCalendario']}
                     return render(request, 'home_erp_externo.html', context)
             if Respuesta['Existe'] == 'Si': ##log in raro
                 #acceso = ext.acceso_externo(request, negocio)
                 from datetime import datetime
                 fechaCalendario = datetime.strptime(request.POST.getlist('fecha')[0].replace('T', ' '), '%Y-%m-%d')
-                context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0]}
+                context = {'usuarioExterno':request.POST.getlist(acceso[0]['Usuario'])[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0], 'DisplayCalendario':Respuesta['datos_accose'][0]['DisplayCalendario']}
                 return render(request, 'home_erp_externo.html', context)
         if request.POST.getlist('ingreso')[0] == 'directo':
             #busca directo el usuario sobre lat abla 
@@ -195,7 +228,7 @@ def externo(request, negocio):
 
                 fechaCalendario = datetime.strptime(request.POST.getlist('fecha')[0].replace('T', ' '), '%Y-%m-%d')
                 #dd = datetime.datetime.now().strftime("%Y-%m-%d")
-                context = {'usuarioExterno':request.POST.getlist('t_inputUsuario')[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0]}
+                context = {'usuarioExterno':request.POST.getlist('t_inputUsuario')[0],'Empresa':negocio, 'paneles':Respuesta['paneles'], 'cal_accrap':Respuesta['cal_accrap'], 'Id_empresa':negocio, 'web_idioma':'esp', 't_anio':str(fechaCalendario.strftime("%Y")),'t_mes':str(fechaCalendario.strftime("%m")), 'fecha':fechaCalendario.strftime("%Y-%m-%d %H:%M:%S"), 'calen_tipo':request.POST.getlist('calendario')[0], 'DisplayCalendario':Respuesta['datos_accose'][0]['DisplayCalendario']}
                 return render(request, 'home_erp_externo.html', context)
             if Respuesta['Existe'] == 'No':     
                 negocio_nom = db.traer_negocio(negocio)
@@ -870,6 +903,8 @@ def traer_ficha_valores(request):
             Respuesta = paneles_data.traer_sub_paneles(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('usuario')[0], request.POST.getlist('t_pkpanel')[0], request.POST.getlist('pkvalor')[0], request.POST.getlist('v_fecha')[0], request.POST.getlist('v_user')[0])  
             context = Respuesta
             return JsonResponse(context)
+
+
 
 def traer_ficha_imagen(request):
     if request.method == 'POST':
@@ -1901,7 +1936,8 @@ def consulta_erp(request, idioma):
                     estados = erp_data.traer_registro_estados(request, request.POST.getlist('Id_empresa')[0], traer_campos)
                     context.update({'estados':estados})
                 else:
-                    context.update({'estados':0})
+                    estados = erp_data.traer_registro_estados(request, request.POST.getlist('Id_empresa')[0], traer_campos)
+                    context.update({'estados':estados})
             return JsonResponse(context)
         else:
             context = {'llego':'no llego'}
@@ -2119,6 +2155,7 @@ def log_erp(request, idioma):
 
         Respuesta = erp_data.validar_user_empresa(request, l_inputEmpresa, l_inputUsuario, l_inputPassword)
         if (Respuesta[0] == "1"):
+            erp_data.actualizar_base(request, l_inputEmpresa)
             dd = datetime.datetime.now().strftime("%Y-%m-%d")
             idioma_html = db.traer_platilla('menu', request.POST.getlist('idioma')[0])    
             datos_cuenta = {'datos_cuentas':Respuesta[13],'valores_cuentas':Respuesta[14],'val_pendiente':Respuesta[15],'dias_pendientes':Respuesta[16]}            

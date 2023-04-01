@@ -10,6 +10,7 @@ import re
 from shutil import register_unpack_format
 import sys
 import smtplib, ssl
+import re
 
 import unicodedata
 import datetime
@@ -50,6 +51,10 @@ from datetime import datetime
 
 from datetime import date
 
+
+def actualizar_base(request, Id_empresa):
+    db = web.con_db.versiones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    db.actualizar()
 
 def offline_inicial(request, Id_empresa, usuario):
     db = web.con_db.offline(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -220,7 +225,7 @@ def menu_add_proceso(request, Id_empresa, nombre, tipo, cabecera, usuario):
         else:
             procesos = db.modulo_crear_modulo(nombre.replace(' ','_'), nombre, cabecera, max[0]['max'], 'Registro') 
             db.estruc_crear_tabla(nombre.replace(' ','_')) 
-            estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_'), nombre)
+            estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_'), nombre, 0)
             cmp = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
             t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'Pk'+nombre.replace(' ','_')}
             campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
@@ -228,22 +233,24 @@ def menu_add_proceso(request, Id_empresa, nombre, tipo, cabecera, usuario):
             cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
 
             if tipo == 'Detalle' or tipo == 'SubDetalle':
-                estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_')+'Detalle', nombre+'Detalle')
+                estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_')+'Detalle', nombre+'Detalle', estructura[0]['PkEstructura'])
                 db.estruc_crear_tabla(nombre.replace(' ','_')+'Detalle') 
                 cmp = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
                 t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'Pk'+nombre.replace(' ','_') + 'Detalle'}
-                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)
+                cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)
                 t_dataX = {'Posicion':'0','Nombre':'Pk'+nombre.replace(' ','_') + 'Detalle','Descripcion':'Pk'+nombre + 'Detalle','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
                 cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
 
                 t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'PkCabecera'}
-                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)
+                db.estruc_crear_Campo(nombre.replace(' ','_')+'Detalle', 'PkCabecera', 'Entero','')
                 t_dataX = {'Posicion':'0','Nombre':'PkCabecera','Descripcion':'PkCabecera','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
                 cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
                 
             if tipo == 'SubDetalle':
 
-                estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_')+'DetalleDetalle', nombre+'DetalleDetalle')
+                estructura = db.modulo_crear_estructura( procesos[0]['PkModulo'], nombre.replace(' ','_')+'DetalleDetalle', nombre+'DetalleDetalle',estructura[0]['PkEstructura'])
                 db.estruc_crear_tabla(nombre.replace(' ','_')+'DetalleDetalle') 
                 cmp = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
                 t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'Pk'+nombre.replace(' ','_') + 'DetalleDetalle'}
@@ -252,7 +259,9 @@ def menu_add_proceso(request, Id_empresa, nombre, tipo, cabecera, usuario):
                 cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
 
                 t_data_tempo= {'ValorInicial':0,'Aumento':1,'Nombre': 'PkCabecera'}
-                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)            
+                campo = cmp.crear_cmpnumsecuencial(estructura[0]['PkEstructura'], t_data_tempo)      
+                db.estruc_crear_Campo(nombre.replace(' ','_')+'DetalleDetalle', 'PkCabecera', 'Entero','')
+      
                 t_dataX = {'Posicion':'0','Nombre':'PkCabecera','Descripcion':'PkCabecera','Anulado':'N','X':'0','Y':'0','tamano':'12','estilo':'Normal','Modificable':'Si','largo':'100','largoweb':'3','saltoweb':'','posicionweb':'arriba_izq','posicionConsulta':'0', 'Visible':'N', 'Eliminable':'N'}
                 cmp.crear_camposxestructura( procesos[0]['PkModulo'], campo[0]['PkCampo'], 'cmpnumsecuencial' ,estructura[0]['PkEstructura'], t_dataX )
             
@@ -586,7 +595,7 @@ def traer_datosuser_n(request, Id_empresa):
 def cmpnumsecuencial(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     estrucc  = db.traer_estructuras_porPk(request.POST.getlist('PkEstructura')[0])
-    senten = 'select max('+str(request.POST.getlist('Nombre')[0])+') + '+ str(request.POST.getlist('Aumento')[0]) +' as "result" from ' + str(estrucc[0]['Nombre']) 
+    senten = 'select COALESCE(max('+str(request.POST.getlist('Nombre')[0])+') + '+ str(request.POST.getlist('Aumento')[0]) +',1) as "result" from ' + str(estrucc[0]['Nombre']) 
     valor = db.cmpconso_ejecutar(senten)
     return {'cmpvalor':valor[0]['result'],'tag1':request.POST.getlist('id_tag_ajax')[0]}
 
@@ -704,7 +713,9 @@ def filtro(request, Id_empresa):
     campos_cab = db.traer_campos_por_pkestr_solo_visible_orden_consuWeb(request.POST.get('t_PkEstructura')) 
     sentencia_where = ''
     sentencia_select = ''
-    valore_filtro = request.POST.getlist('v_where_valor')[0].split(",")
+    #valore_filtro = request.POST.getlist('v_where_valor')[0].split(",")
+    valore_filtro = re.split(';|,| ', request.POST.getlist('v_where_valor')[0])
+
     if request.POST.getlist('v_campo')[0] == 'Todos':
         for xx in valore_filtro:
             sentencia_select = ''
@@ -2457,6 +2468,8 @@ def validar_user_empresa_soloval(request, Id_empresa, usuarios, clave):
     else:
         return 'no'        
 
+
+            
 
 
 def validar_user_empresa(request, Id_empresa, usuario, clave):

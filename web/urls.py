@@ -52,6 +52,9 @@ urlpatterns = [
     url(r'^archi_car_home', views.archi_car_home), #'todo.views.edit_lists', name='edit_lists'            
     url(r'^actualiza_campo', views.actualiza_erp),  
     url(r'^actualizar_docs', views.actualizar_docs),
+    url(r'^actualizar_tablas', views.actualizar_tablas),
+    url(r'^actualizar_campos', views.actualizar_campos),
+    url(r'^actualizar_procesos', views.actualizar_procesos),
     url(r'^acc_usuario', views.acc_usuario),
     url(r'^acc_por_esp', views.acc_por_esp),
     url(r'^acc_por_mas', views.acc_por_mas),
@@ -154,6 +157,7 @@ urlpatterns = [
     url(r'^paneles_carga_pkpanel', views.paneles_carga_pkpanel),
     url(r'^paneles_carga', views.paneles_carga),
     url(r'^paneles_items', views.paneles_items),
+    url(r'^PanelCambioTag', views.PanelCambioTag),
     url(r'^procesar_import_previa', views.procesar_import_previa),
     url(r'^procesar_import_proceso', views.procesar_import_proceso),
     url(r'^email_ficha_server', views.email_ficha_server),

@@ -42,6 +42,21 @@ from datetime import datetime
 from datetime import date
 
 
+def CampoXTabla(request, Id_empresa, estructura):
+    db = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    campos= db.camposXtabla(estructura)
+    return {'campos': campos}
+
+def tablasXmodulo(request, Id_empresa, modulo):
+    db = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    tabla=  db.tablasXmodulo(modulo)
+    return {'tabla': tabla}
+
+def procesos_todos(request, Id_empresa):
+    db = web.con_db.cmpcampos(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    modulos =  db.procesos()
+    return {'modulos': modulos}
+
 def cmpadmin_grabar(dat_conn, zona, es_nuevo, pkid, fuente, t_pkmodulo, t_pkestructura, t_dataCampo, t_dataX, tabla_nombre, cmp_nombre, cmp_display):
     db = web.con_db.cmpcampos(dat_conn['conn_user'],dat_conn['conn_pass'],dat_conn['conn_base'],dat_conn['conn_ip']) 
 
@@ -57,6 +72,9 @@ def cmpadmin_grabar(dat_conn, zona, es_nuevo, pkid, fuente, t_pkmodulo, t_pkestr
 
     if fuente == 'cmpnumsimple':
         new_pkcampo = db.crear_cmpnumsimple(t_pkestructura, t_dataCampo)
+        if len(new_pkcampo) == 0:
+            db.crear_cmpnumsimple_agregarPredeterminado(t_pkestructura, t_dataCampo)
+            new_pkcampo = db.crear_cmpnumsimple(t_pkestructura, t_dataCampo)
 
     if fuente == 'cmpnumsecuencial':
         new_pkcampo = db.crear_cmpnumsecuencial(t_pkestructura, t_dataCampo)

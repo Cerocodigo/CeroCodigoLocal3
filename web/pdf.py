@@ -60,7 +60,7 @@ def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, 
                 pdf.setFont('Helvetica', int(etiqueta['Tamano']), leading = None)
                 pdf.drawString(float(etiqueta['X'])*cm,  (float(plantila[0]['Largo']) - float(etiqueta['Y'])+ float(segmento['AlturaInicial']) ) *cm   , etiqueta['Nombre'])
               if etiqueta['TipoLetra'] == 'Bold' or etiqueta['TipoLetra'] == 'bold':
-                pdf.setFont('Helvetica', int(etiqueta['Tamano']), leading = None)
+                pdf.setFont('Helvetica-Bold', int(etiqueta['Tamano']), leading = None)
                 pdf.drawString(float(etiqueta['X'])*cm,  (float(plantila[0]['Largo']) - float(etiqueta['Y'])+ float(segmento['AlturaInicial']) ) *cm   , etiqueta['Nombre'])
               
             for campo in CamposCabecera[segmento['PkSegmento']]:
@@ -78,44 +78,45 @@ def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, 
                 if type(txt) == float:
                   txt = str(txt)
                 limite  = campo['limite'].split(',')
-                if len(txt) >= int(limite[0]):
-                    for linea in range(0,int(limite[1])):
-#///////////////////////////////////////////////
+                if txt is not None:
+                  if len(txt) >= int(limite[0]):
+                      for linea in range(0,int(limite[1])):
+  #///////////////////////////////////////////////
 
-                      if len(txt) > int(limite[0]):
+                        if len(txt) > int(limite[0]):
 
 
-                        if str(txt[int(limite[0])]) == ' ':
-                          txt_temp = str(txt[0:int(limite[0])])
-                          txt = txt[int(limite[0]):]
+                          if str(txt[int(limite[0])]) == ' ':
+                            txt_temp = str(txt[0:int(limite[0])])
+                            txt = txt[int(limite[0]):]
+                          else:
+                            txt_temp = str(txt[0:int(limite[0])])
+                            indice = 0
+                            for letra in txt[int(limite[0]):]:
+                              if letra != ' ':
+                                txt_temp = txt_temp + letra
+                              else:
+                                break
+                              indice+=1
+                            txt = txt[int(limite[0]) + indice + 1 :]
+                            
+                          if campo['Tipo'] == 'Derecha':
+                            pdf.drawRightString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm   , txt_temp)
+                          else:
+                            pdf.drawString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm   ,  txt_temp)
                         else:
-                          txt_temp = str(txt[0:int(limite[0])])
-                          indice = 0
-                          for letra in txt[int(limite[0]):]:
-                            if letra != ' ':
-                              txt_temp = txt_temp + letra
-                            else:
-                              break
-                            indice+=1
-                          txt = txt[int(limite[0]) + indice + 1 :]
-                          
-                        if campo['Tipo'] == 'Derecha':
-                          pdf.drawRightString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm   , txt_temp)
-                        else:
-                          pdf.drawString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm   ,  txt_temp)
+                          if campo['Tipo'] == 'Derecha':
+                            pdf.drawRightString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm, txt)
+                          else:
+                            pdf.drawString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm, txt)
+                          break
+                        #////////////////////////////////////
+                  else:
+                      if campo['Tipo'] == 'Derecha':
+                          pdf.drawRightString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y'])+ float(segmento['AlturaInicial']) ) *cm   , txt)
                       else:
-                        if campo['Tipo'] == 'Derecha':
-                          pdf.drawRightString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm, txt)
-                        else:
-                          pdf.drawString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y']) - (linea * 0.5) + float(segmento['AlturaInicial']) ) *cm, txt)
-                        break
-                      #////////////////////////////////////
-                else:
-                    if campo['Tipo'] == 'Derecha':
-                        pdf.drawRightString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y'])+ float(segmento['AlturaInicial']) ) *cm   , txt)
-                    else:
-                        pdf.drawString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y'])+ float(segmento['AlturaInicial']) ) *cm   , txt)
-        
+                          pdf.drawString(float(campo['X'])*cm,  (float(plantila[0]['Largo']) - float(campo['Y'])+ float(segmento['AlturaInicial']) ) *cm   , txt)
+          
         if segmento['Tipo'] == 'Detalle':
             ##cabeceras
             for cabeceras in CamposDetalle[segmento['PkSegmento']]:
@@ -163,7 +164,7 @@ def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, 
                 pdf.setFont('Helvetica', int(etiqueta['Tamano']), leading = None)
                 pdf.drawString(float(etiqueta['X'])*cm,  (float(plantila[0]['Largo']) - float(etiqueta['Y']) -  altura_pie ) *cm   , etiqueta['Nombre'])
               if etiqueta['TipoLetra'] == 'bold':
-                pdf.setFont('Helvetica', int(etiqueta['Tamano']), leading = None)
+                pdf.setFont('Helvetica-Bold', int(etiqueta['Tamano']), leading = None)
                 pdf.drawString(float(etiqueta['X'])*cm,  (float(plantila[0]['Largo']) - float(etiqueta['Y']) - altura_pie ) *cm   , etiqueta['Nombre'])
               if etiqueta['TipoLetra'] == 'FirmaDirecta':
                   if etiqueta['Nombre'] == '@usuario@':
@@ -173,7 +174,7 @@ def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, 
                       qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                       qr.drawOn(pdf, float(etiqueta['X'])*cm, (float(plantila[0]['Largo']) - (float(etiqueta['Y']) +  float(altura_pie))) *cm)
                       pdf.drawString((float(etiqueta['X'])+ 2)*cm,  (float(plantila[0]['Largo']) - (float(etiqueta['Y']) -1.5 + float(altura_pie)) ) *cm   , 'Firmado Electronico')
-                      pdf.drawString((float(etiqueta['X'])+ 2) *cm,  (float(plantila[0]['Largo']) - (float(etiqueta['Y']) -1  + float(altura_pie)) ) *cm   , certify[0]['usuario'])
+                      pdf.drawString((float(etiqueta['X'])+ 2) *cm,  (float(plantila[0]['Largo']) - (float(etiqueta['Y']) -1  + float(altura_pie)) ) *cm   , certify[0]['firma'])
                   else:
                     certify = firma.traerdatos_usuario(request, etiqueta['Nombre'], request.POST.getlist('Id_empresa')[0])
                     if len(certify) >0:
@@ -181,7 +182,7 @@ def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, 
                       qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                       qr.drawOn(pdf, float(etiqueta['X'])*cm, (float(plantila[0]['Largo']) - (float(etiqueta['Y']) +  float(altura_pie))) *cm)
                       pdf.drawString((float(etiqueta['X'])+ 2)*cm,  (float(plantila[0]['Largo']) - (float(etiqueta['Y']) -1.5 + float(altura_pie)) ) *cm   , 'Firmado Electronico')
-                      pdf.drawString((float(etiqueta['X'])+ 2) *cm,  (float(plantila[0]['Largo']) - (float(etiqueta['Y']) -1  + float(altura_pie)) ) *cm   , certify[0]['usuario'])
+                      pdf.drawString((float(etiqueta['X'])+ 2) *cm,  (float(plantila[0]['Largo']) - (float(etiqueta['Y']) -1  + float(altura_pie)) ) *cm   , certify[0]['firma'])
               
 
 
@@ -201,7 +202,7 @@ def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, 
                       qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                       qr.drawOn(pdf, float(campo['X'])*cm, (float(plantila[0]['Largo']) - (float(campo['Y']) +  float(altura_pie))) *cm)
                       pdf.drawString((float(campo['X'])+ 2)*cm,  (float(plantila[0]['Largo']) - (float(campo['Y']) -1.5 + float(altura_pie)) ) *cm   , 'Firmado Electronico')
-                      pdf.drawString((float(campo['X'])+ 2) *cm,  (float(plantila[0]['Largo']) - (float(campo['Y']) -1  + float(altura_pie)) ) *cm   , certify[0]['usuario'])
+                      pdf.drawString((float(campo['X'])+ 2) *cm,  (float(plantila[0]['Largo']) - (float(campo['Y']) -1  + float(altura_pie)) ) *cm   , certify[0]['firma'])
               
                   else:
                     pdf.setFont('Helvetica', int(campo['Tamano']), leading = None)
@@ -956,7 +957,9 @@ def crear_pdf_panel_continua(request, Id_empresa):
                 for bloque in bloques:
                   if len(bloque) >= int(limite[0]):
                     txt = bloque
-                    for linea in range(0,int(limite[1])):
+
+                    #for linea in range(0,int(limite[1])):
+                    while txt != '':
                       if len(txt) > int(limite[0]):
                         if str(txt[int(limite[0])]) == ' ':
                           txt_temp = str(txt[0:int(limite[0])])
