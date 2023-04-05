@@ -193,6 +193,7 @@ urlpatterns = [
     url(r'^traer_ficha_valores', views.traer_ficha_valores), 
     url(r'^traer_ficha_imagen', views.traer_ficha_imagen), 
     url(r'^test_chart', views.test_chart),    
+    url(r'^test_iframe', views.test_iframe),    
     url(r'^usuario_autentificar/(?P<Clave_doc>[0-9]+)/', views.usuario_autentificar),
     url(r'^upload', views.upload),      
     url(r'^usuario_nuevo/(?P<Clave_val>[0-9]+)/', views.usuario_nuevo),
