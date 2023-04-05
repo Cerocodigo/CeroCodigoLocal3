@@ -1780,6 +1780,11 @@ def upload(request):
         return render(request, 'upload_form.html', context)
 
 
+def test_iframe(request):
+    context = {'aa' :"a"}
+    return render(request, 'test_iframe.html', context)
+
+
 def test_chart(request):
     context = {'aa' :"a"}
     return render(request, 'home_erp4.html', context)

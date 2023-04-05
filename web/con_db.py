@@ -1,16 +1,18 @@
 import web.mysql
 import datetime
 import logging
+import web.conss
 
 logger = logging.getLogger(__name__)
 #import web.MySQLdb
 class inter_login_LOGIN:
     def __init__(self,V_base):
         self.V_base=V_base
-        #self.mysql_con = web.mysql.class_mysql( "root", "123456789", "cerocodigoweb", "127.0.0.1")
-        #self.mysql_int = web.mysql.class_mysql( "root", "123456789", "mysql", "127.0.0.1")
-        self.mysql_con = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "cerocodigoweb", "107.170.92.160", '3306')
-        self.mysql_int = web.mysql.class_mysql( "cerocodigo", "AEx_1237458", "mysql", "107.170.92.160", '3306')
+        claves = web.conss.claves()
+        claves_con = claves.devolver_con()
+        self.mysql_con = web.mysql.class_mysql(claves_con[0],claves_con[1],claves_con[2],claves_con[3],claves_con[4])
+        claves_int = claves.devolver_int()
+        self.mysql_int = web.mysql.class_mysql( claves_int[0],claves_int[1],claves_int[2],claves_int[3],claves_con[4])
         #test de branch
 
             
@@ -166,7 +168,9 @@ class inter_login_LOGIN:
             return self.mysql_con.table("select * from ing_demo where DATEDIFF(now(),Fecha) < 30 ")
 
 class externo_cliente:
-    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip, conn_puerto):
+        if conn_puerto == 'null':
+            conn_puerto = '3306'
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
     
     def paneles_externo_tabla(self, sentencia):

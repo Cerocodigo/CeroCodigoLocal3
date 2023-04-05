@@ -2494,7 +2494,7 @@ def validar_user_empresa(request, Id_empresa, usuario, clave):
             request.session['conn_port'].update({Id_empresa:dbEmpresa[0]['conn_port']})        
             request.session.save()
             log_empresa = dbEmpresa[0]['Negocio']
-            db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+            db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa],request.session['conn_port'][Id_empresa]) 
             db_cliente.crear_hash(usuario, hash_clave)
             usuario_ok = db_cliente.traer_usuario(usuario, hash_clave)
             if len(usuario_ok) == 1:
