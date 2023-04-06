@@ -1200,7 +1200,7 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
             if (Response["campos_cab"][x]["TablaCampo"] == "cmparchivo") {
   
               //div_c_t = div_c_t + '<input type="file" id="'+ ID_TAG + '" class="form-control col-sm-' + Response["campos_cab"][x]["largoweb"] + '" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-              div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+              div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
               div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
               div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
@@ -1448,7 +1448,7 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
                 if (Response["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
                   if (Response["func_det"][Response["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
   
-                    div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                    div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                     altura_mini = 125
   
@@ -1498,7 +1498,7 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
                 if (Response["campos_det"][x]["TablaCampo"] == "cmparchivo") {
   
                   //div_campos = div_campos + '<input type="file" id="'+id_tag_detalle +'" class="form-control" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-                  div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                  div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                   div_campos = div_campos + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
                   div_campos = div_campos + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'
@@ -2052,7 +2052,7 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
             if (Response["campos_cab"][x]["TablaCampo"] == "cmparchivo") {
   
               //div_c_t = div_c_t + '<input type="file" id="'+ ID_TAG + '" class="form-control col-sm-' + Response["campos_cab"][x]["largoweb"] + '" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-              div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+              div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
               div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
               div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
@@ -2300,7 +2300,7 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
                 if (Response["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
                   if (Response["func_det"][Response["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
   
-                    div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                    div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                     altura_mini = 125
   
@@ -2350,7 +2350,7 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
                 if (Response["campos_det"][x]["TablaCampo"] == "cmparchivo") {
   
                   //div_campos = div_campos + '<input type="file" id="'+id_tag_detalle +'" class="form-control" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-                  div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                  div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                   div_campos = div_campos + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
                   div_campos = div_campos + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'

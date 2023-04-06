@@ -129,13 +129,13 @@ function buscar_referencia_detalle_enter(campo) {
     
                   if (temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
     
-                    inn_html = '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]] + '" alt="image" value="0">' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
+                    inn_html = '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]] + '" alt="image" value="0">' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
     
     
                     document.getElementById(ID_TAG + "_label").innerHTML = inn_html
-                    document.getElementById(ID_TAG + "_label").href = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
+                    document.getElementById(ID_TAG + "_label").href = '/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
     
-                    document.getElementById(ID_TAG + "_img").src = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
+                    document.getElementById(ID_TAG + "_img").src = '/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
     
                   } else {
                     if (temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Fecha Tiempo') {
@@ -431,13 +431,13 @@ function buscar_referencia_detalle_enter(campo) {
 
               if (temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
 
-                inn_html = '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]] + '" alt="image" value="0">' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
+                inn_html = '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]] + '" alt="image" value="0">' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
 
 
                 document.getElementById(ID_TAG + "_label").innerHTML = inn_html
-                document.getElementById(ID_TAG + "_label").href = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
+                document.getElementById(ID_TAG + "_label").href = '/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
 
-                document.getElementById(ID_TAG + "_img").src = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
+                document.getElementById(ID_TAG + "_img").src = '/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Sentencia"]]
 
               } else {
                 if (temp_int["func_det"][temp_int["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Fecha Tiempo') {

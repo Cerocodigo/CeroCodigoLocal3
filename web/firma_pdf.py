@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.serialization import pkcs12
 from endesive.pdf import cms
 import web.con_db
 
+import web.pdf
 
 
 
@@ -36,11 +37,21 @@ def firmasxUsuarios(request, usuario, Id_empresa):
 
 def firmasxGrabar(request, Id_empresa, usuario):
     db = web.con_db.firmas(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    firmar = json.loads(request.POST.getlist('firmas')[0])    
-    for firma in firmar:
-        db.Firma_actualizar(firma['Certy'], firma['Clave'], usuario)
+    firmas = json.loads(request.POST.getlist('firmas')[0])    
+    clasePdf = web.pdf
+    dbusuario = web.con_db.Usuarios(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    usuario = dbusuario.Usuario(usuario)
 
-    context = {'ok':'si'}
+    PdfPruebaFirma = clasePdf.prueba(request.POST.getlist('Id_empresa')[0])
+    display = "Firmado por " + str(usuario[0]['Nombre']) + " " + str(usuario[0]['Apellido'])
+    for firma in firmas:
+        datos_firma = [{'display':display,'certificado':firma['Certy'],'clave':firma['Clave']}]
+        pdf_fianl = firmar(PdfPruebaFirma[0], Id_empresa , datos_firma)     
+        if pdf_fianl[1] == "ok":#ok
+            db.Firma_actualizar(firma['Certy'], firma['Clave'], usuario)
+            context = {'ok':'si'}
+        else:#no ok
+            context = {'ok':'no', 'msg':pdf_fianl[2]}
     return context
 
 
@@ -194,4 +205,4 @@ def firmar(pdffile, Id_empresa, certificado):
     except FileNotFoundError:
         return [fname,'no','FileNotFoundError: firma no se ecuentra ' + certify['certificado']]
     except Exception as errorte:
-        return [fname,'no', ''+errorte.strerror+': '+certify['certificado']+'/']
+        return [fname,'no', ''+str(errorte)+': '+certify['certificado']+'/']

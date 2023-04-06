@@ -241,7 +241,7 @@ function mas(id_tab) {
       if (Response["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
 
         if (Response["func_det"][Response["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
-          fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+          fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
           altura_mini = 125
           if (Response["func_det"][Response["campos_det"][x]["Nombre"]][0]["Modificable"] == 'N') {
             fila = fila + '</div></div>'
@@ -308,7 +308,7 @@ function mas(id_tab) {
       if (Response["campos_det"][x]["TablaCampo"] == "cmparchivo") {
         //fila = fila + '<input type="file" id="' + id_tag +'" class="form-control" value="'+ valor_campo +'" style="height: 25px;font-size: 11px;">'
 
-        fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+        fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
 
         fila = fila + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
         fila = fila + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'
@@ -662,7 +662,7 @@ function massub(id_tab, id_det) {
       if (Response["campos_subdet"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
 
         if (Response["func_subdet"][Response["campos_subdet"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
-          fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+          fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
           altura_mini = 125
           if (Response["func_subdet"][Response["campos_subdet"][x]["Nombre"]][0]["Modificable"] == 'N') {
             fila = fila + '</div></div>'
@@ -712,7 +712,7 @@ function massub(id_tab, id_det) {
       if (Response["campos_subdet"][x]["TablaCampo"] == "cmparchivo") {
         //fila = fila + '<input type="file" id="' + id_tag +'" class="form-control" value="'+ valor_campo +'" style="height: 25px;font-size: 11px;">'
 
-        fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+        fila = fila + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%; display: block;" id="' + id_tag + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
 
         fila = fila + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
         fila = fila + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'
@@ -823,7 +823,7 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
             for (dd = 0; dd < dict_pestalla[id_dic]["plantilla_pdf"]["plantillasMain"].length; dd++) {
               if(dict_pestalla[id_dic]["plantilla_pdf"]['plantillasfirmas'] == 'Si'){
                 adir = dict_pestalla[id_dic]['tabla_cab']['Nombre']+ dict_pestalla[id_dic]['tabla_cab']['PkModulo'] + '_' + dict_pestalla[id_dic]['valores_cab'][0]['Pk'+dict_pestalla[id_dic]['tabla_cab']['Nombre']] + dict_pestalla[id_dic]["plantilla_pdf"]['plantillasMain'][0]['Descripcion']
-                div_botones = div_botones + '<a href="https://www.cerocodigo.com/media/firma/PDF/' + web_Id_empresa + '/'+adir+'" target="_blank" style="font-size: 11px;">'
+                div_botones = div_botones + '<a href="/media/firma/PDF/' + web_Id_empresa + '/'+adir+'" target="_blank" style="font-size: 11px;">'
                 div_botones = div_botones + '<button type="button" class="btn bg-blue btn-flat margin"><span>' + dict_pestalla[id_dic]["plantilla_pdf"]["plantillasMain"][dd]['Nombre'] + '</span></button>'
                 div_botones = div_botones + '</a>'
   
@@ -1189,7 +1189,7 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
   
               if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
                 
-                div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                 if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0]["Modificable"] == 'S') {
                   div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'  
@@ -1264,8 +1264,8 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
   
   
                 div_c_t = div_c_t + '<div class="image view view-first">'
-                div_c_t = div_c_t + '<a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;">'
-                div_c_t = div_c_t + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">'
+                div_c_t = div_c_t + '<a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;">'
+                div_c_t = div_c_t + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">'
                 div_c_t = div_c_t + valor_campo + '</a>'
   
   
@@ -1276,16 +1276,16 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
                 
               }else{
                 if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0]["Ruta"] == 'PdfFirma') {
-                //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
-                div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
                   
                 div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;display: none">Cambiar</label>'
                 div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
   
                 }else{
   
-                  //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
-                  div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                  //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                  div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
     
                   div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
                   div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
@@ -1312,16 +1312,16 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
                 div_c_t = div_c_t + '<input type="text" id="' + ID_TAG + '" class="form-control col-sm-' + dict_pestalla[id_dic]["campos_cab"][x]["largoweb"] + '" value="' + valor_campo + '" ' + readonly + ' readonly="readonly" style="height: 25px;font-size: 11px; width: 70%;">'
   
                 if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Factura') {
-                  div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Facturas/'+ valor_campo +'" target="blank"> '
+                  div_c_t = div_c_t + '<a href="/e_docs/Facturas/'+ valor_campo +'" target="blank"> '
                 }
                 if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Retencion') {
-                  div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Retenciones/'+ valor_campo +'" target="blank"> '
+                  div_c_t = div_c_t + '<a href="/e_docs/Retenciones/'+ valor_campo +'" target="blank"> '
                 }
                 if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Nota credito') {
-                  div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Credito/'+ valor_campo +'" target="blank"> '
+                  div_c_t = div_c_t + '<a href="/e_docs/Credito/'+ valor_campo +'" target="blank"> '
                 }
                 if (dict_pestalla[id_dic]["func_cab"][dict_pestalla[id_dic]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Guia remision') {
-                  div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Guia/'+ valor_campo +'" target="blank"> '
+                  div_c_t = div_c_t + '<a href="/e_docs/Guia/'+ valor_campo +'" target="blank"> '
                 }
                 div_c_t = div_c_t + '<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>'
               }else{
@@ -1608,7 +1608,7 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
                 if (dict_pestalla[id_dic]["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
                   if (dict_pestalla[id_dic]["func_det"][dict_pestalla[id_dic]["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
   
-                    div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                    div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                     altura_mini = 125
   
@@ -1658,7 +1658,7 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
                 if (dict_pestalla[id_dic]["campos_det"][x]["TablaCampo"] == "cmparchivo") {
   
                   //div_campos = div_campos + '<input type="file" id="'+id_tag_detalle +'" class="form-control" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-                  div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                  div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
   
                   div_campos = div_campos + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
                   div_campos = div_campos + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'
@@ -2081,7 +2081,7 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
                 for (dd = 0; dd < dict_pestalla[id_dic]["plantilla_pdf"]["plantillasMain"].length; dd++) {
                   if(dict_pestalla[id_dic]["plantilla_pdf"]['plantillasfirmas'] == 'Si'){
                     adir = dict_pestalla[id_dic]['tabla_cab']['Nombre']+ dict_pestalla[id_dic]['tabla_cab']['PkModulo'] + '_' + dict_pestalla[id_dic]['valores_cab'][0]['Pk'+dict_pestalla[id_dic]['tabla_cab']['Nombre']] + dict_pestalla[id_dic]["plantilla_pdf"]['plantillasMain'][0]['Descripcion']
-                    div_botones = div_botones + '<a href="https://www.cerocodigo.com/media/firma/PDF/' + web_Id_empresa + '/'+adir+'" target="_blank" style="font-size: 11px;">'
+                    div_botones = div_botones + '<a href="/media/firma/PDF/' + web_Id_empresa + '/'+adir+'" target="_blank" style="font-size: 11px;">'
                     div_botones = div_botones + '<button type="button" class="btn bg-blue btn-flat margin"><span>' + dict_pestalla[id_dic]["plantilla_pdf"]["plantillasMain"][dd]['Nombre'] + '</span></button>'
                     div_botones = div_botones + '</a>'
       
@@ -2438,7 +2438,7 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
       
                   if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
                     
-                    div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                    div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
       
                     if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0]["Modificable"] == 'S') {
                       div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'  
@@ -2516,8 +2516,8 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
       
       
                     div_c_t = div_c_t + '<div class="image view view-first">'
-                    div_c_t = div_c_t + '<a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;">'
-                    div_c_t = div_c_t + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">'
+                    div_c_t = div_c_t + '<a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;">'
+                    div_c_t = div_c_t + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">'
                     div_c_t = div_c_t + valor_campo + '</a>'
       
       
@@ -2528,16 +2528,16 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
                     
                   }else{
                     if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0]["Ruta"] == 'PdfFirma') {
-                    //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
-                    div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                    //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                    div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
                       
                     div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;display: none">Cambiar</label>'
                     div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
       
                     }else{
       
-                      //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
-                      div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                      //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                      div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
         
                       div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
                       div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
@@ -2564,16 +2564,16 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
                     div_c_t = div_c_t + '<input type="text" id="' + ID_TAG + '" class="form-control col-sm-' + offlineResponde[pkmodulo]["campos_cab"][x]["largoweb"] + '" value="' + valor_campo + '" ' + readonly + ' readonly="readonly" style="height: 25px;font-size: 11px; width: 70%;">'
       
                     if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Factura') {
-                      div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Facturas/'+ valor_campo +'" target="blank"> '
+                      div_c_t = div_c_t + '<a href="/e_docs/Facturas/'+ valor_campo +'" target="blank"> '
                     }
                     if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Retencion') {
-                      div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Retenciones/'+ valor_campo +'" target="blank"> '
+                      div_c_t = div_c_t + '<a href="/e_docs/Retenciones/'+ valor_campo +'" target="blank"> '
                     }
                     if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Nota credito') {
-                      div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Credito/'+ valor_campo +'" target="blank"> '
+                      div_c_t = div_c_t + '<a href="/e_docs/Credito/'+ valor_campo +'" target="blank"> '
                     }
                     if (offlineResponde[pkmodulo]["func_cab"][offlineResponde[pkmodulo]["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Guia remision') {
-                      div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Guia/'+ valor_campo +'" target="blank"> '
+                      div_c_t = div_c_t + '<a href="/e_docs/Guia/'+ valor_campo +'" target="blank"> '
                     }
                     div_c_t = div_c_t + '<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>'
                   }else{
@@ -2860,7 +2860,7 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
                     if (offlineResponde[pkmodulo]["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
                       if (offlineResponde[pkmodulo]["func_det"][offlineResponde[pkmodulo]["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
       
-                        div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                        div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
       
                         altura_mini = 125
       
@@ -2910,7 +2910,7 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
                     if (offlineResponde[pkmodulo]["campos_det"][x]["TablaCampo"] == "cmparchivo") {
       
                       //div_campos = div_campos + '<input type="file" id="'+id_tag_detalle +'" class="form-control" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-                      div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                      div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
       
                       div_campos = div_campos + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
                       div_campos = div_campos + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'
@@ -3238,7 +3238,7 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
         for (dd = 0; dd < dict_pestalla[id_dic]["plantilla_pdf"]["plantillasMain"].length; dd++) {
           if(dict_pestalla[id_dic]["plantilla_pdf"]['plantillasfirmas'] == 'Si'){
             adir = dict_pestalla[id_dic]['tabla_cab']['Nombre']+ dict_pestalla[id_dic]['tabla_cab']['PkModulo'] + '_' + dict_pestalla[id_dic]['valores_cab'][0]['Pk'+dict_pestalla[id_dic]['tabla_cab']['Nombre']] + dict_pestalla[id_dic]["plantilla_pdf"]['plantillasMain'][0]['Descripcion']
-            div_botones = div_botones + '<a href="https://www.cerocodigo.com/media/firma/PDF/' + web_Id_empresa + '/'+adir+'" target="_blank" style="font-size: 11px;">'
+            div_botones = div_botones + '<a href="/media/firma/PDF/' + web_Id_empresa + '/'+adir+'" target="_blank" style="font-size: 11px;">'
             div_botones = div_botones + '<button type="button" class="btn bg-blue btn-flat margin"><span>' + dict_pestalla[id_dic]["plantilla_pdf"]["plantillasMain"][dd]['Nombre'] + '</span></button>'
             div_botones = div_botones + '</a>'
 
@@ -3644,7 +3644,7 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
 
           if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
             
-            div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+            div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
 
             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0]["Modificable"] == 'S') {
               div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'  
@@ -3724,8 +3724,8 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
 
 
             div_c_t = div_c_t + '<div class="image view view-first">'
-            div_c_t = div_c_t + '<a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;">'
-            div_c_t = div_c_t + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">'
+            div_c_t = div_c_t + '<a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;">'
+            div_c_t = div_c_t + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">'
             div_c_t = div_c_t + valor_campo + '</a>'
 
 
@@ -3736,16 +3736,16 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
             
           }else{
             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0]["Ruta"] == 'PdfFirma') {
-            //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
-            div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+            //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+            div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
               
             div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;display: none">Cambiar</label>'
             div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
 
             }else{
 
-              //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
-              div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+              //div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+              div_c_t = div_c_t + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + ID_TAG + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + ID_TAG + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
 
               div_c_t = div_c_t + '<label for="' + ID_TAG + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
               div_c_t = div_c_t + '<input type="file" id="' + ID_TAG + '_img_file" onchange="cambiar_imagen(' + ID_TAG + '_img)" style="display: none"></div></div>'
@@ -3772,16 +3772,16 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
             div_c_t = div_c_t + '<input type="text" id="' + ID_TAG + '" class="form-control col-sm-' + Response["campos_cab"][x]["largoweb"] + '" value="' + valor_campo + '" ' + readonly + ' readonly="readonly" style="height: 25px;font-size: 11px; width: 70%;">'
 
             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Factura') {
-              div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Facturas/'+ valor_campo +'" target="blank"> '
+              div_c_t = div_c_t + '<a href="/e_docs/Facturas/'+ valor_campo +'" target="blank"> '
             }
             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Retencion') {
-              div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Retenciones/'+ valor_campo +'" target="blank"> '
+              div_c_t = div_c_t + '<a href="/e_docs/Retenciones/'+ valor_campo +'" target="blank"> '
             }
             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Nota credito') {
-              div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Credito/'+ valor_campo +'" target="blank"> '
+              div_c_t = div_c_t + '<a href="/e_docs/Credito/'+ valor_campo +'" target="blank"> '
             }
             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][0][0]["Tipo"] == 'Guia remision') {
-              div_c_t = div_c_t + '<a href="https://www.cerocodigo.com/e_docs/Guia/'+ valor_campo +'" target="blank"> '
+              div_c_t = div_c_t + '<a href="/e_docs/Guia/'+ valor_campo +'" target="blank"> '
             }
             div_c_t = div_c_t + '<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>'
           }else{
@@ -4068,7 +4068,7 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
             if (Response["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
               if (Response["func_det"][Response["campos_det"][x]["Nombre"]][0]["Tipo"] == 'Imagen') {
 
-                div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+                div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
 
                 altura_mini = 125
 
@@ -4137,7 +4137,7 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
             if (Response["campos_det"][x]["TablaCampo"] == "cmparchivo") {
 
               //div_campos = div_campos + '<input type="file" id="'+id_tag_detalle +'" class="form-control" value="'+ valor_campo +'" '+ readonly +' style="height: 25px;font-size: 11px;">'
-              div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
+              div_campos = div_campos + '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;"><div class="image view view-first"><a id="' + id_tag_detalle + '_label" href="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" target="_blank" style="font-size: 11px;"><img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_detalle + '_img" src="/media/archivos/' + web_Id_empresa + '/' + valor_campo + '" alt="image" value="' + valor_campo + '">' + valor_campo + '</a>'
 
               div_campos = div_campos + '<label for="' + id_tag + '_img_file" class="btn bg-blue btn-flat margin btn-block btn-outlined" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">Cambiar</label>'
               div_campos = div_campos + '<input type="file" id="' + id_tag + '_img_file" onchange="cambiar_imagen(' + id_tag + '_img)" style="display: none"></div></div>'

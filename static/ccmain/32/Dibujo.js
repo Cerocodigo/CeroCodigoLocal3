@@ -40,11 +40,11 @@ function Subir_dibujo(dibujo, div_imagen, Filename ) {
 
     // })
     //fetch('http://127.0.0.1:8000/ccimagenes_post/', { method: 'POST', headers: headers, body: formData, mode: 'no-cors',}).then(response => {
-    fetch('https://www.cerocodigo.com/ccimagenes_post/', { method: 'POST', headers: headers, body: formData, mode: 'no-cors',}).then(response => {
+    fetch('/ccimagenes_post/', { method: 'POST', headers: headers, body: formData, mode: 'no-cors',}).then(response => {
 
       console.log(response)
     //div_imagen.src = 'http://127.0.0.1:8000/media/archivos/' + web_Id_empresa + '/' + Filename
-    div_imagen.src = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Filename
+    div_imagen.src = '/media/archivos/' + web_Id_empresa + '/' + Filename
 
 
     })

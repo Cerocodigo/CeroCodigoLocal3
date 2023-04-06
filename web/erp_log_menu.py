@@ -141,7 +141,7 @@ def reporte_empaquetado(request, Id_empresa, usuario, pkreporte):
 
     # cabeceraHtml = '''
     # <div align="center">
-    # <img src="https://www.cerocodigo.com/media/archivos/DLM/logo.png" style="width: 50%;">
+    # <img src="/media/archivos/DLM/logo.png" style="width: 50%;">
     # <h5>TYD SALUD Y BIENESTAR</h5>
     # <h2>REPORTE DE CONSULTIVOS</h2>
     # <h4>Desde el {{FechaIncio}} hasta el {{FechaFin}}</h4>

@@ -1652,8 +1652,20 @@ def crear_pdf_panel_continua(request, Id_empresa):
     return [fileName, firmados, archivos_anexos]
 
 
-def prueba():
-    pass
+def prueba(Id_empresa):
+    fileName = 'media/firma/'+Id_empresa+'/PDF/test'+datetime.now().strftime('%Y%m%d%H%M%S')+'.pdf'
+    documentTitle = ''  
+    pagesize=(float(21)*cm,float(27)*cm)
+    pdf = canvas.Canvas(fileName,pagesize=pagesize)
+    
+    pdf.setPageSize(pagesize)
+
+    pdf.drawString(float(2)*cm, float(2) *cm   , 'Prueba')
+
+    pdf.save()
+
+    return [fileName]
+
 
 
 
