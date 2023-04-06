@@ -85,6 +85,22 @@
       doc.setDrawColor(179, 179, 179);
       doc.setFillColor(255, 255, 255);
       doc.roundedRect(100, 8, 100, 60, 3, 3, 'FD'); //  Black square with rounded corners
+
+
+      imagen = document.getElementById("logo_cia")
+      tipo = imagen.attributes["value"]["value"].split('.')
+      tamano = [80,30]
+      var imgData = getBase64Image(imagen, tamano[0] * 37, tamano[1] * 37)
+      try {
+        doc.addImage(imgData, tipo[1].toUpperCase(), parseFloat(10), parseFloat(5), parseFloat(tamano[0]), parseFloat(tamano[1]))
+      }
+      catch (error) {
+        console.error(error);
+        // expected output: ReferenceError: nonExistentFunction is not defined
+        // Note - error messages will vary depending on browser
+      }
+
+
       doc.text(110, 15, 'Ruc:');
       doc.text(110, 20, 'Factura');
       doc.text(110, 25, 'No.:');
@@ -241,6 +257,38 @@
       doc.save('{{val_fijos.claveAcceso}}.pdf');
   }
 
+  
+function getBase64Image(img, t_w, t_h) {
+    // Create an empty canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = t_w;
+    canvas.height = t_h;
+    //canvas.width = img.width;
+    //canvas.height = img.height;
+    //img.crossOrigin = 'https://www.cerocodigo/media/archivos/mega/golum.jpg';
+    // Copy the image contents to the canvas
+    var ctx = canvas.getContext("2d");
+    //ctx.drawImage(img, 0, 0);
+    try {
+        ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, canvas.width, canvas.height);
+        // Get the data-URL formatted image
+        // Firefox supports PNG and JPEG. You could check img.src to
+        // guess the original format, but be aware the using "image/jpg"
+        // will re-encode the image.
+        var dataURL = canvas.toDataURL("image/png");
+        return dataURL
+        //return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+    catch (error) {
+      console.error(error);
+      return 0
+      // expected output: ReferenceError: nonExistentFunction is not defined
+      // Note - error messages will vary depending on browser
+    }
+  
+  
+  }
+  
   </script>
 
 
@@ -271,8 +319,8 @@
                             <td style="vertical-align: top; width: 50%;">
 
 
-                              <img style="width: 350px; height: 169px;"
-                                src="/static/archivos/logo/{{val_fijos.ruc}}.png" alt=""><br>
+                              <img id="logo_cia" style="width: 350px; height: 169px;"
+                                src="/static/archivos/logo/{{val_fijos.ruc}}.png" value="{{val_fijos.ruc}}.png" alt=""><br>
                               &nbsp;{{val_fijos.contribuyenteEspecial}}<br>
                               &nbsp;OBLIGADO A LLEVAR CONTABILIDAD <span>&nbsp;{{val_fijos.obligadoContabilidad}}<br>
                               </span><span></span>
