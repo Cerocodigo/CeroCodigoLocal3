@@ -80,7 +80,7 @@ function buscar_referencia_cabecera_enter(campo) {
               if (dict_pestalla["p-" + Response_int['cc_pesta']]["func_cab"][dict_pestalla["p-" + Response_int['cc_pesta']]["campos_cab"][x]["Nombre"]][0]["tipo"] == 'Imagen') {
                 ID_TAG = 'p' + Response_int['cc_pesta'] + 'zzz' + dict_pestalla["p-" + Response_int['cc_pesta']]["campos_cab"][x]["Nombre"] + '_img'
 
-                document.getElementById(ID_TAG).src = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][dict_pestalla["p-" + Response_int['cc_pesta']]["func_cab"][dict_pestalla["p-" + Response_int['cc_pesta']]["campos_cab"][x]["Nombre"]][0]["Sentencia"]]
+                document.getElementById(ID_TAG).src = '/media/archivos/' + web_Id_empresa + '/' + Response_int['cmpvalor'][0][dict_pestalla["p-" + Response_int['cc_pesta']]["func_cab"][dict_pestalla["p-" + Response_int['cc_pesta']]["campos_cab"][x]["Nombre"]][0]["Sentencia"]]
                 // document.getElementById(ID_TAG).value = Response_int['cmpvalor'][0][dict_pestalla["p-" + Response_int['cc_pesta']]["func_cab"][dict_pestalla["p-" + Response_int['cc_pesta']]["campos_cab"][x]["Nombre"]][0]["Sentencia"]]
                 document.getElementById(ID_TAG).attributes['value']['value'] = Response_int['cmpvalor'][0][dict_pestalla["p-" + Response_int['cc_pesta']]["func_cab"][dict_pestalla["p-" + Response_int['cc_pesta']]["campos_cab"][x]["Nombre"]][0]["Sentencia"]]
 
@@ -285,12 +285,12 @@ function buscar_referencia_cabecera_enter(campo) {
                       if(dict_pestalla['p-' + cc_pesta]['campos_det'][xq2]['TablaCampo'] == "cmpreferenciaadjunto"){
                         if (dict_pestalla['p-' + cc_pesta]["func_det"][nombCampo][0]["Tipo"] == "Imagen") {
 
-                          inerhtml = '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_det + '_img" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response['cmpvalor'][xq][nombCampo] + '" alt="image" value="0">' + Response['cmpvalor'][xq][nombCampo]
+                          inerhtml = '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" id="' + id_tag_det + '_img" src="/media/archivos/' + web_Id_empresa + '/' + Response['cmpvalor'][xq][nombCampo] + '" alt="image" value="0">' + Response['cmpvalor'][xq][nombCampo]
 
                           document.getElementById(id_tag_det + "_label").innerHTML = inerhtml
-                          document.getElementById(id_tag_det + "_label").href = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response['cmpvalor'][xq][nombCampo]
+                          document.getElementById(id_tag_det + "_label").href = '/media/archivos/' + web_Id_empresa + '/' + Response['cmpvalor'][xq][nombCampo]
 
-                          document.getElementById(id_tag_det + "_img").src = 'https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + Response['cmpvalor'][xq][nombCampo]
+                          document.getElementById(id_tag_det + "_img").src = '/media/archivos/' + web_Id_empresa + '/' + Response['cmpvalor'][xq][nombCampo]
 
                         } else {
                           document.getElementById(id_tag_det).value = Response['cmpvalor'][xq][nombCampo]

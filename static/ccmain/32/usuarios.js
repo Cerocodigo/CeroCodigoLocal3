@@ -237,7 +237,12 @@ function grabar_elementoPermisos() {
         url: '/firma_grabar',
         data: { 'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': web_token, 'Id_empresa': web_Id_empresa, 'usuario': web_usuario, 'firmas':JSON.stringify(firmas)},
         success: function (Response) { 
-            alert('Archivos Subidos')
+          if(Response['ok']=='si'){
+            alert('Firma Actualizada')
+            cerrar_elementoPermisos()
+          }else{
+            alert(Response['msg'])
+          }
         }
       });
     
@@ -271,7 +276,7 @@ function subir_firma(este) {
     headers.append('Access-Control-Allow-Credentials', 'true');
     headers.append('Access-Control-Allow-Headers', 'Content-Type');
 
-    fetch('https://www.cerocodigo.com/ccsubirFirmas/', { method: 'POST', headers: headers, body: formData, mode: 'no-cors',}).then(response => {
+    fetch('/ccsubirFirmas/', { method: 'POST', headers: headers, body: formData, mode: 'no-cors',}).then(response => {
         console.log(response)
 
     })

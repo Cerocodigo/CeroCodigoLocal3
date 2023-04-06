@@ -393,7 +393,7 @@ def dropbox(request):
     return JsonResponse(context)
 
 def aproduccion(request):
-    return redirect("https://www.cerocodigo.com/esp/log")
+    return redirect("/esp/log")
 
 
     
@@ -712,7 +712,7 @@ def email_ficha_server(request):
 def envio_email_pdf2(para, por, pdf, negocio):
     msg = """
     Envio Automatico de $cod1$. 
-    Adjunto Pdf https://www.cerocodigo.com/$cod2$.
+    Adjunto Pdf /$cod2$.
 
     No responda a este correo
     """
@@ -752,7 +752,7 @@ def envio_emailPdf(para, por, pdf, negocio):
     <html>
       <body>
         <p>Envio Automatico de $cod1$.<br>
-           Adjunto Pdf $cod2$. <a href="https://www.cerocodigo.com/media/firma/DLM/$cod2$"> Click aqui </a>
+           Adjunto Pdf $cod2$. <a href="/media/firma/DLM/$cod2$"> Click aqui </a>
         </p>
       </body>
     </html>

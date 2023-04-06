@@ -1325,7 +1325,6 @@ class firmas:
         sentencia = "UPDATE web_firmas set certificado ='"+str(t_Certy).replace('\n','').replace('\r','')+"', clave = '"+str(t_Clave)+"' where fuente = '"+str(t_Usuario)+"'"
         self.mysql_con.ejecutar(sentencia)        
 
-
 class paneles:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
@@ -2008,7 +2007,35 @@ class cmpcampos:
 
 
 
+"""
+class Usuarios() 
+    clase para traer las firmas electronicas desde la base de datos sobre pdf generados a firmar
+"""
+class Usuarios:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
+        """
+        __init__ solo para instanciar la clase Mysql
+        Input: conn_user: Usuario de base de datos, conn_pass: Clave de base de datos, conn_base: NOmbre de base de datos, conn_ip: Ip del host de la base de datos
+        Return: Nada
+        """
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306')
 
+    def Usuario(self, t_usuario):
+        """
+        con t_usuario traer todos los usuario
+        [{PkUsuario,Usuario,Clave,Nombre,Apellido,Apellido2,Anulado,FechaExpiracion,Admin,Sri,Reportes,Campos,Plantillas,Acciones,Procesos_Modulos,Eliminar_Importar,Usuarios,hash,Cargo,Correo, Telefono}]
+        Usuario: Devuelve Listado de Usuario
+        Input:  t_usuario: Usuario a buscar
+        Variables de Uso: 
+        mysql_con: Clase intanciaa de base de datos Mysql
+        Return: Tabla Multi registro en diccionario
+        [{PkUsuario,Usuario,Clave,Nombre,Apellido,Apellido2,Anulado,FechaExpiracion,Admin,Sri,Reportes,Campos,Plantillas,Acciones,Procesos_Modulos,Eliminar_Importar,Usuarios,hash,Cargo,Correo, Telefono}]
+        """
+        if t_usuario == '':
+            sentencia = "select * from usuario"
+        else:
+            sentencia = "select * from usuario where usuario like '"+str(t_usuario)+"'"
+        return self.mysql_con.table(sentencia)
 
 
 

@@ -54,7 +54,7 @@ function cambio_estado_panel(pkmodulo, pkregistro, pkestado) {
               campo.value = Response['registro'][0][Object.keys(Response['registro'][0])[x2]]
             }
             if(campo.type == 'file'){
-              campo.parentNode.childNodes[1].innerHTML = '<a href="https://www.cerocodigo.com/media/archivos/'+web_Id_empresa+'/'+Response['registro'][0][Object.keys(Response['registro'][0])[x2]]+'" target="_blank">'+Response['registro'][0][Object.keys(Response['registro'][0])[x2]]+'</a>'
+              campo.parentNode.childNodes[1].innerHTML = '<a href="/media/archivos/'+web_Id_empresa+'/'+Response['registro'][0][Object.keys(Response['registro'][0])[x2]]+'" target="_blank">'+Response['registro'][0][Object.keys(Response['registro'][0])[x2]]+'</a>'
 
             }
             if(campo.type == 'select-one'){
@@ -261,8 +261,8 @@ function paneles_taraer(pkpanel, pkgrupo, xE, pkmodulo) {
   
                       if (Response["campos_cab"][v2]["TablaCampo"] == "cmparchivo") {
                         html_int = '<div class="thumbnail" style="height: 160px;margin-bottom: 1px;">'
-                        html_int = html_int  + '<input id="' + iddet + '" type="file" class="form-control" onchange="cambio_en_paneles_archi();subir_archivo_flow(' + iddet + ')" style="font-size: 11px;"><p id="' + iddet + '_lbl"><a href="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor + '" target="_blank">' + valor + '</a></p>'
-                        html_int = html_int  + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" src="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor + '" alt="image" value="https://www.cerocodigo.com/media/archivos/' + web_Id_empresa + '/' + valor + '">'
+                        html_int = html_int  + '<input id="' + iddet + '" type="file" class="form-control" onchange="cambio_en_paneles_archi();subir_archivo_flow(' + iddet + ')" style="font-size: 11px;"><p id="' + iddet + '_lbl"><a href="/media/archivos/' + web_Id_empresa + '/' + valor + '" target="_blank">' + valor + '</a></p>'
+                        html_int = html_int  + '<img style="width: 100%;height: 60%;margin-left: auto;margin-right: auto; display: block;" src="/media/archivos/' + web_Id_empresa + '/' + valor + '" alt="image" value="/media/archivos/' + web_Id_empresa + '/' + valor + '">'
                         html_int = html_int  + '</div>'
                         
 

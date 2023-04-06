@@ -102,8 +102,12 @@
       doc.text(190, 45, 'Produccion', 'right');
       doc.text(190, 50, 'Normal', 'right');
 
-      doc.text(10, 40, '{{val_fijos.nombreComercial}}');
-      doc.text(10, 45, '{{val_fijos.razonSocial}}');
+      var v_nombreComercial = '{{val_fijos.nombreComercial}}'
+      var v_razonSocial = '{{val_fijos.razonSocial}}'
+      
+
+      doc.text(10, 40, v_nombreComercial.replace(/amp;/g, ''));
+      doc.text(10, 45, v_razonSocial.replace(/amp;/g, ''));
       doc.text(10, 50, '{{val_fijos.contribuyenteEspecial}}');
       doc.text(10, 55, 'OBLIGADO A LLEVAR CONTABILIDAD:{{val_fijos.obligadoContabilidad}}');
       doc.text(10, 60, 'Direccion');
