@@ -825,31 +825,31 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
             disparador = 'Guardar Registro Nuevo'
             //div_botones =div_botones +'<button type="button" id="btn_grabar_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + Response["dev_pestalla"] + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
             if (pkregistro == '0') {
-              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
             } else {
-              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
             }
           } else {
             disparador = 'Modificar Registro'
             //div_botones =div_botones +'<button  type="button" id="btn_mod_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + Response["dev_pestalla"] + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
             if (pkregistro == '0') {
-              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
   
   
   
   
             } else {
-              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
               for (x = 0; x < Response["estados"].length; x++) {
                 if (Response["estados"][x]["estado_inicial"] == Response["valores_cab"][0][Response["estados"][x]["c_estado"]]) {
-                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
+                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
                 }
                 if (Response["estados"][x]["estado_inicial"] == '' && Response["estados"][x]["estado_final"] != Response["valores_cab"][0][Response["estados"][x]["c_estado"]]) {
-                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
+                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
   
                 }
               }
@@ -1697,31 +1697,31 @@ function registro_cal_directo(pkmodulo, id_fecha, pkregistro, tipo, temp_pestall
             disparador = 'Guardar Registro Nuevo'
             //div_botones =div_botones +'<button type="button" id="btn_grabar_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + Response["dev_pestalla"] + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
             if (pkregistro == '0') {
-              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
             } else {
-              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
             }
           } else {
             disparador = 'Modificar Registro'
             //div_botones =div_botones +'<button  type="button" id="btn_mod_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + Response["dev_pestalla"] + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
             if (pkregistro == '0') {
-              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',2)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
   
   
   
   
             } else {
-              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+              div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
               for (x = 0; x < Response["estados"].length; x++) {
                 if (Response["estados"][x]["estado_inicial"] == Response["valores_cab"][0][Response["estados"][x]["c_estado"]]) {
-                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
+                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
                 }
                 if (Response["estados"][x]["estado_inicial"] == '' && Response["estados"][x]["estado_final"] != Response["valores_cab"][0][Response["estados"][x]["c_estado"]]) {
-                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
+                  div_botones = div_botones + '<button class="' + Response["estados"][x]["color"] + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',3); cambio_estado(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["valores_cab"][0][Response["estados"][x]["pkregistro"]] + ',' + Response["estados"][x]["pkweb_estados_doc"] + ', ' + Response["dev_pestalla"] + ');">' + Response["estados"][x]["display"] + '</span></button>'
   
                 }
               }
