@@ -394,16 +394,19 @@ function mas(id_tab) {
 
 
         //div_campos = div_campos + '<input type="text" id="'+id_tag_subdetalle +'" class="form-control" value="'+ valor_campo +'" '+ readonly +' onchange="guardar_calcular_subdet('+ id_tag_subdetalle +')" style="text-align: right;height: 25px;font-size: 11px;">'
+        if (Response["campos_subdet"][f]["TablaCampo"] == "cmpnumsecuencial") {
+          div_campos = div_campos + '<input type="number" id="' + id_tag_subdetalle + '" class="form-control" value="' + valor_campo + '" readonly="readonly" style="text-align: right;height: 25px;font-size: 11px;">'
 
+        }
         if (Response["campos_subdet"][f]["TablaCampo"] == "cmpnumsimple") {
-          div_campos = div_campos + '<input type="text" id="' + id_tag_subdetalle + '" class="form-control" value="' + valor_campo + '" ' + readonly + ' onchange="guardar_calcular_subdet(' + id_tag_subdetalle + ')" min="' + Response["func_subdet"][Response["campos_subdet"][f]["Nombre"]][0]["Menor"] + '" max="' + Response["func_subdet"][Response["campos_subdet"][f]["Nombre"]][0]["Mayor"] + '" style="text-align: right;height: 25px;font-size: 11px;" onkeypress="return solo_numero(event)">'
+          div_campos = div_campos + '<input type="text" id="' + id_tag_subdetalle + '" class="form-control" value="' + valor_campo + '" onchange="guardar_calcular_subdet(' + id_tag_subdetalle + ')" min="' + Response["func_subdet"][Response["campos_subdet"][f]["Nombre"]][0]["Menor"] + '" max="' + Response["func_subdet"][Response["campos_subdet"][f]["Nombre"]][0]["Mayor"] + '" style="text-align: right;height: 25px;font-size: 11px;" onkeypress="return solo_numero(event)">'
 
         }
         if (Response["campos_subdet"][f]["TablaCampo"] == "cmptxtsimple") {
           if (Response["func_subdet"][Response["campos_subdet"][f]["Nombre"]][0]["Modificable"] == "N") {
             readonly_int = 'readonly="readonly"'
           }
-          div_campos = div_campos + '<input type="text" id="' + id_tag_subdetalle + '" class="form-control" value="' + valor_campo + '" ' + readonly + ' onchange="guardar_calcular_subdet(' + id_tag_subdetalle + ')" ' + readonly_int + ' style="height: 25px;font-size: 11px;">'
+          div_campos = div_campos + '<input type="text" id="' + id_tag_subdetalle + '" class="form-control" value="' + valor_campo + '" onchange="guardar_calcular_subdet(' + id_tag_subdetalle + ')" ' + readonly_int + ' style="height: 25px;font-size: 11px;">'
 
         }
         if (Response["campos_subdet"][f]["TablaCampo"] == "cmpreferenciaadjunto") {
@@ -464,9 +467,14 @@ function mas(id_tab) {
 
         if (Response["campos_subdet"][f]["TablaCampo"] == "cmpfecha") {
           tipodato = 'date'
-  
+          var now = new Date();
+
           if (Response["func_subdet"][Response["campos_subdet"][f]["Nombre"]][0]["Tiempo"] == 'Y') {
             tipodato = 'datetime-local'
+            valor_campo = now
+          }else{
+            valor_campo = now.format("Y-m-d");
+
           }
           div_campos = div_campos + '<input type="' + tipodato + '" id="' + id_tag_subdetalle + '" class="form-control" value="' + valor_campo + '" ' + readonly + ' onchange="guardar_calcular_subdet(' + id_tag_subdetalle + ')" style="height: 25px;font-size: 11px;line-height: 7px;">'
         }
@@ -882,14 +890,14 @@ function registro_sin_server(pkmodulo, pkregistro, tipo, temp_pestalla, origen, 
           if (tipo == 'Nuevo') {
             disparador = 'Guardar Registro Nuevo'
             //div_botones =div_botones +'<button type="button" id="btn_grabar_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-            div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+            div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
   
   
   
           } else {
             disparador = 'Modificar Registro'
             //div_botones =div_botones +'<button  type="button" id="btn_mod_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-            div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+            div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
             
             if (dict_pestalla[id_dic]["acc_rapido"]['Nuevo'] == 'Si') {
               div_botones = div_botones + '<button class="btn bg-blue btn-flat margin" onclick="registro(' + dict_pestalla[id_dic]["tabla_cab"]["PkModulo"] + ',' + dict_pestalla[id_dic]["t_pkregistro"] + ',0,' + pestalla + ',0,0);cerrar_elemento(' + pestalla + ')">Copiar en Nuevo</span></button>'
@@ -2027,6 +2035,7 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
             n_dic['dev_pestalla'] = pestalla
             n_dic['pestalla'] = pestalla
             $("#myTabContent").prepend('<div role="tabpanel" class="tab-pane fade" id="rr' + pestalla + '" aria-labelledby="id' + pestalla + '" style="background-color: transparent;"> Procesando </div>');
+            document.getElementById('id' + pestalla).click();
 
             regitro_resp(n_dic, tipo, pestalla, pkmodulo, pkregistro, origen, t_clave)
             precargo == true
@@ -2046,6 +2055,8 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
           data: { 'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': web_token, 'Id_empresa': web_Id_empresa, 'usuario': web_usuario, 'idioma': web_idioma, 'pkmodulo': pkmodulo, 'pestalla': pestalla, 'pkregistro': pkregistro, 'tipo': tipo, 't_clave': t_clave },
           beforeSend: function () {
             $("#myTabContent").prepend('<div role="tabpanel" class="tab-pane fade" id="rr' + pestalla + '" aria-labelledby="id' + pestalla + '" style="background-color: transparent;"> Procesando </div>');
+            document.getElementById('id' + pestalla).click();
+
           },
           success: function (Response) {
             regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_clave)
@@ -2059,7 +2070,8 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
 
         $("#myTabContent").prepend('<div role="tabpanel" class="tab-pane fade" id="rr' + pestalla + '" aria-labelledby="id' + pestalla + '" style="background-color: transparent;"> Procesando </div>');
       
-      
+        document.getElementById('id' + pestalla).click();
+
         $('#rr' + pestalla).html('');
       
             id_dic = 'p-' + pestalla
@@ -2130,14 +2142,14 @@ function registro(pkmodulo, pkregistro, tipo, temp_pestalla, origen, t_clave) {
               if (tipo == 'Nuevo') {
                 disparador = 'Guardar Registro Nuevo'
                 //div_botones =div_botones +'<button type="button" id="btn_grabar_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-                div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+                div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
       
       
       
               } else {
                 disparador = 'Modificar Registro'
                 //div_botones =div_botones +'<button  type="button" id="btn_mod_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-                div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+                div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
                 
                 if (offlineResponde[pkmodulo]["acc_rapido"]['Nuevo'] == 'Si') {
                   div_botones = div_botones + '<button class="btn bg-blue btn-flat margin" onclick="registro(' + offlineResponde[pkmodulo]["tabla_cab"]["PkModulo"] + ',' + offlineResponde[pkmodulo]["t_pkregistro"] + ',0,' + pestalla + ',0,0);cerrar_elemento(' + pestalla + ')">Copiar en Nuevo</span></button>'
@@ -3297,14 +3309,14 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
       if (tipo == 'Nuevo') {
         disparador = 'Guardar Registro Nuevo'
         //div_botones =div_botones +'<button type="button" id="btn_grabar_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + Response["dev_pestalla"] + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-        div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+        div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
 
 
 
       } else {
         disparador = 'Modificar Registro'
         //div_botones =div_botones +'<button  type="button" id="btn_mod_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + Response["dev_pestalla"] + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-        div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + Response["dev_pestalla"] + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+        div_botones = div_botones + '<button  type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + Response["dev_pestalla"] + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
         
         if (Response["acc_rapido"]['Nuevo'] == 'Si') {
           div_botones = div_botones + '<button class="btn bg-blue btn-flat margin" onclick="registro(' + Response["tabla_cab"]["PkModulo"] + ',' + Response["t_pkregistro"] + ',0,' + Response["dev_pestalla"] + ',0,0);cerrar_elemento(' + Response["dev_pestalla"] + ')">Copiar en Nuevo</span></button>'
@@ -4045,7 +4057,7 @@ function regitro_resp(Response, tipo, pestalla, pkmodulo, pkregistro, origen, t_
             }
             if (Response["campos_det"][x]["TablaCampo"] == "cmpformuladetalle") {
 
-              div_campos = div_campos + '<input type="text" id="' + id_tag_detalle + '" class="form-control" value="' + valor_campo + '" readonly="readonly" onchange="guardar_calcular_det(' + id_tag_detalle + ')" style="height: 25px;font-size: 11px;">'
+              div_campos = div_campos + '<input type="text" id="' + id_tag_detalle + '" class="form-control" value="' + valor_campo + '" readonly="readonly" onchange="guardar_calcular_det(' + id_tag_detalle + ')" style="height: 25px;font-size: 11px;text-align: right;">'
             }
             if (Response["campos_det"][x]["TablaCampo"] == "cmpfecha") {
               tipodato = 'date'

@@ -959,203 +959,7 @@ function click_en_canvas_panel(pkpanel) {
 
 
 
-function actualizar_user_estado(temp_pestalla) {
-  lista_div = document.getElementById('estado_usuarios_lista_' + temp_pestalla)
-  listado_tetx = ''
-  for (qw = 0; qw < lista_div.childElementCount; qw++) {
-    if (lista_div.children[qw].children[0].children[0].checked == true) {
-      listado_tetx = listado_tetx + '(' + lista_div.children[qw].children[0].innerText + '),'
-    }
-  }
 
-  text_div = document.getElementById('estado_usuarios_' + temp_pestalla)
-  text_div.value = listado_tetx.substring(0, listado_tetx.length - 1)
-
-}
-
-function actualizar_estado(t_pkestado, temp_pestalla, t_PkModulo, modo) {
-
-  var t_estado_display = document.getElementById('estado_display_' + temp_pestalla).value
-  var t_estado_estado_inicial = document.getElementById('estado_estado_inicial_' + temp_pestalla).value
-  var t_estado_estado_final = document.getElementById('estado_estado_final_' + temp_pestalla).value
-  var t_estado_color = document.getElementById('estado_color_' + temp_pestalla).value
-  var t_estado_usuarios = document.getElementById('estado_usuarios_' + temp_pestalla).value
-
-
-
-  $.ajax({
-    type: 'POST',
-    url: '/adm_estados_actualizar',
-    data: { 'csrfmiddlewaretoken': web_token, 'Id_empresa': web_Id_empresa, 'usuario': web_usuario, 'idioma': web_idioma, 't_pkestado': t_pkestado, 'temp_pestalla': temp_pestalla, 't_PkModulo': t_PkModulo, 'modo': modo, 't_estado_display': t_estado_display, 't_estado_estado_inicial': t_estado_estado_inicial, 't_estado_estado_final': t_estado_estado_final, 't_estado_color': t_estado_color, 't_estado_usuarios': t_estado_usuarios },
-    success: function (Response) {
-
-
-      list_iv = document.getElementById('btn_estado_' + Response['t_pkestado'])
-      if (modo == 0) {
-        list_iv.remove()
-        $('#lista_estados__detalle_' + temp_pestalla).html('');
-
-      }
-      if (modo == 1) {
-        list_iv.innerHTML = t_estado_display
-        list_iv.click()
-      }
-
-    }
-  });
-
-}
-
-
-function nueva_estado(temp_pestalla, t_PkModulo) {
-
-
-  $.ajax({
-    type: 'POST',
-    url: '/adm_estados_nuevo',
-    data: { 'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': web_token, 'Id_empresa': web_Id_empresa, 'usuario': web_usuario, 'idioma': web_idioma, 'temp_pestalla': temp_pestalla, 't_PkModulo': t_PkModulo },
-    success: function (Response) {
-
-      list_iv = document.getElementById('lista_estados_' + Response['temp_pestalla'])
-      list_iv.innerHTML = '<button type="button" id="btn_estado_' + Response['ultimo_estado'][0]['pkweb_estados_doc'] + '" onclick="traer_cond(' + Response['temp_pestalla'] + ', ' + Response['ultimo_estado'][0]['pkweb_estados_doc'] + ')" class="btn bg-blue btn-flat margin"><span>' + Response['ultimo_estado'][0]['display'] + '</span></button>' + '' + list_iv.innerHTML
-
-
-    }
-  });
-}
-
-function traer_cond(temp_pestalla, t_pkestado) {
-
-  $.ajax({
-    type: 'POST',
-    url: '/adm_estados_cond',
-    data: { 'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': web_token, 'Id_empresa': web_Id_empresa, 'usuario': web_usuario, 'idioma': web_idioma, 'temp_pestalla': temp_pestalla, 't_pkestado': t_pkestado },
-    success: function (Response) {
-
-
-
-
-      html_pdf = '<div class="col-md-12">'
-
-      html_pdf = html_pdf + '<div class="col-md-12">'
-
-      html_pdf = html_pdf + '<button type="button" onclick="actualizar_estado(' + Response['list_estados'][0]['pkweb_estados_doc'] + ',' + temp_pestalla + ', ' + pkmodulo + ', 1)" class="btn bg-green btn-flat margin"><span> Grabar Cambios </span></button>' + ''
-      html_pdf = html_pdf + '<button type="button" onclick="actualizar_estado(' + Response['list_estados'][0]['pkweb_estados_doc'] + ',' + temp_pestalla + ', ' + pkmodulo + ', 0)" class="btn bg-red btn-flat margin"><span> Eliminar </span></button>' + ''
-      html_pdf = html_pdf + '</div>'
-
-      html_pdf = html_pdf + '<div class="col-md-12">'
-
-
-      html_pdf = html_pdf + '<div class="col-sm-4"><label class="control-label for=" id"="" style="font-size: 12px;font-weight: bold;">Display</label><input type="text" id="estado_display_' + temp_pestalla + '" class="form-control col-sm-4" value="' + Response['list_estados'][0]['display'] + '" style="height: 25px;font-size: 11px;"></div>'
-
-      html_pdf = html_pdf + '<div class="col-sm-4"><label class="control-label for=" id"="" style="font-size: 12px;font-weight: bold;">Estado Inicial</label><input type="text" id="estado_estado_inicial_' + temp_pestalla + '" class="form-control col-sm-4" value="' + Response['list_estados'][0]['estado_inicial'] + '" style="height: 25px;font-size: 11px;"></div>'
-      html_pdf = html_pdf + '<div class="col-sm-4"><label class="control-label for=" id"="" style="font-size: 12px;font-weight: bold;">Estado Final</label><input type="text" id="estado_estado_final_' + temp_pestalla + '" class="form-control col-sm-4" value="' + Response['list_estados'][0]['estado_final'] + '" style="height: 25px;font-size: 11px;"></div>'
-      html_pdf = html_pdf + '<div class="col-sm-4"><label class="control-label for=" id"="" style="font-size: 12px;font-weight: bold;">Estilo</label><input type="text" id="estado_color_' + temp_pestalla + '" class="form-control col-sm-4" value="' + Response['list_estados'][0]['color'] + '" style="height: 25px;font-size: 11px;"></div>'
-      html_pdf = html_pdf + '<div class="col-sm-4"><label class="control-label for=" id"="" style="font-size: 12px;font-weight: bold;">Usuario</label>'
-      html_pdf = html_pdf + '<input type="hidden" id="estado_usuarios_' + temp_pestalla + '" class="form-control col-sm-4" value="' + Response['list_estados'][0]['usuarios'] + '" style="height: 25px;font-size: 11px;">'
-
-
-      slip_user = Response['list_estados'][0]['usuarios'].split(',')
-
-
-
-
-
-      html_pdf = html_pdf + '<div class="form-group" id="estado_usuarios_lista_' + temp_pestalla + '">'
-
-      for (qw = 0; qw < Response['list_usuario'].length; qw++) {
-        est_checked = false
-
-        for (qw2 = 0; qw2 < slip_user.length; qw2++) {
-
-          if ('(' + Response['list_usuario'][qw]['Usuario'].toString().toUpperCase() + ')' == slip_user[qw2].toString().toUpperCase()) {
-            est_checked = true
-
-          }
-        }
-        if (est_checked == true) {
-          html_pdf = html_pdf + '<div class="checkbox"><label><input type="checkbox" onchange="actualizar_user_estado(' + temp_pestalla + ')" checked><span class="checkbox-material"><span class="check"></span></span>' + Response['list_usuario'][qw]['Usuario'].toString() + '</label></div>'
-        } else {
-          html_pdf = html_pdf + '<div class="checkbox"><label><input type="checkbox" onchange="actualizar_user_estado(' + temp_pestalla + ')"><span class="checkbox-material"><span class="check"></span></span>' + Response['list_usuario'][qw]['Usuario'].toString() + '</label></div>'
-        }
-      }
-
-
-      html_pdf = html_pdf + '</div>'
-
-
-
-      html_pdf = html_pdf + '</div>'
-
-
-
-
-
-      html_pdf = html_pdf + '</div>'
-
-      html_pdf = html_pdf + '<div class="col-md-6">'
-      html_pdf = html_pdf + '</div>'
-
-      html_pdf = html_pdf + '</div>'
-
-
-      $('#lista_estados__detalle_' + temp_pestalla).html(html_pdf);
-
-
-
-
-
-
-    }
-  });
-}
-
-//ddddddddddddddddddddddddddddddddddddddd
-
-
-
-
-function Editar_estados(temp_pestalla) {
-
-  var cc_tabla = dict_pestalla["p-" + temp_pestalla]
-
-
-  pkmodulo = dict_pestalla["p-" + temp_pestalla]["tabla"][0]["PkModulo"]
-
-  var id_tab = pkmodulo
-  tipo = 'Nuevo'
-
-  $.ajax({
-    type: 'POST',
-    url: '/adm_estados',
-    data: { 'fuente': $(this).attr("value"), 'csrfmiddlewaretoken': web_token, 'Id_empresa': web_Id_empresa, 'usuario': web_usuario, 'idioma': web_idioma, 'pkmodulo': pkmodulo },
-    success: function (Response) {
-
-
-
-
-      html_pdf = '<div class="col-md-12"><div class="row" id="lista_estados_' + temp_pestalla + '">'
-
-      for (qw = 0; qw < Response['list_estados'].length; qw++) {
-        html_pdf = html_pdf + '<button type="button" id="btn_estado_' + Response['list_estados'][qw]['pkweb_estados_doc'] + '" onclick="traer_cond(' + temp_pestalla + ', ' + Response['list_estados'][qw]['pkweb_estados_doc'] + ')" class="btn bg-blue btn-flat margin"><span>' + Response['list_estados'][qw]['display'] + '</span></button>' + ''
-
-      }
-
-      html_pdf = html_pdf + '<button type="button" id="" onclick="nueva_estado(' + temp_pestalla + ', ' + pkmodulo + ')" class="btn bg-green btn-flat margin"><span> Crear Nuevo </span></button>' + ''
-      html_pdf = html_pdf + '</div>'
-
-
-      html_pdf = html_pdf + '</div>'
-
-      html_pdf = html_pdf + '<div class="col-md-12"><div class="row" id="lista_estados__detalle_' + temp_pestalla + '">'
-      html_pdf = html_pdf + ''
-
-      html_pdf = html_pdf + '</div></div>'
-
-      $('#rr' + temp_pestalla).html(html_pdf);
-    }
-  });
-}
 
 function edocs_filtro_datos() {
   var filtro_sri = document.getElementById('edocs_filtro_sri')
@@ -1634,9 +1438,12 @@ function abrirmenu_atributo_pdf(envio, temp_pestalla, pkplan, seg, tipo, indice)
   html_int = ''
   seg_nom = ''
   html_int = '<div class="col-sm-12" style="margin-left: 0px;">'
-  html_int = html_int + '<button type="button" id="" onclick="add_pdf(0,0,' + temp_pestalla + ',' + pkplan + ',' + seg + ',' + tipo + ',' + indice + ')" class="btn bg-green btn-flat margin"><span>Nuevo</span></button>'
-  html_int = html_int + '<button type="button" id="" onclick="add_pdf(0,1,' + temp_pestalla + ',' + pkplan + ',' + seg + ',' + tipo + ',' + indice + ')" class="btn bg-green btn-flat margin"><span>Duplicar</span></button>'
-  html_int = html_int + '<button type="button" id="" onclick="add_pdf(0,2,' + temp_pestalla + ',' + pkplan + ',' + seg + ',' + tipo + ',' + indice + ')" class="btn bg-green btn-flat margin"><span>Eliminar</span></button></div>'
+  tipoy= 0
+  if(tipo == '3'){tipoy = 1}
+
+  html_int = html_int + '<button type="button" id="" onclick="add_pdf('+tipoy+',0,' + temp_pestalla + ',' + pkplan + ',' + seg + ',' + tipo + ',' + indice + ')" class="btn bg-green btn-flat margin"><span>Nuevo</span></button>'
+  html_int = html_int + '<button type="button" id="" onclick="add_pdf('+tipoy+',1,' + temp_pestalla + ',' + pkplan + ',' + seg + ',' + tipo + ',' + indice + ')" class="btn bg-green btn-flat margin"><span>Duplicar</span></button>'
+  html_int = html_int + '<button type="button" id="" onclick="add_pdf('+tipoy+',2,' + temp_pestalla + ',' + pkplan + ',' + seg + ',' + tipo + ',' + indice + ')" class="btn bg-green btn-flat margin"><span>Eliminar</span></button></div>'
 
 
 
@@ -2610,9 +2417,9 @@ function add_pdf(ori, funct, temp_pestalla, pkplan, seg, tipo, indice) {
       elemento_nue['Campo'] = document.getElementById(ori + 'cmdCampo$' + temp_pestalla).value
       elemento_nue['Ext'] = document.getElementById(ori + 'cmdExt$' + temp_pestalla).value
       elemento_nue['Limite'] = document.getElementById(ori + 'cmdLimite$' + temp_pestalla).value
-      elemento_nue['Tamano'] = document.getElementById(ori + 'cmdTamano$' + temp_pestalla).value
+      elemento_nue['Tamano'] = 12
       elemento_nue['Tipo'] = document.getElementById(ori + 'cmdTipo$' + temp_pestalla).value
-      elemento_nue['X'] = parseFloat(document.getElementById(ori + 'cmdX$' + temp_pestalla).value) + 0.5
+      elemento_nue['X'] = parseFloat(document.getElementById(ori + 'cmdX$' + temp_pestalla).value) + 2
       tipo_nom = 'cmd'
 
     }
@@ -2622,12 +2429,14 @@ function add_pdf(ori, funct, temp_pestalla, pkplan, seg, tipo, indice) {
       tipo_nom = 'eti'
       elemento_nue = { 'Nombre': 'Etiqueta', 'Tamano': 12, 'TipoLetra': 'Normal', 'X': 1, 'Y': 1 }
     }
-    if (tipo === 2) {
+    if (tipo == 2) {
       tipo_nom = 'cmc'
-      elemento_nue = { 'Campo': ' ', 'Tamano': 12, 'Ext': 'Normal', 'Tipo': 'Normal', 'X': 1, 'Y': 1, 'limite': '20,1' }
+      s_campo = document.getElementById('ucmcCampo$'+temp_pestalla)
+      elemento_nue = { 'Campo': s_campo.childNodes[0].value, 'Tamano': 12, 'Ext': 'Normal', 'Tipo': 'Normal', 'X': 1, 'Y': 1, 'limite': '20,1' }
     }
     if (tipo == 3) {
-      elemento_nue = { 'Cabecera': ' ', 'Campo': ' ', 'Tipo': 'Normal', 'Ext': 'Normal', 'Limite': 20, 'Tamano': 12, 'X': 1 }
+      s_campo = document.getElementById('ucmdCampo$'+temp_pestalla)
+      elemento_nue = { 'Cabecera': 'Cabecera', 'Campo': s_campo.childNodes[0].value, 'Tipo': 'Normal', 'Ext': 'Normal', 'Limite': 20, 'Tamano': 12, 'X': 1 }
       tipo_nom = 'cmd'
     }
   }
@@ -14691,11 +14500,11 @@ function registro_de_rep(pkmodulo, pkregistro, tipo) {
         if (tipo == 'Nuevo') {
           disparador = 'Guardar Registro Nuevo'
           //div_botones =div_botones +'<button type="button" id="btn_grabar_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-          div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+          div_botones = div_botones + '<button type="button" id="btn_grabar_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + pestalla + ',0)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
         } else {
           disparador = 'Modificar Registro'
           //div_botones =div_botones +'<button type="button" id="btn_mod_'+pestalla+'" onclick="this.disabled=true;click_val(1);grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
-          div_botones = div_botones + '<button type="button" id="btn_mod_' + pestalla + '" onclick="grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
+          div_botones = div_botones + '<button type="button" id="btn_mod_' + pestalla + '" onclick="abrir_default_grabando();grabar_elemento(' + pestalla + ',1)" class="btn bg-green btn-flat margin"><span>Grabar</span></button>'
         }
         if(web_esAdmin == 'Y'){
           div_botones = div_botones + '<button type="button" onclick="validar_registro(' + pestalla + ')" class="btn bg-yellow btn-flat margin"><span>Validar</span></button>'
@@ -15574,6 +15383,9 @@ function validarCedulaRuc(id){
   }
 }
 
+function abrir_default_grabando() {
+  document.getElementById('a_default_grabando').click()
+}
 
 
 
@@ -15582,10 +15394,11 @@ function grabar_elemento(pestana_int, disparador) {
 
 
   if (esta_grbando == 0) {
-    document.getElementById('a_default_grabando').click()
+    
+    //document.getElementById('divGrabandoMsg').innerHTML = '<p>Calculando</p>'
     esta_grbando = 1
     calcular_0_final(pestana_int)
-
+    //document.getElementById('divGrabandoMsg').innerHTML = document.getElementById('divGrabandoMsg').innerHTML + '<p>Calculando detalle</p>'
     for (zx = 0; zx < (cc_porPesta['p-' + pestana_int] + 1); zx++) {
       for (zy = 0; zy < (ccsub_porPesta['p-' + pestana_int] + 1); zy++) {
         calcular_subdetalle(pestana_int, zy, zx)
@@ -15593,9 +15406,10 @@ function grabar_elemento(pestana_int, disparador) {
       calcular_detalle(pestana_int, zx)
     }
 
+    //document.getElementById('divGrabandoMsg').innerHTML = document.getElementById('divGrabandoMsg').innerHTML + '<p>Calculando Final</p>'
     calcular_0_final(pestana_int)
 
-
+    //document.getElementById('divGrabandoMsg').innerHTML = document.getElementById('divGrabandoMsg').innerHTML + '<p>Validando</p>'
     valido = verificar_validar_registro(pestana_int)
     if (valido == true) {
       Response = dict_pestalla['p-' + pestana_int]
@@ -15849,6 +15663,7 @@ function grabar_elemento(pestana_int, disparador) {
           headers.append('Access-Control-Allow-Methods', 'POST');
           headers.append('Access-Control-Allow-Credentials', 'true');
           headers.append('Access-Control-Allow-Headers', 'Content-Type');
+          //document.getElementById('divGrabandoMsg').innerHTML = document.getElementById('divGrabandoMsg').innerHTML + '<p>Enviando Archivos</p>'
 
           fetch('/ccimagenes/', { method: 'POST', headers: headers, body: formData, mode: 'no-cors', }).then(response => {
             console.log(response)
@@ -15872,6 +15687,8 @@ function grabar_elemento(pestana_int, disparador) {
       div_grab = document.getElementById("div_grabador")
       div_grab.innerHTML = ''
       pre_respuesta = Response
+      //document.getElementById('divGrabandoMsg').innerHTML = document.getElementById('divGrabandoMsg').innerHTML + '<p>Enviando a Servidor</p>'
+
       if(offline == false){
         
         $.ajax({
