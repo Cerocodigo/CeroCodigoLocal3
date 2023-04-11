@@ -1191,6 +1191,9 @@ def activar_usuario_directo(request, Clave_act):
                 request.session['conn_pass'] = {}
                 request.session['conn_base'] = {}
                 request.session['conn_ip'] = {}
+                request.session['conn_port'] = {}
+            if not(request.session.has_key('conn_port')):
+                request.session['conn_port'] = {}
             request.session['conn_user'].update({clave_vale[0]["Id_erp"]:'user_'+str(clave_vale[0]["Id_erp"])})
             request.session['conn_pass'].update({clave_vale[0]["Id_erp"]:"P"+str(clave_vale[0]["Id_erp"])+'_'+str(clave_base)})
             request.session['conn_base'].update({clave_vale[0]["Id_erp"]:'cliente_'+str(clave_vale[0]["Id_erp"])})
@@ -1217,6 +1220,9 @@ def activar_usuario(request, Clave_act):
                 request.session['conn_pass'] = {}
                 request.session['conn_base'] = {}
                 request.session['conn_ip'] = {}
+                request.session['conn_port'] = {}
+            if not(request.session.has_key('conn_port')):
+                request.session['conn_port'] = {}
             request.session['conn_user'].update({clave_vale[0]["Id_erp"]:'user_'+str(clave_vale[0]["Id_erp"])})
             request.session['conn_pass'].update({clave_vale[0]["Id_erp"]:"P"+str(clave_vale[0]["Id_erp"])+'_'+str(clave_base)})
             request.session['conn_base'].update({clave_vale[0]["Id_erp"]:'cliente_'+str(clave_vale[0]["Id_erp"])})
