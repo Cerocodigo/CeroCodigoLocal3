@@ -1526,7 +1526,7 @@ def actualizar_docs(id_empresa):
     db = web.con_db.inter_login_LOGIN("Mysql")
     conn = db.traer_conn_empresa(id_empresa)
     if len(conn) > 0:
-        db_cliente = web.con_db.externo_cliente(conn[0]['user'], conn[0]['pass'], conn[0]['base'], conn[0]['ip'])
+        db_cliente = web.con_db.externo_cliente(conn[0]['user'], conn[0]['pass'], conn[0]['base'], conn[0]['ip'],'3306')
         tipo_actu = db.traer_tipos_actualizar(id_empresa, 'r_') 
         if len(tipo_actu) > 0:
             for i in tipo_actu:

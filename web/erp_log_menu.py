@@ -2377,13 +2377,18 @@ def validar_user_empresa_admin(request, Id_empresa, usuario, clave):
             request.session['conn_pass'] = {}
             request.session['conn_base'] = {}
             request.session['conn_ip'] = {}
+            request.session['conn_port'] = {}
+        if not(request.session.has_key('conn_port')):
+            request.session['conn_port'] = {}
         request.session['conn_user'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_user']})
         request.session['conn_pass'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_pass']})
         request.session['conn_base'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_base']})
-        request.session['conn_ip'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_ip']})        
+        request.session['conn_ip'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_ip']})
+        request.session['conn_port'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_ip']})        
+        
         request.session.save()
         log_empresa = dbEmpresa[0]['Negocio']
-        db_cliente = web.con_db.externo_cliente(request.session['conn_user'][dbEmpresa[0]['Id_erp']],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+        db_cliente = web.con_db.externo_cliente(request.session['conn_user'][dbEmpresa[0]['Id_erp']],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa],'3306') 
         db_cliente.crear_hash(usuario, hash_clave)
         usuario_ok = db_cliente.traer_usuarioSoloAdmin(usuario, hash_clave)
         if len(usuario_ok) == 1:
@@ -2459,7 +2464,7 @@ def validar_user_empresa_soloval(request, Id_empresa, usuarios, clave):
     if len(dbEmpresa) == 1:
         if dbEmpresa[0]["estado"] == "valido":
             log_empresa = dbEmpresa[0]['Negocio']
-            db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+            db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa],'3306') 
             usuario_ok = db_cliente.traer_usuario(usuarios, hash_clave)
             if len(usuario_ok) == 1:
                 return 'ok'
