@@ -1626,7 +1626,7 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                         
                         envio_email(str(envio_datset[Nom_tabla_cab][0][correo['Para']]), cuerpo, correo['De'])
         except Exception as e: 
-            return ['Valio', type(e).__name__ + str(e) + z['Nombre']]
+            return ['Valio', type(e).__name__ + str(e) + ' ' + z['Nombre']]
     return senten_acc
 
 def envio_email(para, msg, por):
