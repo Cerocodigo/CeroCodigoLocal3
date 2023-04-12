@@ -1047,6 +1047,10 @@ def guardar_base(request, Id_empresa):
                 num_det = num_det + 1
     if paso == True:
         senten_acc = EjecutarAcciones(request, Id_empresa, request.POST.getlist('pkmodulo')[0], request.POST.getlist('disparador')[0], envio_datset,{})  
+        if len(senten_acc) == 2:
+            if senten_acc[0] == 'Valio':
+                context = {'grabo':False, 'msg':{'Error':senten_acc[1]}}
+                return context
         db = web.con_db.transsaciones(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
         graboTodo =db.ingreso_base(senten_cab, senten_det, senten_acc, request.POST.getlist('pkmodulo')[0], senten_subdet)
         if graboTodo[0] == True:
@@ -1083,542 +1087,546 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
     rowcount = {}
     tabla_cab = ''
     for z in datosCabecera:
-        if z["Disparador"] == disparador:
-            if z["Accion"] == "Insertar":
-                for a in envio_datset:
-                    tabla_cab = a
-                    break
-                if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
-                    datasetIngreso = []
-                    listado_tablas = db.ListadoTablas(z["ModuloAfectado"])
-                    listado_campos = {}
-                    dict_pk_nombre_tabla = {}
-                    valores_pk = {}
-                    tabla_primaria = ""
-                    for y in listado_tablas:
-                        Pa_ingre_campos = db.traer_campos_por_pkestr(y["PkEstructura"])
-                        listado_campos.update({y["PkEstructura"]:Pa_ingre_campos})
-                        rowcount.update({y["PkEstructura"]:0})
-                        dict_pk_nombre_tabla.update({y["PkEstructura"]:y["Nombre"]})
+        try:
+            if z["Disparador"] == disparador:
+                if z["Accion"] == "Insertar":
+                    for a in envio_datset:
+                        tabla_cab = a
+                        break
+                    if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
+                        datasetIngreso = []
+                        listado_tablas = db.ListadoTablas(z["ModuloAfectado"])
+                        listado_campos = {}
+                        dict_pk_nombre_tabla = {}
+                        valores_pk = {}
+                        tabla_primaria = ""
+                        for y in listado_tablas:
+                            Pa_ingre_campos = db.traer_campos_por_pkestr(y["PkEstructura"])
+                            listado_campos.update({y["PkEstructura"]:Pa_ingre_campos})
+                            rowcount.update({y["PkEstructura"]:0})
+                            dict_pk_nombre_tabla.update({y["PkEstructura"]:y["Nombre"]})
 
-                        sentencia_int = 'select max( cast( Pk' + str(y["Nombre"]) + '  as decimal(12,0)) )+1 as "pkmax"  from ' + str(y["Nombre"])                        
-                        dict_tempo = db.cmpconso_ejecutar(sentencia_int)
-                        if dict_tempo[0]['pkmax'] == None:
-                            valores_pk.update({'Pk' + str(y["Nombre"]) :0})
-                        else:
-                            valores_pk.update({'Pk' + str(y["Nombre"]) :dict_tempo[0]['pkmax']})
+                            sentencia_int = 'select max( cast( Pk' + str(y["Nombre"]) + '  as decimal(12,0)) )+1 as "pkmax"  from ' + str(y["Nombre"])                        
+                            dict_tempo = db.cmpconso_ejecutar(sentencia_int)
+                            if dict_tempo[0]['pkmax'] == None:
+                                valores_pk.update({'Pk' + str(y["Nombre"]) :0})
+                            else:
+                                valores_pk.update({'Pk' + str(y["Nombre"]) :dict_tempo[0]['pkmax']})
+                            
+                            if tabla_primaria == "":
+                                tabla_primaria = y["Nombre"]
+
+                        #datosRegistros = db.TraerAccionesNumeroRegistrosCabeceras(z["PkAccion"])
+                        datosRegistros = db.TraerAccionesNumeroRegistros(z["PkAccion"])
+                        #BTN!
+                        obj_tablas  = db.tablas(z["ModuloAfectado"])
+                        obj_campos = db.campos(obj_tablas)
+                        obj_funciones_campos = db.funciones_campos_dict_pkestruc(obj_tablas, obj_campos)
+                        #----------------nueva forma mas sensilla
+                        dataset_ingresar = {}
+                        accionescampos = {}
                         
-                        if tabla_primaria == "":
-                            tabla_primaria = y["Nombre"]
 
-                    #datosRegistros = db.TraerAccionesNumeroRegistrosCabeceras(z["PkAccion"])
-                    datosRegistros = db.TraerAccionesNumeroRegistros(z["PkAccion"])
-                    #BTN!
-                    obj_tablas  = db.tablas(z["ModuloAfectado"])
-                    obj_campos = db.campos(obj_tablas)
-                    obj_funciones_campos = db.funciones_campos_dict_pkestruc(obj_tablas, obj_campos)
-                    #----------------nueva forma mas sensilla
-                    dataset_ingresar = {}
-                    accionescampos = {}
-                    
+                        for y in datosRegistros:
+                            datos = db.TraerAccionesCampos(y["PkAccionL2"])
+                            accionescampos.update({y["PkAccionL2"]:datos})
 
+                        datos_indices_truchos = {}
 
-                    for y in datosRegistros:
-                        datos = db.TraerAccionesCampos(y["PkAccionL2"])
-                        accionescampos.update({y["PkAccionL2"]:datos})
+                            
 
-                    datos_indices_truchos = {}
-
-                    for y in datosRegistros:
-                        if y["SeREpite"] =="No":
-                            tempo_ingre={}
-                            for yy in listado_campos[y["PkEstructura"]]:
-                                tempo_ingre.update({yy["Nombre"]:0})
-                            for yy in accionescampos[y["PkAccionL2"]]:
-                                if yy["Tipo"] == "Valor":
-                                    if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
-                                        valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 + int(yy["Elemento"]) 
-                                        tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]] 
-                                    else:
-                                        tempo_ingre[yy["Campo"]] = yy["Elemento"]
-                                if yy["Tipo"] == "Campo":
-                                    tempo_ingre[yy["Campo"]] = envio_datset[yy["Tabla"]][0][yy["Elemento"]] 
-                                if yy["Tipo"] == "Cabecera":
-                                    tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]] 
-                                if yy["Tipo"] == "Auto":
-                                        if yy["Campo"] == 'PKCabecera':
-                                            tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
-                                        else:
-                                            if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
-                                                valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
-                                                tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]]
-                                            else:
-                                                sentencia_int = 'select max( cast( ' + str(yy["Campo"]) + '  as decimal(12,0)) )+1 as "' + str(yy["Campo"]) + '"  from ' + str(dict_pk_nombre_tabla[y["PkEstructura"]])
-                                                tempo_valor = db.cmpconso_ejecutar(sentencia_int)
-                                                if tempo_valor[0][yy["Campo"]] != None:
-                                                    tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
-                                                else:
-                                                    tempo_ingre[yy["Campo"]] = 0
-                                dataset_ingresar.update({y["PkAccionL2"]:[tempo_ingre]})
-                        if y["SeREpite"] =="Tb":
-                            tempo_ingre1 = []
-                            for xxx in envio_datset[y["TablaRepetir"]]:                            
+                        for y in datosRegistros:
+                            if y["SeREpite"] =="No":
                                 tempo_ingre={}
                                 for yy in listado_campos[y["PkEstructura"]]:
-                                    tempo_ingre.update({yy["Nombre"] : 0})
+                                    tempo_ingre.update({yy["Nombre"]:0})
                                 for yy in accionescampos[y["PkAccionL2"]]:
                                     if yy["Tipo"] == "Valor":
-                                        tempo_ingre[yy["Campo"]] = yy["Elemento"]
+                                        if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
+                                            valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 + int(yy["Elemento"]) 
+                                            tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]] 
+                                        else:
+                                            tempo_ingre[yy["Campo"]] = yy["Elemento"]
                                     if yy["Tipo"] == "Campo":
-                                        tempo_ingre[yy["Campo"]] = xxx[yy["Elemento"]]
-                                    if yy["Tipo"] == "Cabecera":
-                                        tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]]
-                                    if yy["Tipo"] == "Auto":
-                                        if yy["Campo"] == 'PKCabecera':
-                                            ##tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
-                                            Nom_put_tabla =''
-                                            for hh in datosRegistros:
-                                                if hh['PkAccionL2'] == y['PkCabecera']:
-                                                    repetuche = hh['TablaRepetir']
-                                                    for hh2 in obj_tablas:
-                                                        if hh2['PkEstructura'] == hh['PkEstructura']:
-                                                            Nom_put_tabla = hh2['Nombre']
-                                                            break
-                                            if y['PkCabecera'] in dataset_ingresar:
-                                                if len(dataset_ingresar[y['PkCabecera']])== 1:
-                                                    tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][0]['Pk' +Nom_put_tabla]
-                                                else:
-                                                    indice_trucho = 0
-                                                    for hh in envio_datset[repetuche]:
-                                                        if hh['Pk'+repetuche] == xxx['PKCabecera']:
-                                                            tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][indice_trucho]['Pk' +Nom_put_tabla]
-                                                            break
-                                                        indice_trucho = indice_trucho + 1
-                                            else:
-                                                tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
-                                        else:
-                                            if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
-                                                valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
-                                                tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]]
-                                            else:
-                                                sentencia_int = 'select max( cast( ' + str(yy["Campo"]) + '  as decimal(12,0)) )+1 as "' + str(yy["Campo"]) + '"  from ' + str(dict_pk_nombre_tabla[y["PkEstructura"]])
-                                                tempo_valor = db.cmpconso_ejecutar(sentencia_int)
-                                                if tempo_valor[0][yy["Campo"]] == None:
-                                                    tempo_ingre[yy["Campo"]] = 0
-                                                else:
-                                                    tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
-                                    
-                                tempo_ingre1.append(tempo_ingre)
-                            dataset_ingresar.update({y["PkAccionL2"]:tempo_ingre1})
-                        if y["SeREpite"] =="Qr":
-                            tempo_ingre1 = []
-                            data_query = Acc_TraerDataTable(request, Id_empresa, envio_datset, y["TablaRepetir"], 0)
-                            for xxx in data_query:                         
-                                tempo_ingre={}
-                                for yy in listado_campos[y["PkEstructura"]]:
-                                    tempo_ingre.update({yy["Nombre"] : 0})
-                                for yy in accionescampos[y["PkAccionL2"]]:
-                                    if yy["Tipo"] == "Valor":
-                                        tempo_ingre[yy["Campo"]] = yy["Elemento"]
-                                    if yy["Tipo"] == "Query":
-                                        tempo_ingre[yy["Campo"]] = xxx[yy["Elemento"]] 
+                                        tempo_ingre[yy["Campo"]] = envio_datset[yy["Tabla"]][0][yy["Elemento"]] 
                                     if yy["Tipo"] == "Cabecera":
                                         tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]] 
-                                    if yy["Tipo"] == "QueryEjecutar":
-                                        divi = str(xxx[yy["Elemento"]]).split('$')
-                                        qr_var = str(divi[0]).split(',')
-                                        qr_sente = str(divi[1]).split('&')
-                                        paraejecutar = 'select ' + str(qr_sente[0]) + ' as "resul" from ' + str(qr_sente[1]) + ' where ' + str(qr_sente[2])
-                                        for a in qr_var:
-                                            qr_var_indi = a.split(':')
-                                            paraejecutar = paraejecutar.replace(qr_var_indi[0],  envio_datset[yy["Tabla"]][0][qr_var_indi[1]] )
-                                        tempo_ingre[yy["Campo"]] = db.cmpconso_ejecutar(paraejecutar)[0]['resul']
                                     if yy["Tipo"] == "Auto":
-                                        if yy["Campo"] == 'PKCabecera':
-                                            tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
-                                        else:
-                                            if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
-                                                valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
-                                                tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]]
-
+                                            if yy["Campo"] == 'PKCabecera':
+                                                tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
                                             else:
-                                                sentencia_int = 'select max( cast( ' + str(yy["Campo"]) + '  as decimal(12,0)) )+1 as "' + str(yy["Campo"]) + '"  from ' + str(dict_pk_nombre_tabla[y["PkEstructura"]])
-                                                tempo_valor = db.cmpconso_ejecutar(sentencia_int)
-                                                if tempo_valor[0][yy["Campo"]] == None:
-                                                    tempo_ingre[yy["Campo"]] = 0
-                                                else:    
-                                                    tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
-                                tempo_ingre1.append(tempo_ingre)
-                            dataset_ingresar.update({y["PkAccionL2"]:tempo_ingre1})
-                    
-                    cc_fila = len(datosRegistros)
-                    pkestru_por_pkaacc = {}
-                    for y in reversed(datosRegistros):
-                        pkestru_por_pkaacc.update({y["PkAccionL2"]:y["PkEstructura"]})
-                        for dd in dataset_ingresar[y["PkAccionL2"]]:
-                            for yy in accionescampos[y["PkAccionL2"]]: 
-                                if yy["Tipo"] == "Auto":
-                                    if yy["Origen"] == "cmpsistema":
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Nombre"] == 'Usuario Actual':
-                                            dd[yy["Campo"]] = request.POST.getlist('usuario')[0]
-
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Nombre"] == 'Fecha Actual': 
-                                            dd[yy["Campo"]] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Nombre"] == 'Hora Actual':                                      
-                                            dd[yy["Campo"]] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                                    if yy["Origen"] == "cmpformuladetalle":
-                                        valor_final = 0
-                                        cc_final = 0
-                                        Valor_temp = 0
-
-                                        Campo_a_oper = obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Campo"]
-                                        Campo_a_sumar = Campo_a_oper.split(".")
-                                        for x3 in datosRegistros:
-                                            if str(x3['PkEstructura']) == str(obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["TablaDetalle"]):
-                                                for x4 in dataset_ingresar[x3["PkAccionL2"]]:
-                                                    if x4[Campo_a_sumar[1]] != "":
-                                                        Valor_temp = float(x4[Campo_a_sumar[1]])
-                                                    else:
-                                                        Valor_temp = 0
-                                                    excluido = False
-                                                    for ss in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][1]:
-                                                        valor_comparar = 0
-                                                        if ss["Tipo"] == "Valor":
-                                                            valor_comparar = ss["Valor"]
-                                                        else:
-                                                            valor_comparar = x4[ss["Valor"]]
-                                                        if ss["Operador"] == "=":
-                                                            if x4["Campo"] != valor_comparar:
-                                                                excluido = True
-                                                        if ss["Operador"] == ">":
-                                                            if x4["Campo"] <= valor_comparar:
-                                                                excluido = True
-                                                        if ss["Operador"] == "<":
-                                                            if x4["Campo"] >= valor_comparar:
-                                                                excluido = True
-                                                        if ss["Operador"] == ">=":
-                                                            if x4["Campo"] < valor_comparar:
-                                                                excluido = True
-                                                        if ss["Operador"] == "<=":
-                                                            if x4["Campo"] > valor_comparar:
-                                                                excluido = True
-                                                        if ss["Operador"] == "!=":
-                                                            if x4["Campo"] == valor_comparar:
-                                                                excluido = True
-                                                    if excluido == False:
-                                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Suma":
-                                                            valor_final =  float(valor_final) + float(Valor_temp)
-                                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Promedio":
-                                                            valor_final =  float(valor_final) + float(Valor_temp)
-                                                            cc_final =  cc_final + 1
-                                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Maximo":
-                                                            if float(valor_final) > float(Valor_temp):
-                                                                valor_final = float(Valor_temp)                                                    
-                                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Minimo":
-                                                            if float(valor_final) < float(Valor_temp):
-                                                                valor_final = float(Valor_temp) 
-                                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Contar":
-                                                            cc_final =  cc_final + 1
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Suma":
-                                            dd[yy["Campo"]] = round(float(valor_final) , 2)                                               
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Promedio":
-                                            dd[yy["Campo"]] = float(valor_final / cc_final)
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Maximo":
-                                            dd[yy["Campo"]] = float(valor_final)                                                    
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Minimo":
-                                            dd[yy["Campo"]] = float(valor_final)                                                    
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Contar":
-                                            dd[yy["Campo"]] = float(cc_final)                                                    
-                                    if yy["Origen"] == "cmpoperacion":
-                                        temp  = 0.0
-                                        operador = "="
-                                        Valor = 0.0
-                                        for u in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][1]:
-                                            if u["Estado"] == "O":
-                                                operador = u["Sentencia"]
-                                            else:
-                                                if u["Estado"] == "C":
-                                                    Valor = dd[u["Sentencia"]]
-                                                if u["Estado"] == "V":
-                                                    Valor = u["Sentencia"]
-                                                if operador == "":
-                                                    temp = float(Valor)
-                                                if(operador == "+"):
-                                                    temp = float(temp) + float(Valor)
-                                                if(operador == "-"):
-                                                    temp = float(temp) - float(Valor)
-                                                if(operador == "*"):
-                                                    temp = float(temp) * float(Valor)
-                                                if(operador == "/"):
-                                                    if Valor > 0:
-                                                        temp = float(temp) / float(Valor)
-                                                    else:
-                                                        temp = 0
-                                        dd[yy["Campo"]] = temp                       
-                                    if yy["Origen"] == "cmpconsolidado":
-                                        A_Select = 'Select ( '
-                                        A_From = 'From '
-                                        A_Where = 'Where '
-                                        A_Group = ''
-                                        A_GroupWhere = ''
-                                        sentencia = ""
-                                        FaltaDato = False
-                                        for x3 in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][1]:
-                                            A_From = A_From + str(x3["Tabla"]) + ' as ' + str(x3["Nombre"]) + ', '
-                                        if A_From == 'From ':
-                                            A_From = ''
-                                        else:
-                                            A_From = A_From[0:-2]
-                                        for x3 in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][2]:
-                                            if x3["Tipo"] == "Valor":
-                                                A_Where = A_Where + " '" + str(x3["Elemento"]) + "' "
-                                            if x3["Tipo"] == "Operacion":
-                                                A_Where = A_Where + " " + str(x3["Elemento"]) + " "                                                
-                                            if x3["Tipo"] == "Registro":
-                                                A_Where = A_Where + " '" + str(dd[x3["Elemento"]]) + "' "                                                
-                                            if x3["Tipo"] == "Campo":
-                                                if x3["Funcion"] == "":
-                                                    A_Where = A_Where + str(x3["Origen"]) + '.' + str(x3["Elemento"])
+                                                if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
+                                                    valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
+                                                    tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]]
                                                 else:
-                                                    if x3["Funcion"] == "Suma":
-                                                        A_Where = A_Where + ' Sum(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                                    if x3["Funcion"] == " Promedio":
-                                                        A_Where = A_Where + ' Avg(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                                    if x3["Funcion"] == "Contar":
-                                                        A_Where = A_Where + ' Count(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                                    A_GroupWhere = A_GroupWhere + str(x3["Origen"]) + '.' + str(x3["Elemento"]) + ', '
-                                        if A_GroupWhere != '':
-                                            A_GroupWhere = A_GroupWhere[0:-2]
-                                        if A_Where == "Where ":
-                                            A_Where == ""
-
-                                        for x3 in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][3]:
-                                            if x3["Tipo"] == "Valor":
-                                                A_Select = A_Select + " '" + str(x3["Elemento"]) + "' "
-                                            if x3["Tipo"] == "Operacion":
-                                                A_Select = A_Select + " " + str(x3["Elemento"]) + " "                                                
-                                            if x3["Tipo"] == "Registro":
-                                                A_Select = A_Select + " '" + str(dd[x3["Elemento"]]) + "' "                                                
-                                            if x3["Tipo"] == "Campo":
-                                                if x3["Funcion"] == "":
-                                                    A_Select = A_Select + str(x3["Origen"]) + '.' + str(x3["Elemento"])
+                                                    sentencia_int = 'select max( cast( ' + str(yy["Campo"]) + '  as decimal(12,0)) )+1 as "' + str(yy["Campo"]) + '"  from ' + str(dict_pk_nombre_tabla[y["PkEstructura"]])
+                                                    tempo_valor = db.cmpconso_ejecutar(sentencia_int)
+                                                    if tempo_valor[0][yy["Campo"]] != None:
+                                                        tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
+                                                    else:
+                                                        tempo_ingre[yy["Campo"]] = 0
+                                    dataset_ingresar.update({y["PkAccionL2"]:[tempo_ingre]})
+                            if y["SeREpite"] =="Tb":
+                                tempo_ingre1 = []
+                                for xxx in envio_datset[y["TablaRepetir"]]:                            
+                                    tempo_ingre={}
+                                    for yy in listado_campos[y["PkEstructura"]]:
+                                        tempo_ingre.update({yy["Nombre"] : 0})
+                                    for yy in accionescampos[y["PkAccionL2"]]:
+                                        if yy["Tipo"] == "Valor":
+                                            tempo_ingre[yy["Campo"]] = yy["Elemento"]
+                                        if yy["Tipo"] == "Campo":
+                                            tempo_ingre[yy["Campo"]] = xxx[yy["Elemento"]]
+                                        if yy["Tipo"] == "Cabecera":
+                                            tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]]
+                                        if yy["Tipo"] == "Auto":
+                                            if yy["Campo"] == 'PKCabecera':
+                                                ##tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
+                                                Nom_put_tabla =''
+                                                for hh in datosRegistros:
+                                                    if hh['PkAccionL2'] == y['PkCabecera']:
+                                                        repetuche = hh['TablaRepetir']
+                                                        for hh2 in obj_tablas:
+                                                            if hh2['PkEstructura'] == hh['PkEstructura']:
+                                                                Nom_put_tabla = hh2['Nombre']
+                                                                break
+                                                if y['PkCabecera'] in dataset_ingresar:
+                                                    if len(dataset_ingresar[y['PkCabecera']])== 1:
+                                                        tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][0]['Pk' +Nom_put_tabla]
+                                                    else:
+                                                        indice_trucho = 0
+                                                        for hh in envio_datset[repetuche]:
+                                                            if hh['Pk'+repetuche] == xxx['PKCabecera']:
+                                                                tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][indice_trucho]['Pk' +Nom_put_tabla]
+                                                                break
+                                                            indice_trucho = indice_trucho + 1
                                                 else:
-                                                    if x3["Funcion"] == "Suma":
-                                                        A_Select = A_Select + ' Sum(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                                    if x3["Funcion"] == "Promedio":
-                                                        A_Select = A_Select + ' Avg(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                                    if x3["Funcion"] == "Contar":
-                                                        A_Select = A_Select + ' Count(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
-                                                    A_Group = A_Group + str(x3["Origen"]) + '.' + str(x3["Elemento"]) + ', '
-                                        if A_Group != '':
-                                            A_Group = A_Group[0:-2]
-                                        A_Select = A_Select + " ) as '" + str(yy["Campo"]) + "'"
-                                        if(A_Group == ""):
-                                            if(A_GroupWhere == ""):
-                                                sentencia = A_Select + " " + A_From + " " + A_Where
+                                                    tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
                                             else:
-                                                sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " +  A_GroupWhere
-                                        else:
-                                            if(A_GroupWhere == ""):
-                                                sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " + A_Group
+                                                if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
+                                                    valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
+                                                    tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]]
+                                                else:
+                                                    sentencia_int = 'select max( cast( ' + str(yy["Campo"]) + '  as decimal(12,0)) )+1 as "' + str(yy["Campo"]) + '"  from ' + str(dict_pk_nombre_tabla[y["PkEstructura"]])
+                                                    tempo_valor = db.cmpconso_ejecutar(sentencia_int)
+                                                    if tempo_valor[0][yy["Campo"]] == None:
+                                                        tempo_ingre[yy["Campo"]] = 0
+                                                    else:
+                                                        tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
+                                        
+                                    tempo_ingre1.append(tempo_ingre)
+                                dataset_ingresar.update({y["PkAccionL2"]:tempo_ingre1})
+                            if y["SeREpite"] =="Qr":
+                                tempo_ingre1 = []
+                                data_query = Acc_TraerDataTable(request, Id_empresa, envio_datset, y["TablaRepetir"], 0)
+                                for xxx in data_query:                         
+                                    tempo_ingre={}
+                                    for yy in listado_campos[y["PkEstructura"]]:
+                                        tempo_ingre.update({yy["Nombre"] : 0})
+                                    for yy in accionescampos[y["PkAccionL2"]]:
+                                        if yy["Tipo"] == "Valor":
+                                            tempo_ingre[yy["Campo"]] = yy["Elemento"]
+                                        if yy["Tipo"] == "Query":
+                                            tempo_ingre[yy["Campo"]] = xxx[yy["Elemento"]] 
+                                        if yy["Tipo"] == "Cabecera":
+                                            tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]] 
+                                        if yy["Tipo"] == "QueryEjecutar":
+                                            divi = str(xxx[yy["Elemento"]]).split('$')
+                                            qr_var = str(divi[0]).split(',')
+                                            qr_sente = str(divi[1]).split('&')
+                                            paraejecutar = 'select ' + str(qr_sente[0]) + ' as "resul" from ' + str(qr_sente[1]) + ' where ' + str(qr_sente[2])
+                                            for a in qr_var:
+                                                qr_var_indi = a.split(':')
+                                                paraejecutar = paraejecutar.replace(qr_var_indi[0],  envio_datset[yy["Tabla"]][0][qr_var_indi[1]] )
+                                            tempo_ingre[yy["Campo"]] = db.cmpconso_ejecutar(paraejecutar)[0]['resul']
+                                        if yy["Tipo"] == "Auto":
+                                            if yy["Campo"] == 'PKCabecera':
+                                                tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
                                             else:
-                                                sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " +  A_Group + ', ' + A_GroupWhere
-                                
-                                        tempo_valor = db.cmpconso_ejecutar(sentencia)
-                                        if len(tempo_valor) == 0:
-                                            dd[yy["Campo"]] = 0 
-                                        else:
-                                            dd[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
+                                                if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
+                                                    valores_pk[yy["Campo"]] = (valores_pk[yy["Campo"]]) + 1 
+                                                    tempo_ingre[yy["Campo"]] = valores_pk[yy["Campo"]]
 
-                                    #if yy["Origen"] == "cmpdecabecera":
-                                    if yy["Origen"] == "cmpfecha":  
-                                        if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Tiempo"] == 'Y':
-                                            dd[yy["Campo"]] = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                                        else:
-                                            dd[yy["Campo"]] = str(datetime.now().strftime('%Y-%m-%d'))
-                       
-                    for y in dataset_ingresar:
-                        for yy in dataset_ingresar[y]:
-                            sentencia = "insert into `" + str(dict_pk_nombre_tabla[pkestru_por_pkaacc[y]]) +  "` (" 
-                            Vsentencia = "VALUES ("
-                            for y3 in yy:                                
-                                sentencia = sentencia + "`" + str(y3) + "`, "
-                                Vsentencia = Vsentencia + "'" + str(yy[y3]) + "', "
-                            sentencia = sentencia[0:-2] + ")"
-                            Vsentencia = Vsentencia[0:-2] + ")"
-                            senten_acc.append( sentencia + Vsentencia )
-                    #a/0
- 
-            if z["Accion"] == "Modificar":
-                if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
-                    Update = ""
-                    UpdateFrom = "UPDATE"
-                    UpdateSet = "SET"
-                    UpdateWhere = "WHERE "
-                    Updatehaving  = " "
-                    Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
-                    Updata = db.TraerUpdateFrom(z["PkAccion"])
-                    for y in Updata:
-                        UpdateFrom = UpdateFrom + " " + str(y["Tabla"]) + ", "
-                    UpdateFrom = UpdateFrom[0:-2]
-                    
-                    Updata = db.TraerUpdateWhere(z["PkAccion"])
-                    for y in Updata:
-                        if y["Tipo"] == "Campo":
-                            UpdateWhere = UpdateWhere + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Valor":
-                            UpdateWhere = UpdateWhere + "'" + str(y["Elemento"]) + "' "
-                        if y["Tipo"] == "Operacion":
-                            UpdateWhere = UpdateWhere + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Registro":
-                            UpdateWhere = UpdateWhere + " '" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "' "
-                        if y["Tipo"] == "Registro sin Comillas":
-                            UpdateWhere = UpdateWhere +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
-
-                    Updata = db.TraerUpdatehaving(z["PkAccion"])
-                    for y in Updata:
-                        if y["Tipo"] == "Campo":
-                            Updatehaving = Updatehaving + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Valor":
-                            Updatehaving = Updatehaving + "'" + str(y["Elemento"]) + "' "
-                        if y["Tipo"] == "Operacion":
-                            Updatehaving = Updatehaving + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Registro":
-                            Updatehaving = Updatehaving + " '" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "' "
-                        if y["Tipo"] == "Registro sin Comillas":
-                            Updatehaving = Updatehaving +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
-
-                    Updata = db.TraerUpdateSet(z["PkAccion"])
-                    for y in Updata:
-                        if y["Tipo"] == "Campo":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(y["Valor"]) + ", "
-                        if y["Tipo"] == "Valor":
-                            if y["Valor"] == "@Usuario@":
-                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(request.POST.getlist('usuario')[0]) + "', "
-                            else:
-                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = '" + str(y["Valor"]) + "', "
-                        if y["Tipo"] == "Operacion":
-                            variables = y["Variables"].split(",")
-                            valor_final = y["Valor"]
-                            if not(y["Variables"] == ''):
-                                for yy in variables:
-                                    valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
-                        if y["Tipo"] == "Registro":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "', "
-                        if y["Tipo"] == "Registro sin Comillas":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + ", "
-                        if y["Tipo"] == "Variable":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(IngVariables[y["Valor"]]) + "', "
+                                                else:
+                                                    sentencia_int = 'select max( cast( ' + str(yy["Campo"]) + '  as decimal(12,0)) )+1 as "' + str(yy["Campo"]) + '"  from ' + str(dict_pk_nombre_tabla[y["PkEstructura"]])
+                                                    tempo_valor = db.cmpconso_ejecutar(sentencia_int)
+                                                    if tempo_valor[0][yy["Campo"]] == None:
+                                                        tempo_ingre[yy["Campo"]] = 0
+                                                    else:    
+                                                        tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
+                                    tempo_ingre1.append(tempo_ingre)
+                                dataset_ingresar.update({y["PkAccionL2"]:tempo_ingre1})
                         
-                    UpdateSet = UpdateSet[0:-2]    
-                    if UpdateWhere == "WHERE":
-                        Update = UpdateFrom + " " + UpdateSet + " " + Updatehaving
-                    else:
-                        Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
-                    senten_acc.append(Update)
-            if z["Accion"] == "cc_actualizaciones":
-                if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
-                    Update = ""
-                    UpdateFrom = "UPDATE"
-                    UpdateSet = "SET"
-                    UpdateWhere = "WHERE "
-                    Updatehaving  = " "
+                        cc_fila = len(datosRegistros)
+                        pkestru_por_pkaacc = {}
+                        for y in reversed(datosRegistros):
+                            pkestru_por_pkaacc.update({y["PkAccionL2"]:y["PkEstructura"]})
+                            for dd in dataset_ingresar[y["PkAccionL2"]]:
+                                for yy in accionescampos[y["PkAccionL2"]]: 
+                                    if yy["Tipo"] == "Auto":
+                                        if yy["Origen"] == "cmpsistema":
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Nombre"] == 'Usuario Actual':
+                                                dd[yy["Campo"]] = request.POST.getlist('usuario')[0]
+
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Nombre"] == 'Fecha Actual': 
+                                                dd[yy["Campo"]] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Nombre"] == 'Hora Actual':                                      
+                                                dd[yy["Campo"]] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                                        if yy["Origen"] == "cmpformuladetalle":
+                                            valor_final = 0
+                                            cc_final = 0
+                                            Valor_temp = 0
+
+                                            Campo_a_oper = obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Campo"]
+                                            Campo_a_sumar = Campo_a_oper.split(".")
+                                            for x3 in datosRegistros:
+                                                if str(x3['PkEstructura']) == str(obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["TablaDetalle"]):
+                                                    for x4 in dataset_ingresar[x3["PkAccionL2"]]:
+                                                        if x4[Campo_a_sumar[1]] != "":
+                                                            Valor_temp = float(x4[Campo_a_sumar[1]])
+                                                        else:
+                                                            Valor_temp = 0
+                                                        excluido = False
+                                                        for ss in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][1]:
+                                                            valor_comparar = 0
+                                                            if ss["Tipo"] == "Valor":
+                                                                valor_comparar = ss["Valor"]
+                                                            else:
+                                                                valor_comparar = x4[ss["Valor"]]
+                                                            if ss["Operador"] == "=":
+                                                                if x4["Campo"] != valor_comparar:
+                                                                    excluido = True
+                                                            if ss["Operador"] == ">":
+                                                                if x4["Campo"] <= valor_comparar:
+                                                                    excluido = True
+                                                            if ss["Operador"] == "<":
+                                                                if x4["Campo"] >= valor_comparar:
+                                                                    excluido = True
+                                                            if ss["Operador"] == ">=":
+                                                                if x4["Campo"] < valor_comparar:
+                                                                    excluido = True
+                                                            if ss["Operador"] == "<=":
+                                                                if x4["Campo"] > valor_comparar:
+                                                                    excluido = True
+                                                            if ss["Operador"] == "!=":
+                                                                if x4["Campo"] == valor_comparar:
+                                                                    excluido = True
+                                                        if excluido == False:
+                                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Suma":
+                                                                valor_final =  float(valor_final) + float(Valor_temp)
+                                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Promedio":
+                                                                valor_final =  float(valor_final) + float(Valor_temp)
+                                                                cc_final =  cc_final + 1
+                                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Maximo":
+                                                                if float(valor_final) > float(Valor_temp):
+                                                                    valor_final = float(Valor_temp)                                                    
+                                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Minimo":
+                                                                if float(valor_final) < float(Valor_temp):
+                                                                    valor_final = float(Valor_temp) 
+                                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Contar":
+                                                                cc_final =  cc_final + 1
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Suma":
+                                                dd[yy["Campo"]] = round(float(valor_final) , 2)                                               
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Promedio":
+                                                dd[yy["Campo"]] = float(valor_final / cc_final)
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Maximo":
+                                                dd[yy["Campo"]] = float(valor_final)                                                    
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Minimo":
+                                                dd[yy["Campo"]] = float(valor_final)                                                    
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0][0]["Operacion"] == "Contar":
+                                                dd[yy["Campo"]] = float(cc_final)                                                    
+                                        if yy["Origen"] == "cmpoperacion":
+                                            temp  = 0.0
+                                            operador = "="
+                                            Valor = 0.0
+                                            for u in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][1]:
+                                                if u["Estado"] == "O":
+                                                    operador = u["Sentencia"]
+                                                else:
+                                                    if u["Estado"] == "C":
+                                                        Valor = dd[u["Sentencia"]]
+                                                    if u["Estado"] == "V":
+                                                        Valor = u["Sentencia"]
+                                                    if operador == "":
+                                                        temp = float(Valor)
+                                                    if(operador == "+"):
+                                                        temp = float(temp) + float(Valor)
+                                                    if(operador == "-"):
+                                                        temp = float(temp) - float(Valor)
+                                                    if(operador == "*"):
+                                                        temp = float(temp) * float(Valor)
+                                                    if(operador == "/"):
+                                                        if Valor > 0:
+                                                            temp = float(temp) / float(Valor)
+                                                        else:
+                                                            temp = 0
+                                            dd[yy["Campo"]] = temp                       
+                                        if yy["Origen"] == "cmpconsolidado":
+                                            A_Select = 'Select ( '
+                                            A_From = 'From '
+                                            A_Where = 'Where '
+                                            A_Group = ''
+                                            A_GroupWhere = ''
+                                            sentencia = ""
+                                            FaltaDato = False
+                                            for x3 in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][1]:
+                                                A_From = A_From + str(x3["Tabla"]) + ' as ' + str(x3["Nombre"]) + ', '
+                                            if A_From == 'From ':
+                                                A_From = ''
+                                            else:
+                                                A_From = A_From[0:-2]
+                                            for x3 in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][2]:
+                                                if x3["Tipo"] == "Valor":
+                                                    A_Where = A_Where + " '" + str(x3["Elemento"]) + "' "
+                                                if x3["Tipo"] == "Operacion":
+                                                    A_Where = A_Where + " " + str(x3["Elemento"]) + " "                                                
+                                                if x3["Tipo"] == "Registro":
+                                                    A_Where = A_Where + " '" + str(dd[x3["Elemento"]]) + "' "                                                
+                                                if x3["Tipo"] == "Campo":
+                                                    if x3["Funcion"] == "":
+                                                        A_Where = A_Where + str(x3["Origen"]) + '.' + str(x3["Elemento"])
+                                                    else:
+                                                        if x3["Funcion"] == "Suma":
+                                                            A_Where = A_Where + ' Sum(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
+                                                        if x3["Funcion"] == " Promedio":
+                                                            A_Where = A_Where + ' Avg(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
+                                                        if x3["Funcion"] == "Contar":
+                                                            A_Where = A_Where + ' Count(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
+                                                        A_GroupWhere = A_GroupWhere + str(x3["Origen"]) + '.' + str(x3["Elemento"]) + ', '
+                                            if A_GroupWhere != '':
+                                                A_GroupWhere = A_GroupWhere[0:-2]
+                                            if A_Where == "Where ":
+                                                A_Where == ""
+
+                                            for x3 in obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][3]:
+                                                if x3["Tipo"] == "Valor":
+                                                    A_Select = A_Select + " '" + str(x3["Elemento"]) + "' "
+                                                if x3["Tipo"] == "Operacion":
+                                                    A_Select = A_Select + " " + str(x3["Elemento"]) + " "                                                
+                                                if x3["Tipo"] == "Registro":
+                                                    A_Select = A_Select + " '" + str(dd[x3["Elemento"]]) + "' "                                                
+                                                if x3["Tipo"] == "Campo":
+                                                    if x3["Funcion"] == "":
+                                                        A_Select = A_Select + str(x3["Origen"]) + '.' + str(x3["Elemento"])
+                                                    else:
+                                                        if x3["Funcion"] == "Suma":
+                                                            A_Select = A_Select + ' Sum(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
+                                                        if x3["Funcion"] == "Promedio":
+                                                            A_Select = A_Select + ' Avg(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
+                                                        if x3["Funcion"] == "Contar":
+                                                            A_Select = A_Select + ' Count(' + str(x3["Origen"]) + '.' + str(x3["Elemento"])+ ') '
+                                                        A_Group = A_Group + str(x3["Origen"]) + '.' + str(x3["Elemento"]) + ', '
+                                            if A_Group != '':
+                                                A_Group = A_Group[0:-2]
+                                            A_Select = A_Select + " ) as '" + str(yy["Campo"]) + "'"
+                                            if(A_Group == ""):
+                                                if(A_GroupWhere == ""):
+                                                    sentencia = A_Select + " " + A_From + " " + A_Where
+                                                else:
+                                                    sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " +  A_GroupWhere
+                                            else:
+                                                if(A_GroupWhere == ""):
+                                                    sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " + A_Group
+                                                else:
+                                                    sentencia = A_Select + " " + A_From + " " + A_Where + " Group by  " +  A_Group + ', ' + A_GroupWhere
+                                    
+                                            tempo_valor = db.cmpconso_ejecutar(sentencia)
+                                            if len(tempo_valor) == 0:
+                                                dd[yy["Campo"]] = 0 
+                                            else:
+                                                dd[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
+
+                                        #if yy["Origen"] == "cmpdecabecera":
+                                        if yy["Origen"] == "cmpfecha":  
+                                            if obj_funciones_campos[y["PkEstructura"]][yy["Campo"]][0]["Tiempo"] == 'Y':
+                                                dd[yy["Campo"]] = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                                            else:
+                                                dd[yy["Campo"]] = str(datetime.now().strftime('%Y-%m-%d'))
+                        
+                        for y in dataset_ingresar:
+                            for yy in dataset_ingresar[y]:
+                                sentencia = "insert into `" + str(dict_pk_nombre_tabla[pkestru_por_pkaacc[y]]) +  "` (" 
+                                Vsentencia = "VALUES ("
+                                for y3 in yy:                                
+                                    sentencia = sentencia + "`" + str(y3) + "`, "
+                                    Vsentencia = Vsentencia + "'" + str(yy[y3]) + "', "
+                                sentencia = sentencia[0:-2] + ")"
+                                Vsentencia = Vsentencia[0:-2] + ")"
+                                senten_acc.append( sentencia + Vsentencia )
+                        #a/0
+
+                if z["Accion"] == "Modificar":
+                    if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
+                        Update = ""
+                        UpdateFrom = "UPDATE"
+                        UpdateSet = "SET"
+                        UpdateWhere = "WHERE "
+                        Updatehaving  = " "
+                        Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
+                        Updata = db.TraerUpdateFrom(z["PkAccion"])
+                        for y in Updata:
+                            UpdateFrom = UpdateFrom + " " + str(y["Tabla"]) + ", "
+                        UpdateFrom = UpdateFrom[0:-2]
+                        
+                        Updata = db.TraerUpdateWhere(z["PkAccion"])
+                        for y in Updata:
+                            if y["Tipo"] == "Campo":
+                                UpdateWhere = UpdateWhere + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Valor":
+                                UpdateWhere = UpdateWhere + "'" + str(y["Elemento"]) + "' "
+                            if y["Tipo"] == "Operacion":
+                                UpdateWhere = UpdateWhere + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Registro":
+                                UpdateWhere = UpdateWhere + " '" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "' "
+                            if y["Tipo"] == "Registro sin Comillas":
+                                UpdateWhere = UpdateWhere +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+
+                        Updata = db.TraerUpdatehaving(z["PkAccion"])
+                        for y in Updata:
+                            if y["Tipo"] == "Campo":
+                                Updatehaving = Updatehaving + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Valor":
+                                Updatehaving = Updatehaving + "'" + str(y["Elemento"]) + "' "
+                            if y["Tipo"] == "Operacion":
+                                Updatehaving = Updatehaving + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Registro":
+                                Updatehaving = Updatehaving + " '" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "' "
+                            if y["Tipo"] == "Registro sin Comillas":
+                                Updatehaving = Updatehaving +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+
+                        Updata = db.TraerUpdateSet(z["PkAccion"])
+                        for y in Updata:
+                            if y["Tipo"] == "Campo":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(y["Valor"]) + ", "
+                            if y["Tipo"] == "Valor":
+                                if y["Valor"] == "@Usuario@":
+                                    UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(request.POST.getlist('usuario')[0]) + "', "
+                                else:
+                                    UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = '" + str(y["Valor"]) + "', "
+                            if y["Tipo"] == "Operacion":
+                                variables = y["Variables"].split(",")
+                                valor_final = y["Valor"]
+                                if not(y["Variables"] == ''):
+                                    for yy in variables:
+                                        valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
+                            if y["Tipo"] == "Registro":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "', "
+                            if y["Tipo"] == "Registro sin Comillas":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + ", "
+                            if y["Tipo"] == "Variable":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(IngVariables[y["Valor"]]) + "', "
+                            
+                        UpdateSet = UpdateSet[0:-2]    
+                        if UpdateWhere == "WHERE":
+                            Update = UpdateFrom + " " + UpdateSet + " " + Updatehaving
+                        else:
+                            Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
+                        senten_acc.append(Update)
+                if z["Accion"] == "cc_actualizaciones":
+                    if validar_condiciones(request, Id_empresa, z["PkAccion"], envio_datset) == True:
+                        Update = ""
+                        UpdateFrom = "UPDATE"
+                        UpdateSet = "SET"
+                        UpdateWhere = "WHERE "
+                        Updatehaving  = " "
+                        Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
+                        Updata = db.TraerUpdateFrom(z["PkAccion"])
+                        for y in Updata:
+                            UpdateFrom = UpdateFrom + " " + str(y["Tabla"]) + ", "
+                        UpdateFrom = UpdateFrom[0:-2]
+                        
+                        Updata = db.TraerUpdateWhere(z["PkAccion"])
+                        for y in Updata:
+                            if y["Tipo"] == "Campo":
+                                UpdateWhere = UpdateWhere + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Valor":
+                                UpdateWhere = UpdateWhere + "\'" + str(y["Elemento"]) + "\' "
+                            if y["Tipo"] == "Operacion":
+                                UpdateWhere = UpdateWhere + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Registro":
+                                UpdateWhere = UpdateWhere + " \'" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "\' "
+                            if y["Tipo"] == "Registro sin Comillas":
+                                UpdateWhere = UpdateWhere +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+
+                        Updata = db.TraerUpdatehaving(z["PkAccion"])
+                        for y in Updata:
+                            if y["Tipo"] == "Campo":
+                                Updatehaving = Updatehaving + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Valor":
+                                Updatehaving = Updatehaving + "\'" + str(y["Elemento"]) + "\' "
+                            if y["Tipo"] == "Operacion":
+                                Updatehaving = Updatehaving + str(y["Elemento"]) + "  "
+                            if y["Tipo"] == "Registro":
+                                Updatehaving = Updatehaving + " \'" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "\' "
+                            if y["Tipo"] == "Registro sin Comillas":
+                                Updatehaving = Updatehaving +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+
+                        Updata = db.TraerUpdateSet(z["PkAccion"])
+                        for y in Updata:
+                            if y["Tipo"] == "Campo":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(y["Valor"]) + ", "
+                            if y["Tipo"] == "Valor":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = \'" + str(y["Valor"]) + "\', "
+                            if y["Tipo"] == "Operacion":
+                                variables = y["Variables"].split(",")
+                                valor_final = y["Valor"]
+                                if not(y["Variables"] == ''):
+                                    for yy in variables:
+                                        valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
+                            if y["Tipo"] == "Registro":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = \'" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "\', "
+                            if y["Tipo"] == "Registro sin Comillas":
+                                UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + ", "
+                        UpdateSet = UpdateSet[0:-2]    
+                        if UpdateWhere == "WHERE":
+                            Update = UpdateFrom + " " + UpdateSet + " " + Updatehaving
+                        else:
+                            Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
+                        logger.debug('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
+                        senten_acc.append('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
+                if z["Accion"] == "Email":
+                    datosCorreo = db.TraerAccionesCorreo(z["PkAccion"])
                     Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
-                    Updata = db.TraerUpdateFrom(z["PkAccion"])
-                    for y in Updata:
-                        UpdateFrom = UpdateFrom + " " + str(y["Tabla"]) + ", "
-                    UpdateFrom = UpdateFrom[0:-2]
-                    
-                    Updata = db.TraerUpdateWhere(z["PkAccion"])
-                    for y in Updata:
-                        if y["Tipo"] == "Campo":
-                            UpdateWhere = UpdateWhere + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Valor":
-                            UpdateWhere = UpdateWhere + "\'" + str(y["Elemento"]) + "\' "
-                        if y["Tipo"] == "Operacion":
-                            UpdateWhere = UpdateWhere + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Registro":
-                            UpdateWhere = UpdateWhere + " \'" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "\' "
-                        if y["Tipo"] == "Registro sin Comillas":
-                            UpdateWhere = UpdateWhere +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
 
-                    Updata = db.TraerUpdatehaving(z["PkAccion"])
-                    for y in Updata:
-                        if y["Tipo"] == "Campo":
-                            Updatehaving = Updatehaving + str(y["Origen"]) + "." + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Valor":
-                            Updatehaving = Updatehaving + "\'" + str(y["Elemento"]) + "\' "
-                        if y["Tipo"] == "Operacion":
-                            Updatehaving = Updatehaving + str(y["Elemento"]) + "  "
-                        if y["Tipo"] == "Registro":
-                            Updatehaving = Updatehaving + " \'" + str(envio_datset[Nom_tabla_cab][0][y["Elemento"]])  + "\' "
-                        if y["Tipo"] == "Registro sin Comillas":
-                            Updatehaving = Updatehaving +  str(envio_datset[Nom_tabla_cab][0][y["Elemento"]]) + " "
+                    for correo in datosCorreo:
+                        #De
+                        #Para
+                        #Tema
+                        #Cuerpo
+                        #Variables
 
-                    Updata = db.TraerUpdateSet(z["PkAccion"])
-                    for y in Updata:
-                        if y["Tipo"] == "Campo":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(y["Valor"]) + ", "
-                        if y["Tipo"] == "Valor":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "."+ str(y["Campo"]) + " = \'" + str(y["Valor"]) + "\', "
-                        if y["Tipo"] == "Operacion":
-                            variables = y["Variables"].split(",")
-                            valor_final = y["Valor"]
-                            if not(y["Variables"] == ''):
-                                for yy in variables:
-                                    valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
-                        if y["Tipo"] == "Registro":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = \'" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "\', "
-                        if y["Tipo"] == "Registro sin Comillas":
-                            UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + ", "
-                    UpdateSet = UpdateSet[0:-2]    
-                    if UpdateWhere == "WHERE":
-                        Update = UpdateFrom + " " + UpdateSet + " " + Updatehaving
-                    else:
-                        Update = UpdateFrom + " " + UpdateSet + "  " + UpdateWhere + " " + Updatehaving
-                    logger.debug('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
-                    senten_acc.append('INSERT INTO `cc_actualizaciones` (`nombre`, `sentencia`) VALUES ("'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S') +'", "'+ Update +'")')
-            if z["Accion"] == "Email":
-                datosCorreo = db.TraerAccionesCorreo(z["PkAccion"])
-                Nom_tabla_cab = db.TraerNombre_tabla(z["PkModulo"])[0]["Nombre"]
+                        sender = correo['De']
+                        receivers = str(envio_datset[Nom_tabla_cab][0][correo['Para']])
 
-                for correo in datosCorreo:
-                    #De
-                    #Para
-                    #Tema
-                    #Cuerpo
-                    #Variables
+                        messageCat = correo['CuerpoCab']
+                        messagePie = correo['CuerpoPie']
 
-                    sender = correo['De']
-                    receivers = str(envio_datset[Nom_tabla_cab][0][correo['Para']])
+                        messageDer = ''
 
-                    messageCat = correo['CuerpoCab']
-                    messagePie = correo['CuerpoPie']
+                        VarCab = json.loads(correo['VariablesCad']) # {@var1:campo1,@var2:campo2}
 
-                    messageDer = ''
+                        for var in VarCab:
+                            messageCat = messageCat.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+                            messagePie = messagePie.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
 
-                    VarCab = json.loads(correo['VariablesCad']) # {@var1:campo1,@var2:campo2}
+                        VarDet = json.loads(correo['VariablesDet']) # {@var1:campo1,@var2:campo2}
+                        if len(VarDet)>0:
+                            Nom_tabla_det = db.ListadoTablas(z["PkModulo"])[1]["Nombre"]
+                            for fila in envio_datset[Nom_tabla_det]:
+                                Linea = correo['CuerpoDet']
+                                for var in VarDet:
+                                    Linea = Linea.replace(var,str(fila[VarDet[var]]))
+                                messageDer = messageDer + Linea + '\n'
 
-                    for var in VarCab:
-                        messageCat = messageCat.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
-                        messagePie = messagePie.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+                        cuerpo = messageCat + '\n' + messageDer + '\n' + messagePie
 
-                    VarDet = json.loads(correo['VariablesDet']) # {@var1:campo1,@var2:campo2}
-                    if len(VarDet)>0:
-                        Nom_tabla_det = db.ListadoTablas(z["PkModulo"])[1]["Nombre"]
-                        for fila in envio_datset[Nom_tabla_det]:
-                            Linea = correo['CuerpoDet']
-                            for var in VarDet:
-                                Linea = Linea.replace(var,str(fila[VarDet[var]]))
-                            messageDer = messageDer + Linea + '\n'
-
-                    cuerpo = messageCat + '\n' + messageDer + '\n' + messagePie
-
-                    
-                    envio_email(str(envio_datset[Nom_tabla_cab][0][correo['Para']]), cuerpo, correo['De'])
+                        
+                        envio_email(str(envio_datset[Nom_tabla_cab][0][correo['Para']]), cuerpo, correo['De'])
+        except Exception as e: 
+            return ['Valio', type(e).__name__ + str(e) + z['Nombre']]
     return senten_acc
 
 def envio_email(para, msg, por):
@@ -2384,7 +2392,7 @@ def validar_user_empresa_admin(request, Id_empresa, usuario, clave):
         request.session['conn_pass'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_pass']})
         request.session['conn_base'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_base']})
         request.session['conn_ip'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_ip']})
-        request.session['conn_port'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_ip']})        
+        request.session['conn_port'].update({dbEmpresa[0]['Id_erp']:dbEmpresa[0]['conn_port']})        
         
         request.session.save()
         log_empresa = dbEmpresa[0]['Negocio']

@@ -10746,6 +10746,16 @@ function calcular_detalle_nuevo(pestana_int, fila) {
     }
     if (Response["campos_det"][x]["TablaCampo"] == "cmpreferencia") {
       valor_campo = 0
+      if(Response['func_det'][Response["campos_det"][x]["Nombre"]][0][0]['predeterminado_valor'] != ''){
+        
+        if(Response['func_det'][Response["campos_det"][x]["Nombre"]][0][0]['Tipo_Predeterminado'] == '0'){
+          valor_campo = Response['func_det'][Response["campos_det"][x]["Nombre"]][0][0]['predeterminado_valor']  
+          document.getElementById(ID_TAG).value  = valor_campo
+          buscar_referencia_detalle_enter(ID_TAG)
+        }
+
+      }
+
     }
     if (Response["campos_det"][x]["TablaCampo"] == "cmpreferenciaadjunto") {
       valor_campo = 0

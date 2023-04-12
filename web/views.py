@@ -143,6 +143,7 @@ def logExterno(request):
     if request.method == 'POST':
         #erp_data = web.erp_log_menu
         #Respuesta = erp_data.validar_user_empresa(request, l_inputEmpresa, l_inputUsuario, l_inputPassword)
+        negocio = request.POST.getlist('negocio')[0]
         if request.POST.getlist('ingreso')[0] == 'crear':
             negocio_nom = db.traer_negocio(negocio)
             acceso = ext.acceso_externo(request, negocio_nom, negocio)
@@ -1198,7 +1199,9 @@ def activar_usuario_directo(request, Clave_act):
             request.session['conn_pass'].update({clave_vale[0]["Id_erp"]:"P"+str(clave_vale[0]["Id_erp"])+'_'+str(clave_base)})
             request.session['conn_base'].update({clave_vale[0]["Id_erp"]:'cliente_'+str(clave_vale[0]["Id_erp"])})
             request.session['conn_ip'].update({clave_vale[0]["Id_erp"]:'127.0.0.1'})        
-            request.session['conn_ip'].update({clave_vale[0]["Id_erp"]:'107.170.92.160'})        
+            request.session['conn_ip'].update({clave_vale[0]["Id_erp"]:'107.170.92.160'})    
+            request.session['conn_port'].update({clave_vale[0]["Id_erp"]:'3306'})    
+                
             request.session.save()
             erp_data = web.erp_log_menu         
             erp_data.creacion_inicial(request, clave_vale[0]["Id_erp"], clave_vale[0]["u_clave"], clave_vale[0]["u_correo"])
@@ -1226,7 +1229,9 @@ def activar_usuario(request, Clave_act):
             request.session['conn_user'].update({clave_vale[0]["Id_erp"]:'user_'+str(clave_vale[0]["Id_erp"])})
             request.session['conn_pass'].update({clave_vale[0]["Id_erp"]:"P"+str(clave_vale[0]["Id_erp"])+'_'+str(clave_base)})
             request.session['conn_base'].update({clave_vale[0]["Id_erp"]:'cliente_'+str(clave_vale[0]["Id_erp"])})
-            request.session['conn_ip'].update({clave_vale[0]["Id_erp"]:'107.170.92.160'})        
+            request.session['conn_ip'].update({clave_vale[0]["Id_erp"]:'107.170.92.160'})    
+            request.session['conn_port'].update({clave_vale[0]["Id_erp"]:'3306'})    
+    
             request.session.save()
             erp_data = web.erp_log_menu         
             erp_data.creacion_inicial(request, clave_vale[0]["Id_erp"], clave_vale[0]["u_clave"], clave_vale[0]["u_correo"])

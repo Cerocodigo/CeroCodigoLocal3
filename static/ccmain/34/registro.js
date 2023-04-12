@@ -4608,6 +4608,9 @@ function calcular_0_v2(pestana_int, cc_cambios) {
                             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == ">") { if (document.getElementById(ID_TAG_campoA).value <= valor_comparar) { excluido = 1 } }
                             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == "<=") { if (document.getElementById(ID_TAG_campoA).value > valor_comparar) { excluido = 1 } }
                             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == ">=") { if (document.getElementById(ID_TAG_campoA).value < valor_comparar) { excluido = 1 } }
+                            if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == "!=") { if (document.getElementById(ID_TAG_campoA).value == valor_comparar) { excluido = 1 } }
+                            
+
                         }
 
                         if (excluido == 0) {
@@ -5054,6 +5057,8 @@ function calcular_0(pestana_int) {
                             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == ">") { if (document.getElementById(ID_TAG_campoA).value <= valor_comparar) { excluido = 1 } }
                             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == "<=") { if (document.getElementById(ID_TAG_campoA).value > valor_comparar) { excluido = 1 } }
                             if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == ">=") { if (document.getElementById(ID_TAG_campoA).value < valor_comparar) { excluido = 1 } }
+                            if (Response["func_cab"][Response["campos_cab"][x]["Nombre"]][1][x3]["Operador"] == "!=") { if (document.getElementById(ID_TAG_campoA).value == valor_comparar) { excluido = 1 } }
+
                         }
 
                         if (excluido == 0) {
@@ -5424,6 +5429,8 @@ function calcular_0_final(pestana_int) {
                                 if (Response["func_cab"][Response["campos_cab"][ee]["Nombre"]][1][x3]["Operador"] == ">") { if (document.getElementById(ID_TAG_campoA).value <= valor_comparar) { excluido = 1 } }
                                 if (Response["func_cab"][Response["campos_cab"][ee]["Nombre"]][1][x3]["Operador"] == "<=") { if (document.getElementById(ID_TAG_campoA).value > valor_comparar) { excluido = 1 } }
                                 if (Response["func_cab"][Response["campos_cab"][ee]["Nombre"]][1][x3]["Operador"] == ">=") { if (document.getElementById(ID_TAG_campoA).value < valor_comparar) { excluido = 1 } }
+                                if (Response["func_cab"][Response["campos_cab"][ee]["Nombre"]][1][x3]["Operador"] == "!=") { if (document.getElementById(ID_TAG_campoA).value == valor_comparar) { excluido = 1 } }
+
                             }
 
                             if (excluido == 0) {
