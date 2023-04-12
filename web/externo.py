@@ -72,7 +72,9 @@ def acceso_externo(request, datos_con, Id_empresa):
     request.session['conn_user'].update({Id_empresa:datos_con[0]['conn_user']})
     request.session['conn_pass'].update({Id_empresa:datos_con[0]['conn_pass']})
     request.session['conn_base'].update({Id_empresa:datos_con[0]['conn_base']})
-    request.session['conn_ip'].update({Id_empresa:datos_con[0]['conn_ip']})        
+    request.session['conn_ip'].update({Id_empresa:datos_con[0]['conn_ip']})  
+    request.session['conn_port'].update({Id_empresa:datos_con[0]['conn_port']})  
+          
     request.session.save()
     return datos_accose
 
@@ -94,13 +96,15 @@ def validar_user_externo(request, Id_empresa, inputUsuario, inputPassword):
                     request.session['conn_pass'] = {}
                     request.session['conn_base'] = {}
                     request.session['conn_ip'] = {}
-                request.session['conn_port'] = {}
-            if not(request.session.has_key('conn_port')):
-                request.session['conn_port'] = {}
+                    request.session['conn_port'] = {}
+                if not(request.session.has_key('conn_port')):
+                    request.session['conn_port'] = {}
                 request.session['conn_user'].update({Id_empresa:dbEmpresa[0]['conn_user']})
                 request.session['conn_pass'].update({Id_empresa:dbEmpresa[0]['conn_pass']})
                 request.session['conn_base'].update({Id_empresa:dbEmpresa[0]['conn_base']})
-                request.session['conn_ip'].update({Id_empresa:dbEmpresa[0]['conn_ip']})        
+                request.session['conn_ip'].update({Id_empresa:dbEmpresa[0]['conn_ip']})       
+                request.session['conn_port'].update({Id_empresa:dbEmpresa[0]['conn_port']})       
+                 
                 request.session.save()
                 db_cliente = web.con_db.externo_cliente(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa],'3306') 
                 cal_accrap = db_cliente.cal_accrap('Externo')
