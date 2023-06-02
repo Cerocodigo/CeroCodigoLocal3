@@ -1,7 +1,7 @@
 
 import datetime
-from macpath import split
-
+#from macpath import split
+from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
@@ -11,9 +11,28 @@ from datetime import datetime
 from reportlab.lib.pagesizes import letter, landscape, A4
 from reportlab_qrcode import QRCodeImage
 from reportlab.graphics.shapes import *
+from PyPDF2 import PdfFileReader, PdfFileMerger
 
 import web.con_db
 import web.firma_pdf
+
+def split_text(c, text, max_width):
+    lines = []
+    words = text.split()
+    current_line = ""
+
+    for word in words:
+        if c.stringWidth(current_line + " " + word, "Helvetica", 12) <= max_width:
+            current_line += " " + word
+        else:
+            lines.append(current_line.strip())
+            current_line = word
+
+    if current_line:
+        lines.append(current_line.strip())
+
+    return lines
+
 
 def crear_pdf_registro(request, Id_empresa, PkModulo, PkRegistro, envio_datset, pkplantilla):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
@@ -436,6 +455,7 @@ def crear_pdf_panel_historia_Clinica(request, Id_empresa):
                     else:
                       certify = firma.traerdatos_usuario(request, a2['valor'], request.POST.getlist('Id_empresa')[0])
                       if len(certify)>0:
+                        firmados.append(a2['valor'])
                         qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                         qr.drawOn(pdf, float(a2['x'])*cm, (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) +  float(max_detalle))) *cm)
                         pdf.drawString((float(a2['x'])+ 2)*cm,  (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) -1.5 + float(max_detalle)) ) *cm   , 'Firmado Electronico')
@@ -779,6 +799,7 @@ def crear_pdf_panel(request, Id_empresa):
                   txt= txt[:-2]
                   certify = firma.traerdatos_usuario(request, txt, request.POST.getlist('Id_empresa')[0])
                   if len(certify)>0:
+                    firmados.append(txt)
                     qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                     qr.drawOn(pdf, float(a2['x'])*cm, (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) +  float(max_detalle))) *cm)
                     pdf.drawString((float(a2['x'])+ 2)*cm,  (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) -1.5 + float(max_detalle)) ) *cm   , 'Firmado Electronico')
@@ -813,6 +834,7 @@ def crear_pdf_panel_continua(request, Id_empresa):
     indice_pag = 0
     lineaY = 0
     archivos_anexos = []
+    ultimalineaY = 0
 
     plan_seg  = db.traer_plantilla_pdf_seg_tipo(request.POST.getlist('t_pkpaneL_g')[0], 'Cabecera')
     for a in plan_seg:
@@ -859,6 +881,7 @@ def crear_pdf_panel_continua(request, Id_empresa):
                   valor = a2['valor'].split('.')
                   certify = firma.traerdatos_usuario(request, str(dato[valor[1]]) , request.POST.getlist('Id_empresa')[0])
                   if len(certify)>0:
+                    firmados.append(str(dato[valor[1]]))
                     qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                     qr.drawOn(pdf, float(a2['x'])*cm, (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) + lineaY)) *cm)
                     pdf.drawString((float(a2['x'])+ 2)*cm,  (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) + lineaY -1.5) ) *cm   , 'Firmado Electronico')
@@ -904,6 +927,8 @@ def crear_pdf_panel_continua(request, Id_empresa):
                             pdf.drawRightString(float(a2['x'])*cm,  (float(request.POST.getlist('t_largo')[0]) - float(a2['y'])- lineaY -bloq+ float(a['altura'])) *cm   , txt)         
                         break
                   bloq = bloq + 0.5
+              if ultimalineaY < float(a2['y']):
+                ultimalineaY = float(a2['y'])
 
     for fecha in plan_fechas:
       for a in plan_bases:
@@ -1012,6 +1037,73 @@ def crear_pdf_panel_continua(request, Id_empresa):
             else:
               lineaY = lineaY + float(a['linea_ficha'])
 
+    if ultimalineaY > lineaY:
+      lineaY = ultimalineaY
+    max_ancho = float(request.POST.getlist('t_Ancho')[0])*cm - 140           
+    medio = float(request.POST.getlist('t_Ancho')[0])*cm           
+
+    for fecha in plan_fechas:
+      for a in plan_bases:
+        bases[a['nombre']] = db.sql_traer_directo(a['senten'].replace('@pk@',request.POST.getlist('fichapk')[0]).replace('@fecha@',fecha['fecha'].strftime('%Y-%m-%d')).replace('@user@',request.POST.getlist('fichaUser')[0]))
+      plan_seg  = db.traer_plantilla_pdf_seg_tipo(request.POST.getlist('t_pkpaneL_g')[0], 'DetalleNuevo')
+      for a in plan_seg:
+        if len(bases[a['base']]) > 0:
+
+          a['etiqueta'] = '--------------------------------- '+ str(a['etiqueta'])+' ---------------------------------'
+          text_width = pdf.stringWidth(a['etiqueta'], "Helvetica", 12)
+
+          lineaY = lineaY + 0.5
+          pdf.drawString(float((pdf._pagesize[0] / 2) - (text_width/2.3)),  (float(request.POST.getlist('t_largo')[0])- lineaY ) *cm, a['etiqueta'])         
+          lineaY = lineaY + 1
+
+          a['datos'] = db.traer_plantilla_pdf_valor_SoloCamposen_orden(a['pksegmento'])
+
+          for dato in bases[a['base']]:
+            for a2 in a['datos']:
+              if a2['tipo'] == 'Campo':
+                pdf.setFont("Helvetica", int(a2['Letra']))
+
+                etiqueta = str(a2['etiqueta']) + ':'
+                valor = a2['valor'].split('.')
+                txt = str(dato[valor[1]]) 
+
+                limite  = a2['limite'].split(',')
+                bloq = 0
+                bloques = str(txt).split('\n')
+                ## cuantas lineas son:
+                ##len(bloques) mas cada queibre de bloque
+                lineas = []
+                ##arrglo_valores = a cada bloque por cada linea que exista porel limite
+                #limit mayusculas = 70
+                #limite normal = 110  
+
+                # for bloque in bloques:
+                #   if len(bloque) <= int(limite[0]):
+                #     text_width = pdf.stringWidth(bloque, "Helvetica", 12)
+                #     lineas.append(bloque)
+                #   else:
+                #     while len(bloque) > int(limite[0]):
+                #       text_width = pdf.stringWidth(bloque[0:int(limite[0])], "Helvetica", 12)
+                #       lineas.append(bloque[0:int(limite[0])])
+                #       bloque = bloque[int(limite[0]):]
+                #     text_width = pdf.stringWidth(bloque, "Helvetica", 12)
+                #     lineas.append(bloque)
+                for bloque in bloques:
+                  lineas = split_text(pdf, bloque, max_ancho)
+
+                if float(request.POST.getlist('t_largo')[0]) - (lineaY + (len(lineas) * 0.5)) < 2:
+                  pdf.showPage()
+                  lineaY = 1
+
+                  
+                #primer etiqueta
+                pdf.drawString(float(0.5)*cm,  (float(request.POST.getlist('t_largo')[0])- lineaY ) *cm   , etiqueta)         
+
+                for linea in lineas:
+                  pdf.drawString(float(4)*cm,  (float(request.POST.getlist('t_largo')[0])- lineaY ) *cm   , linea)         
+                  lineaY = lineaY + 0.5
+
+
     plan_seg  = db.traer_plantilla_pdf_seg_tipo(request.POST.getlist('t_pkpaneL_g')[0], 'Pie')
     for a in plan_seg:
       for base in plan_bases:
@@ -1063,6 +1155,7 @@ def crear_pdf_panel_continua(request, Id_empresa):
                   valor = a2['valor'].split('.')
                   certify = firma.traerdatos_usuario(request, str(dato[valor[1]]) , request.POST.getlist('Id_empresa')[0])
                   if len(certify)>0:
+                    firmados.append(str(dato[valor[1]]))
                     qr = QRCodeImage(certify[0]['display'] + ' Firmado ' +datetime.now().strftime('%Y-%m-%d- %H:%M:%S'), size=2 * cm)
                     qr.drawOn(pdf, float(a2['x'])*cm, (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) + lineaY)) *cm)
                     pdf.drawString((float(a2['x'])+ 2)*cm,  (float(request.POST.getlist('t_largo')[0]) - (float(a2['y']) + lineaY -1.5) ) *cm   , 'Firmado Electronico')
@@ -1236,7 +1329,6 @@ def crear_pdf_panel_continua(request, Id_empresa):
                             break
                       bloq = bloq + (int(a2['Letra']) / 10 * (0.5) )
   
-  #/////////////////////////////////////////////////////
             if aa['tipo'] == 'DetalleLateral':
                 for a2 in aa['datos']:
                     pdf.setFont("Helvetica", int(a2['Letra']))
@@ -1647,7 +1739,36 @@ def crear_pdf_panel_continua(request, Id_empresa):
                         break
                   bloq = bloq + 0.5
 
+
+
     pdf.save()
+
+    plan_seg  = db.traer_plantilla_pdf_seg_tipo_porsegmento(request.POST.getlist('t_pkpaneL_g')[0], 'Archivos')
+    for a in plan_seg:
+      basesArchivos = db.sql_traer_directo(a['base'].replace('@pk@',request.POST.getlist('fichapk')[0]).replace('@fecha@',request.POST.getlist('fichaFecha')[0]).replace('@user@',request.POST.getlist('fichaUser')[0]))
+      archivos = 0
+      for b in basesArchivos:
+        archivos = archivos + 1
+        existing_pdf_file = fileName 
+
+
+        # Create a PdfFileMerger object
+        merger = PdfFileMerger()
+
+        # Append the existing PDF to the new PDF
+        merger.append(existing_pdf_file)
+
+        # Append the new PDF to the merger
+        merger.append(b['archivo'])
+        fileName = 'media/firma/'+Id_empresa+'/PDF/'+request.POST.getlist('nombre')[0] +datetime.now().strftime('%Y%m%d%H%M%S')+'_'+str(archivos)+'.pdf'
+
+        # Output the merged PDF to a new file
+        merged_pdf_file = fileName
+        merger.write(merged_pdf_file)
+
+        # Close the merger
+        merger.close()
+
 
     return [fileName, firmados, archivos_anexos]
 

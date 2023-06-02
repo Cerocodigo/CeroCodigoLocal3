@@ -40,10 +40,10 @@ def firmasxGrabar(request, Id_empresa, usuario):
     firmas = json.loads(request.POST.getlist('firmas')[0])    
     clasePdf = web.pdf
     dbusuario = web.con_db.Usuarios(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
-    usuario = dbusuario.Usuario(usuario)
+    claseUsuario = dbusuario.Usuario(usuario)
 
     PdfPruebaFirma = clasePdf.prueba(request.POST.getlist('Id_empresa')[0])
-    display = "Firmado por " + str(usuario[0]['Nombre']) + " " + str(usuario[0]['Apellido'])
+    display = "Firmado por " + str(claseUsuario[0]['Nombre']) + " " + str(claseUsuario[0]['Apellido'])
     for firma in firmas:
         datos_firma = [{'display':display,'certificado':firma['Certy'],'clave':firma['Clave']}]
         pdf_fianl = firmar(PdfPruebaFirma[0], Id_empresa , datos_firma)     

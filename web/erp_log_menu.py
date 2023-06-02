@@ -789,10 +789,10 @@ def traer_estados_desde_panel_directo(request, Id_empresa, int_pkmodulo):
     estados_cab = db.sql_traer_directo("select * FROM web_estados_doc where PkModulo = " + str(int_pkmodulo))
     return [estados_cab]
 
-def traer_registro_desde_panel(request, Id_empresa, campos, candiciones):
+def traer_registro_desde_panel(request, Id_empresa, campos, candiciones, filtro):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     tablas  = db.tablas(request.POST.getlist('pkmodulo')[0])
-    valores = db.valores_codniones(tablas, campos, candiciones, request.POST.getlist('usuario')[0])
+    valores = db.valores_codniones(tablas, campos, candiciones, request.POST.getlist('usuario')[0], filtro)
     valores_cab = valores[0]
     return [ valores_cab]
 
@@ -816,7 +816,9 @@ def traer_registro_estados(request, Id_empresa, campos):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     estados = db.t_estados(request.POST.getlist('pkmodulo')[0],request.POST.getlist('usuario')[0])
     for estado in estados:
-        estado['variables'] = db.t_estadosVariables(estado['pkweb_estados_doc'])
+        estado['variables'] = db.t_estadosVariables(estado['pkweb_estados_doc'])        
+        estado['traspaso'] = db.t_estadostraspaso(estado['pkweb_estados_doc'])        
+        
     return estados
 
 
@@ -1115,7 +1117,7 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                             
                             if tabla_primaria == "":
                                 tabla_primaria = y["Nombre"]
-
+                        logger.debug("valores_pk:" + str(valores_pk))
                         #datosRegistros = db.TraerAccionesNumeroRegistrosCabeceras(z["PkAccion"])
                         datosRegistros = db.TraerAccionesNumeroRegistros(z["PkAccion"])
                         #BTN!
@@ -1133,7 +1135,8 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
 
                         datos_indices_truchos = {}
 
-                            
+
+
 
                         for y in datosRegistros:
                             if y["SeREpite"] =="No":
@@ -1181,8 +1184,11 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                                             tempo_ingre[yy["Campo"]] = envio_datset[tabla_cab][0][yy["Elemento"]]
                                         if yy["Tipo"] == "Auto":
                                             if yy["Campo"] == 'PKCabecera':
+                                                if type(y['PkCabecera']) is str:
+                                                    y['PkCabecera'] = int(y['PkCabecera'])
                                                 ##tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
                                                 Nom_put_tabla =''
+                                                logger.debug("dataset_ingresar: " + str(dataset_ingresar))
                                                 for hh in datosRegistros:
                                                     if hh['PkAccionL2'] == y['PkCabecera']:
                                                         repetuche = hh['TablaRepetir']
@@ -1190,17 +1196,24 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                                                             if hh2['PkEstructura'] == hh['PkEstructura']:
                                                                 Nom_put_tabla = hh2['Nombre']
                                                                 break
+                                                logger.debug("dataset_ingresar[y['PkCabecera']]: " + str(dataset_ingresar[y['PkCabecera']])) 
                                                 if y['PkCabecera'] in dataset_ingresar:
+                                                    logger.debug("if y['PkCabecera'] in dataset_ingresar:")
                                                     if len(dataset_ingresar[y['PkCabecera']])== 1:
+                                                        logger.debug("if len(dataset_ingresar[y['PkCabecera']])== 1:")
                                                         tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][0]['Pk' +Nom_put_tabla]
                                                     else:
+                                                        logger.debug("else if len(dataset_ingresar[y['PkCabecera']])== 1: else")
                                                         indice_trucho = 0
                                                         for hh in envio_datset[repetuche]:
+                                                            logger.debug("if hh['Pk'+repetuche] == xxx['PKCabecera']")
                                                             if hh['Pk'+repetuche] == xxx['PKCabecera']:
+                                                                logger.debug("else if len(dataset_ingresar[y['PkCabecera']])== 1: else")
                                                                 tempo_ingre[yy["Campo"]] = dataset_ingresar[y['PkCabecera']][indice_trucho]['Pk' +Nom_put_tabla]
                                                                 break
                                                             indice_trucho = indice_trucho + 1
                                                 else:
+                                                    logger.debug("else if y['PkCabecera'] in dataset_ingresar: else")
                                                     tempo_ingre[yy["Campo"]] = valores_pk["Pk" + tabla_primaria]
                                             else:
                                                 if yy["Campo"] == ('Pk' + str(dict_pk_nombre_tabla[y["PkEstructura"]])):
@@ -1213,7 +1226,8 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                                                         tempo_ingre[yy["Campo"]] = 0
                                                     else:
                                                         tempo_ingre[yy["Campo"]] = tempo_valor[0][yy["Campo"]]
-                                        
+                                    logger.debug("tempo_ingre:" + str(tempo_ingre))
+
                                     tempo_ingre1.append(tempo_ingre)
                                 dataset_ingresar.update({y["PkAccionL2"]:tempo_ingre1})
                             if y["SeREpite"] =="Qr":
@@ -1509,7 +1523,7 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                                 valor_final = y["Valor"]
                                 if not(y["Variables"] == ''):
                                     for yy in variables:
-                                        valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy[0]])
+                                        valor_final = valor_final.replace("[" + yy + "]", envio_datset[Nom_tabla_cab][0][yy])
                                 UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = " + str(valor_final) + ", "
                             if y["Tipo"] == "Registro":
                                 UpdateSet = UpdateSet + " " + str(y["Fuente"]) + "." + str(y["Campo"]) + " = '" + str(envio_datset[Nom_tabla_cab][0][y["Valor"]]) + "', "
@@ -1601,40 +1615,61 @@ def EjecutarAcciones(request, Id_empresa, pkmodulo, disparador, envio_datset, In
                         sender = correo['De']
                         receivers = str(envio_datset[Nom_tabla_cab][0][correo['Para']])
 
+                        HtmlCuerpoCab = correo['HtmlCuerpoCab']
+                        HtmlCuerpoDet = correo['HtmlCuerpoDet']
+                        HtmlCuerpoPie = correo['HtmlCuerpoPie']
+
                         messageCat = correo['CuerpoCab']
                         messagePie = correo['CuerpoPie']
+                        messageTema = correo['Tema']
 
                         messageDer = ''
+
+                        HtmlmessageDer = ''
 
                         VarCab = json.loads(correo['VariablesCad']) # {@var1:campo1,@var2:campo2}
 
                         for var in VarCab:
                             messageCat = messageCat.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
                             messagePie = messagePie.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+                            messageTema = messageTema.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+                            HtmlCuerpoCab = HtmlCuerpoCab.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
+                            HtmlCuerpoPie = HtmlCuerpoPie.replace(var,str(envio_datset[Nom_tabla_cab][0][VarCab[var]]))
 
                         VarDet = json.loads(correo['VariablesDet']) # {@var1:campo1,@var2:campo2}
                         if len(VarDet)>0:
                             Nom_tabla_det = db.ListadoTablas(z["PkModulo"])[1]["Nombre"]
                             for fila in envio_datset[Nom_tabla_det]:
                                 Linea = correo['CuerpoDet']
+                                LineaHtml = correo['HtmlCuerpoDet']
                                 for var in VarDet:
                                     Linea = Linea.replace(var,str(fila[VarDet[var]]))
+                                    LineaHtml = LineaHtml.replace(var,str(fila[VarDet[var]]))
+                                    
                                 messageDer = messageDer + Linea + '\n'
+                                HtmlmessageDer = HtmlmessageDer + Linea
 
                         cuerpo = messageCat + '\n' + messageDer + '\n' + messagePie
+                        messagehtml = HtmlCuerpoCab + HtmlmessageDer  + HtmlCuerpoPie
+                        envio_email(correo['De'], str(envio_datset[Nom_tabla_cab][0][correo['Para']]), cuerpo, messageTema, messagehtml )
 
-                        
-                        envio_email(str(envio_datset[Nom_tabla_cab][0][correo['Para']]), cuerpo, correo['De'])
         except Exception as e: 
             return ['Valio', type(e).__name__ + str(e) + ' ' + z['Nombre']]
     return senten_acc
 
-def envio_email(para, msg, por):
-    try:
-        send_mail(por, msg, 'documentos@cerocodigo.com',[para])
-    except:
-        pass
-
+def envio_email(desde, para, msg, por, html_message ):
+    if desde == '':
+        desde = 'documentos@cerocodigo.com'
+    if html_message == '':
+        try:
+            send_mail(por, msg, desde,[para])
+        except:
+            pass
+    else:
+        try:
+            send_mail(por, msg, desde,[para], html_message=html_message)
+        except:
+            pass
 
 def EjecutarAcciones_FirmaPdf(request, Id_empresa, pkmodulo, disparador, envio_datset):
      
@@ -1818,6 +1853,8 @@ def reporte_ejecutar(request, Id_empresa):
         for b in repvariables:
             a = a.replace(b, "'"+ str(repvariables[b])+ "'")
         a = a.replace("`", "'")
+        a = a.replace("@usuario@", request.POST.get('usuario'))
+        
         resul = db.reporte_ejecutar(a)
         db_msg = ''
         if resul['error'] == 0:
@@ -2175,7 +2212,13 @@ def mod_usuario(request, Id_empresa):
     db = web.con_db.inter_registro(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
     #d_estado = db.traer_estado(request.POST.getlist('pkestado')[0])
     usuario_actual = db.traer_usuario(request.POST.getlist('t_us_use')[0])
+    
+    
     clave = ''
+    displayAudit = 'Usuarios : '
+    d_registro = {'Usuario':[{'Usuario':request.POST.getlist('t_us_use')[0],    'Nombre':request.POST.getlist('t_us_nom')[0],    'Apellido':request.POST.getlist('t_us_ape')[0],    'Cargo':request.POST.getlist('t_us_car')[0],    'Correo':request.POST.getlist('t_us_cor')[0],    'Sri':request.POST.getlist('t_us_sri')[0],    'Admin':request.POST.getlist('t_us_adm')[0],    'Anulado':request.POST.getlist('t_us_anu')[0],    'Paneles':request.POST.getlist('t_paneles')[0]}]}
+
+
     if request.POST.getlist('t_us_cla1')[0] != "":
         clave = hashear(request.POST.getlist('t_us_cla1')[0])
     request.POST.getlist('t_us_cla1')[0]
@@ -2187,6 +2230,7 @@ def mod_usuario(request, Id_empresa):
             for a in panels:
                 db.acceso_panel(request.POST.getlist('t_us_use')[0], a)
             context = {'resp':'Usuario Ingresado','ok':1}
+            displayAudit = displayAudit + "Usuario Ingresado"
         else:
             context = {'resp':'Usuario ya Existe','ok':0}
     if request.POST.getlist('tipo')[0] == '1':
@@ -2200,6 +2244,7 @@ def mod_usuario(request, Id_empresa):
                     for a in panels:
                         db.acceso_panel(request.POST.getlist('t_us_use')[0], a)
                     context = {'resp':'Usuario Modificado','ok':1}
+                    displayAudit = displayAudit + "Usuario Modificado"
                 else:
                     context = {'resp':'Usuario ya Existe','ok':0}
             else:
@@ -2210,6 +2255,7 @@ def mod_usuario(request, Id_empresa):
                     for a in panels:
                         db.acceso_panel(request.POST.getlist('t_us_use')[0], a)
                     context = {'resp':'Usuario Modificado','ok':1} #cambio de user
+                    displayAudit = displayAudit + "Usuario Modificado"
                 else:
                     context = {'resp':'Seleccione un Usuario','ok':0} #cambio de user
     if request.POST.getlist('tipo')[0] == '2':
@@ -2217,8 +2263,12 @@ def mod_usuario(request, Id_empresa):
         if len(usuario_actualPK) == 1:
             db.del_usuario(request.POST.getlist('t_us_pk')[0])
             context = {'resp':'Usuario Eliminado','ok':1}
+            displayAudit = displayAudit + "Usuario Eliminado"
         else:
             context = {'resp':'Seleccione un Usuario','ok':0}
+    
+    sente = 'insert into `llankay_log` (`sentencia`, `usuario`, `fecha`, `ip`) VALUES ("'+str(d_registro)+'", "'+str(request.POST.getlist('usuario')[0])+'", now(), "'+str(displayAudit)+'")'
+    db.sql_directo(sente)
     return context
 
 def mod_usuario_cla(request, Id_empresa): 
@@ -2246,6 +2296,26 @@ def acc_usuario(request, Id_empresa):
     lista_modulos_gen = db.lista_modulos_gen(request.POST.getlist('usuario')[0])    
     listado_user = db.carga_list_user_completa()    
     context = {'lista_modulos':lista_modulos,'lista_modulos_gen':lista_modulos_gen,'listado_user':listado_user} #cambio de user
+    return context
+
+
+
+def acc_panelesdatagrupo(request, Id_empresa, pkpanel, pkgrupo): 
+    db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    p_usuarios = db.traer_paneles_usuarios(pkpanel, pkgrupo)
+    context = {'p_usuarios':p_usuarios} #cambio de user
+    return context
+
+def acc_panelesdata(request, Id_empresa, pkpanel): 
+    db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    p_grupos = db.traer_paneles_grupos(pkpanel)
+    context = {'p_grupos':p_grupos} #cambio de user
+    return context
+
+def acc_paneles(request, Id_empresa): 
+    db = web.con_db.paneles(request.session['conn_user'][Id_empresa],request.session['conn_pass'][Id_empresa],request.session['conn_base'][Id_empresa],request.session['conn_ip'][Id_empresa]) 
+    lista_Paneles = db.traer_paneles_todos()
+    context = {'lista_Paneles':lista_Paneles} #cambio de user
     return context
 
 def cambio_estado(request, Id_empresa): 

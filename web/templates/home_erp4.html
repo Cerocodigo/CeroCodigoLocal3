@@ -64,26 +64,28 @@
 <!-- Main canvg code -->
 <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
 
-<script src="/static/ccmain/35/main_script.js"></script>
-<script src="/static/ccmain/35/menu_general.js"></script>
-<script src="/static/ccmain/35/validaciones.js"></script>
-<script src="/static/ccmain/35/imagenes.js"></script>
-<script src="/static/ccmain/35/admin_campos.js"></script>
-<script src="/static/ccmain/35/sri.js"></script>
-<script src="/static/ccmain/35/paneles.js"></script>
-<script src="/static/ccmain/35/Dibujo.js"></script>
-<script src="/static/ccmain/35/panel_estados.js"></script>
-<script src="/static/ccmain/35/usuarios.js"></script>
-<script src="/static/ccmain/35/PDF.js"></script>
-<script src="/static/ccmain/35/cmpreferencia.js"></script>
-<script src="/static/ccmain/35/calendario.js"></script>
-<script src="/static/ccmain/35/Notificaciones.js"></script>
-<script src="/static/ccmain/35/reportes.js"></script>
-<script src="/static/ccmain/35/offline.js"></script>
-<script src="/static/ccmain/35/registro.js"></script>
-<script src="/static/ccmain/35/buscadoresCab.js"></script>
-<script src="/static/ccmain/35/cmpcalculos.js"></script>
-<script src="/static/ccmain/35/electronico.js"></script>
+<script src="/static/ccmain/47/main_script.js"></script>
+<script src="/static/ccmain/47/menu_general.js"></script>
+<script src="/static/ccmain/47/validaciones.js"></script>
+<script src="/static/ccmain/47/imagenes.js"></script>
+<script src="/static/ccmain/47/admin_campos.js"></script>
+<script src="/static/ccmain/47/sri.js"></script>
+<script src="/static/ccmain/47/paneles.js"></script>
+<script src="/static/ccmain/47/Dibujo.js"></script>
+<script src="/static/ccmain/47/panel_estados.js"></script>
+<script src="/static/ccmain/47/usuarios.js"></script>
+<script src="/static/ccmain/47/PDF.js"></script>
+<script src="/static/ccmain/47/cmpreferencia.js"></script>
+<script src="/static/ccmain/47/calendario.js"></script>
+<script src="/static/ccmain/47/Notificaciones.js"></script>
+<script src="/static/ccmain/47/reportes.js"></script>
+<script src="/static/ccmain/47/offline.js"></script>
+<script src="/static/ccmain/47/registro.js"></script>
+<script src="/static/ccmain/47/buscadoresCab.js"></script>
+<script src="/static/ccmain/47/cmpcalculos.js"></script>
+<script src="/static/ccmain/47/electronico.js"></script>
+<script src="/static/ccmain/47/estados.js"></script>
+
 
 <style>
   google.charts.load('current', {'packages':['corechart']});
@@ -153,7 +155,7 @@
 
 
   function bloqueado() {
-    {% if datos_cuenta.dias_pendientes > 80 %}   
+    {% if datos_cuenta.dias_pendientes > 75 %}   
       return true 
     {% else %}
       return false
@@ -511,12 +513,12 @@ const CSS_COLOR_NAMES = [
               <span class="label label-green" id="div_peso_media" onclick="tarer_pero_media()"></span>
 
               {% if disco_usado.pocen <= 0.5 %}
-                <span class="label label-green" id="div_pagos" style="background: green;">Base Datos: {{disco_usado.usado}}  - {{ disco_usado.max}} Gb</span>
+                <span class="label label-green" id="div_espacio" style="background: green;">Base Datos: {{disco_usado.usado}}  - {{ disco_usado.max}} Gb</span>
               {% else %}
                 {% if disco_usado.pocen >= 0.8 %}
-                  <span class="label label-red" id="div_pagos" style="background: red;">Base Datos: {{disco_usado.usado}}  - {{ disco_usado.max}} Gb</span>
+                  <span class="label label-red" id="div_espacio" style="background: red;">Base Datos: {{disco_usado.usado}}  - {{ disco_usado.max}} Gb</span>
                 {% else %}
-                  <span class="label label-yellow" id="div_pagos" style="background: yellow;">Base Datos: {{disco_usado.usado}}  - {{disco_usado.max}} Gb</span>
+                  <span class="label label-yellow" id="div_espacio" style="background: yellow;">Base Datos: {{disco_usado.usado}}  - {{disco_usado.max}} Gb</span>
                 {% endif %}
               {% endif %}
              
@@ -538,14 +540,23 @@ const CSS_COLOR_NAMES = [
               <li class="dropdown messages-menu">
                 <a data-toggle="modal" id="a_default_pagos" data-target="#modal-default_pagos">
                   <i class="fa fa-fw fa-money"></i>
-                   <span class="label label-danger" id="div_pagos">{{datos_cuenta.val_pendiente}}</span>
+                    {% if datos_cuenta.dias_pendientes > 45 %}   
+                    <span class="label label-danger" id="div_pagos">{{datos_cuenta.val_pendiente}}</span>
+                    {% else %}
+                    <span class="label label-info" id="div_pagos">{{datos_cuenta.val_pendiente}}</span>
+                    {% endif %}
                 </a>
               </li>
             {% else %}
               <li class="dropdown messages-menu" style="display: none;">
                 <a data-toggle="modal" id="a_default_pagos" data-target="#modal-default_pagos">
                   <i class="fa fa-fw fa-money"></i>
-                   <span class="label label-danger" id="div_pagos">{{datos_cuenta.val_pendiente}}</span>
+                  {% if datos_cuenta.dias_pendientes > 45 %}   
+                    <span class="label label-danger" id="div_pagos">{{datos_cuenta.val_pendiente}}</span>
+                  {% else %}
+                    <span class="label label-info" id="div_pagos">{{datos_cuenta.val_pendiente}}</span>
+                  {% endif %}
+
                 </a>
               </li>            
             {% endif %}
@@ -554,7 +565,7 @@ const CSS_COLOR_NAMES = [
             <li class="dropdown messages-menu">
               <a data-toggle="modal" data-target="#modal-default_errores" >
                 <i class="fa fa-fw fa-warning"></i>
-                <span class="label label-danger" id="div_errores">0</span>
+                <span class="label label-info" id="div_errores">0</span>
               </a>
 
 
@@ -2236,6 +2247,7 @@ const CSS_COLOR_NAMES = [
                     {% if valores.Dias > 59 %}
                       <tr style="background: orange;">
                     {% endif %}
+
                   {% else %}
                       <tr>  
                   {% endif %}
@@ -2257,7 +2269,7 @@ const CSS_COLOR_NAMES = [
           </div>
 
           <div class="modal-footer" style="text-align: center;">
-              <p>Acceso se bloquea automático si hay facturas con más de 80 días Vencidas<p>
+              <p><b>Acceso se bloquea automático si hay facturas con más de 75 días Vencidas</b><p>
               <p>De estar bloqueado sin adeudar nada, comunicarse al 0987202912 para atención inmediata.</p>
           </div>
 
@@ -3512,7 +3524,7 @@ const CSS_COLOR_NAMES = [
 <!-- /.content-wrapper -->
 <footer class="main-footer">
   <div class="pull-right hidden-xs">
-    <b>Versión</b> 3.2.0
+    <b>Versión</b> 3.44.0
   </div>
   <strong>Copyright &copy; 2014-{{t_anio}} <a href="http://cerocodigo.com">CeroCodigo</a> y Nicolas Lubkov.</strong> Derechos reservados.
 </footer>
@@ -3602,6 +3614,76 @@ const CSS_COLOR_NAMES = [
             </div>
           </div>
         </li>
+        <li>
+          <div class="input-group" style="padding-left: 10px; width: 100%;">
+            <label>104</label>
+
+            <div class="input-group input-group-sm" style="width: 100%;">
+
+            <input type="number" name="" value="{{t_anio}}" id='fecha_sri_anio_104' style="width: 100px;color: black;height: 25px;">
+
+            <select class="" id="fecha_sri_periodo_104" style="height: 25px;padding-top: 0px;padding-bottom: 0px;padding-top: 0px;padding-bottom: 0px;width: 40%;color: black;">
+              {% if t_mes == '01' %}<option selected value="01">Enero</option>{% else %}<option value="01">Enero</option>{% endif %}
+              {% if t_mes == '02' %}<option selected value="02">Febrero</option>{% else %}<option value="02">Febrero</option>{% endif %}
+              {% if t_mes == '03' %}<option selected value="03">Marzo</option>{% else %}<option value="03">Marzo</option>{% endif %}
+              {% if t_mes == '04' %}<option selected value="04">Abril</option>{% else %}<option value="04">Abril</option>{% endif %}
+              {% if t_mes == '05' %}<option selected value="05">Mayo</option>{% else %}<option value="05">Mayo</option>{% endif %}
+              {% if t_mes == '06' %}<option selected value="06">Junio</option>{% else %}<option value="06">Junio</option>{% endif %}
+              {% if t_mes == '07' %}<option selected value="07">Julio</option>{% else %}<option value="07">Julio</option>{% endif %}
+              {% if t_mes == '08' %}<option selected value="08">Agosto</option>{% else %}<option value="08">Agosto</option>{% endif %}
+              {% if t_mes == '09' %}<option selected value="09">Septiembre</option>{% else %}<option value="09">Septiembre</option>{% endif %}
+              {% if t_mes == '10' %}<option selected value="10">Octubre</option>{% else %}<option value="10">Octubre</option>{% endif %}
+              {% if t_mes == '11' %}<option selected value="11">Noviembre</option>{% else %}<option value="11">Noviembre</option>{% endif %}
+              {% if t_mes == '12' %}<option selected value="12">Diciembre</option>{% else %}<option value="12">Diciembre</option>{% endif %}
+
+
+            </select>
+
+            <!--<input type="date" id="fecha_sri" style="height: 25px;font-size: 11px;margin-left: 5px;" value="{{fecha}}"> -->
+
+
+            <button type="button" class="btn bg-blue btn-flat margin" onclick="abrir_SRI_104()" style="height: 25px;padding: 3px 4px;color: black;"><i class="fa fa-fw fa-download"></i></button>
+          </div>
+
+
+
+          </div>
+        </li>
+        <li>
+          <div class="input-group" style="padding-left: 10px; width: 100%;">
+            <label>103</label>
+
+            <div class="input-group input-group-sm" style="width: 100%;">
+
+            <input type="number" name="" value="{{t_anio}}" id='fecha_sri_anio_103' style="width: 100px;color: black;height: 25px;">
+
+            <select class="" id="fecha_sri_periodo_103" style="height: 25px;padding-top: 0px;padding-bottom: 0px;padding-top: 0px;padding-bottom: 0px;width: 40%;color: black;">
+              {% if t_mes == '01' %}<option selected value="01">Enero</option>{% else %}<option value="01">Enero</option>{% endif %}
+              {% if t_mes == '02' %}<option selected value="02">Febrero</option>{% else %}<option value="02">Febrero</option>{% endif %}
+              {% if t_mes == '03' %}<option selected value="03">Marzo</option>{% else %}<option value="03">Marzo</option>{% endif %}
+              {% if t_mes == '04' %}<option selected value="04">Abril</option>{% else %}<option value="04">Abril</option>{% endif %}
+              {% if t_mes == '05' %}<option selected value="05">Mayo</option>{% else %}<option value="05">Mayo</option>{% endif %}
+              {% if t_mes == '06' %}<option selected value="06">Junio</option>{% else %}<option value="06">Junio</option>{% endif %}
+              {% if t_mes == '07' %}<option selected value="07">Julio</option>{% else %}<option value="07">Julio</option>{% endif %}
+              {% if t_mes == '08' %}<option selected value="08">Agosto</option>{% else %}<option value="08">Agosto</option>{% endif %}
+              {% if t_mes == '09' %}<option selected value="09">Septiembre</option>{% else %}<option value="09">Septiembre</option>{% endif %}
+              {% if t_mes == '10' %}<option selected value="10">Octubre</option>{% else %}<option value="10">Octubre</option>{% endif %}
+              {% if t_mes == '11' %}<option selected value="11">Noviembre</option>{% else %}<option value="11">Noviembre</option>{% endif %}
+              {% if t_mes == '12' %}<option selected value="12">Diciembre</option>{% else %}<option value="12">Diciembre</option>{% endif %}
+
+
+            </select>
+
+            <!--<input type="date" id="fecha_sri" style="height: 25px;font-size: 11px;margin-left: 5px;" value="{{fecha}}"> -->
+
+
+            <button type="button" class="btn bg-blue btn-flat margin" onclick="abrir_SRI_103()" style="height: 25px;padding: 3px 4px;color: black;"><i class="fa fa-fw fa-download"></i></button>
+          </div>
+
+
+
+          </div>
+        </li>
       </ul>
 
       {% endif %}
@@ -3637,7 +3719,11 @@ const CSS_COLOR_NAMES = [
             <button type="button" class="btn bg-blue btn-flat margin" onclick="user_acces()" style="height: 25px;padding: 3px 4px;width: 100%;">Permisos<div class="ripple-container"></div></button>
           </div>
           {% endif %}
-
+          {% if Es_admin == "Y" %}
+          <div class="" style="padding-left: 10px;padding-right: 10px;">
+            <button type="button" class="btn bg-blue btn-flat margin" onclick="paneles_acces()" style="height: 25px;padding: 3px 4px;width: 100%;">Paneles<div class="ripple-container"></div></button>
+          </div>
+          {% endif %}
 
           <div class="" style="padding-left: 10px;padding-right: 10px;">
             <span class="label label-danger" id="div_offlinecc"></span>

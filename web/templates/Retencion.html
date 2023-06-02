@@ -59,86 +59,105 @@
     <script type="text/javascript" src="js/basic.js"></script>
     
     <![endif]-->
-  <script>
-    $(function () {
-      $("#accordion-basic, #accordion-text, #accordion-graphic").accordion({
-        autoHeight: false,
-        navigation: true
-      });
-      $("#tabs").tabs();
-      $(".button").button();
+<script>
+  $(function () {
+    $("#accordion-basic, #accordion-text, #accordion-graphic").accordion({
+      autoHeight: false,
+      navigation: true
     });
+    $("#tabs").tabs();
+    $(".button").button();
+  });
 
-    function format2(n, currency) {
-      return currency + " " + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+  function format2(n, currency) {
+    return currency + " " + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+  }
+
+
+
+
+  function hacer_pdf() {
+    var doc = new jsPDF();
+    doc.setFontSize(10);
+    //doc.addImage(imgData2, 'JPEG', 15, 40, 180, 180);
+    doc.setDrawColor(179, 179, 179);
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(100, 8, 100, 60, 3, 3, 'FD'); //  Black square with rounded corners
+
+
+    imagen = document.getElementById("logo_cia")
+    tipo = imagen.attributes["value"]["value"].split('.')
+    tamano = [80,30]
+    var imgData = getBase64Image(imagen, tamano[0] * 37, tamano[1] * 37)
+    try {
+      doc.addImage(imgData, tipo[1].toUpperCase(), parseFloat(10), parseFloat(5), parseFloat(tamano[0]), parseFloat(tamano[1]))
+    }
+    catch (error) {
+      console.error(error);
+      // expected output: ReferenceError: nonExistentFunction is not defined
+      // Note - error messages will vary depending on browser
     }
 
+    doc.text(110, 15, 'Ruc:');
+    doc.text(110, 20, 'Comprobante de Retencion');
+    doc.text(110, 25, 'No.:');
+    doc.text(110, 30, 'Numero de autorizacion');
+    doc.text(110, 40, 'Fecha y hora:');
+    doc.text(110, 45, 'Ambiente:');
+    doc.text(110, 50, 'Emision:');
+    doc.text(110, 55, 'Clave acceso:');
+    doc.setFontSize(9);
+    doc.text(105, 35, '{{val_fijos.numeroAutorizacion}}');
+    doc.text(105, 60, '{{val_fijos.claveAcceso}}');
+    doc.text(190, 15, '{{val_fijos.ruc}}', 'right');
+    doc.text(190, 25, '{{val_fijos.estab}}-{{val_fijos.ptoEmi}}-{{val_fijos.secuencial}}', 'right');
+    doc.text(190, 40, '{{val_fijos.fechaEmision}}', 'right');
+    doc.text(190, 45, 'Produccion', 'right');
+    doc.text(190, 50, 'Normal', 'right');
+    
+    VnombreComercial = '{{val_fijos.nombreComercial}}'
+    VrazonSocial = '{{val_fijos.razonSocial}}'
+    
+    doc.text(10, 40, VnombreComercial.replace(/&amp;/g, '&'));
+    doc.text(10, 45, VrazonSocial.replace(/&amp;/g, '&'));
+
+    doc.text(10, 50, '{{val_fijos.contribuyenteEspecial}}');
+    doc.text(10, 55, 'OBLIGADO A LLEVAR CONTABILIDAD:{{val_infoCompRetencion.obligadoContabilidad}}');
+    doc.text(10, 60, 'Direccion');
+    doc.text(10, 65, '{{val_fijos.dirMatriz}}');
+
+    doc.setDrawColor(179, 179, 179);
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(5, 70, 200, 20, 3, 3, 'FD'); //  Black square with rounded corners
+
+    doc.text(20, 75, 'RAZON SOCIAL / NOMBRES APELLIDOS:');
+    doc.text(110, 75, 'IDENTIFICACION:');
+    doc.text(140, 75, '{{val_infoCompRetencion.identificacionSujetoRetenido}}');
+    doc.text(20, 85, '{{val_infoCompRetencion.razonSocialSujetoRetenido}}');
 
 
 
-    function hacer_pdf() {
-      var doc = new jsPDF();
-      doc.setFontSize(10);
-      //doc.addImage(imgData2, 'JPEG', 15, 40, 180, 180);
-      doc.setDrawColor(179, 179, 179);
-      doc.setFillColor(255, 255, 255);
-      doc.roundedRect(100, 8, 100, 60, 3, 3, 'FD'); //  Black square with rounded corners
-      doc.text(110, 15, 'Ruc:');
-      doc.text(110, 20, 'Factura');
-      doc.text(110, 25, 'No.:');
-      doc.text(110, 30, 'Numero de autorizacion');
-      doc.text(110, 40, 'Fecha y hora:');
-      doc.text(110, 45, 'Ambiente:');
-      doc.text(110, 50, 'Emision:');
-      doc.text(110, 55, 'Clave acceso:');
-      doc.setFontSize(9);
-      doc.text(105, 35, '{{val_fijos.numeroAutorizacion}}');
-      doc.text(105, 60, '{{val_fijos.claveAcceso}}');
-      doc.text(190, 15, '{{val_fijos.ruc}}', 'right');
-      doc.text(190, 25, '{{val_fijos.estab}}-{{val_fijos.ptoEmi}}-{{val_fijos.secuencial}}', 'right');
-      doc.text(190, 40, '{{val_fijos.fechaEmision}}', 'right');
-      doc.text(190, 45, 'Produccion', 'right');
-      doc.text(190, 50, 'Normal', 'right');
+    //----------------------------------------detalle
+    doc.text(5, 95, 'Numero');
+    doc.text(50, 95, 'Fecha');
+    doc.text(70, 95, 'Ejercicio');
+    doc.text(90, 95, 'Impuesto');
+    doc.text(120, 95, 'Codigo', 'right');
+    doc.text(155, 95, 'Base Imponible', 'right');
+    doc.text(180, 95, 'Procentaje', 'right');
+    doc.text(200, 95, 'Valor', 'right');
 
-      doc.text(10, 40, '{{val_fijos.nombreComercial}}');
-      doc.text(10, 45, '{{val_fijos.razonSocial}}');
-      doc.text(10, 50, '{{val_fijos.contribuyenteEspecial}}');
-      doc.text(10, 55, 'OBLIGADO A LLEVAR CONTABILIDAD:{{val_fijos.obligadoContabilidad}}');
-      doc.text(10, 60, 'Direccion');
-      doc.text(10, 65, '{{val_fijos.dirMatriz}}');
+    var JVNumero = {% autoescape off %} {{ JVNumero }} {% endautoescape %};
+    var JVFecha = {% autoescape off %}{{ JVFecha }} {% endautoescape %};
+    var JVEjercicio = {% autoescape off %}{{ JVEjercicio }} {% endautoescape %};
+    var JVCodigo = {% autoescape off %}{{ JVCodigo }} {% endautoescape %};
+    var JVBase_Imponible = {% autoescape off %}{{ JVBase_Imponible }} {% endautoescape %};
+    var JVImpuesto = {% autoescape off %}{{ JVImpuesto }} {% endautoescape %};
+    var JVProcentaje = {% autoescape off %}{{ JVProcentaje }} {% endautoescape %};
+    var JVValor = {% autoescape off %}{{ JVValor }} {% endautoescape %};
 
-      doc.setDrawColor(179, 179, 179);
-      doc.setFillColor(255, 255, 255);
-      doc.roundedRect(5, 70, 200, 20, 3, 3, 'FD'); //  Black square with rounded corners
-
-      doc.text(20, 75, 'RAZON SOCIAL / NOMBRES APELLIDOS:');
-      doc.text(110, 75, 'IDENTIFICACION:');
-      doc.text(140, 75, '{{val_infoCompRetencion.identificacionSujetoRetenido}}');
-      doc.text(20, 85, '{{val_infoCompRetencion.razonSocialSujetoRetenido}}');
-
-
-
-      //----------------------------------------detalle
-      doc.text(5, 95, 'Numero');
-      doc.text(50, 95, 'Fecha');
-      doc.text(70, 95, 'Ejercicio');
-      doc.text(90, 95, 'Impuesto');
-      doc.text(120, 95, 'Codigo', 'right');
-      doc.text(155, 95, 'Base Imponible', 'right');
-      doc.text(180, 95, 'Procentaje', 'right');
-      doc.text(200, 95, 'Valor', 'right');
-
-      var JVNumero = {% autoescape off %} { { JVNumero } } {% endautoescape %};
-    var JVFecha = {% autoescape off %}{ { JVFecha } } {% endautoescape %};
-    var JVEjercicio = {% autoescape off %}{ { JVEjercicio } } {% endautoescape %};
-    var JVCodigo = {% autoescape off %}{ { JVCodigo } } {% endautoescape %};
-    var JVBase_Imponible = {% autoescape off %}{ { JVBase_Imponible } } {% endautoescape %};
-    var JVImpuesto = {% autoescape off %}{ { JVImpuesto } } {% endautoescape %};
-    var JVProcentaje = {% autoescape off %}{ { JVProcentaje } } {% endautoescape %};
-    var JVValor = {% autoescape off %}{ { JVValor } } {% endautoescape %};
-
-    var JVinfoAdicional_nombre = {% autoescape off %}{ { JVinfoAdicional_nombre } } {% endautoescape %};
-    var JVinfoAdicional_valor = {% autoescape off %}{ { JVinfoAdicional_valor } } {% endautoescape %};
+    var JVinfoAdicional_nombre = {% autoescape off %}{{ JVinfoAdicional_nombre }} {% endautoescape %};
+    var JVinfoAdicional_valor = {% autoescape off %}{{ JVinfoAdicional_valor }} {% endautoescape %};
 
     doc.line(5, 96, 205, 96); // horizontal line
     var paguina = 0
@@ -186,11 +205,41 @@
 
     doc.save('{{val_fijos.claveAcceso}}.pdf');
 
-        }
+  }
 
+  function getBase64Image(img, t_w, t_h) {
+    // Create an empty canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = t_w;
+    canvas.height = t_h;
+    //canvas.width = img.width;
+    //canvas.height = img.height;
+    //img.crossOrigin = 'https://www.cerocodigo/media/archivos/mega/golum.jpg';
+    // Copy the image contents to the canvas
+    var ctx = canvas.getContext("2d");
+    //ctx.drawImage(img, 0, 0);
+    try {
+        ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, canvas.width, canvas.height);
+        // Get the data-URL formatted image
+        // Firefox supports PNG and JPEG. You could check img.src to
+        // guess the original format, but be aware the using "image/jpg"
+        // will re-encode the image.
+        var dataURL = canvas.toDataURL("image/png");
+        return dataURL
+        //return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+    catch (error) {
+      console.error(error);
+      return 0
+      // expected output: ReferenceError: nonExistentFunction is not defined
+      // Note - error messages will vary depending on browser
+    }
+  
+  
+  }
+  
 
-
-  </script>
+</script>
 
 
 </head>
@@ -217,8 +266,7 @@
                         <tbody>
                           <tr>
                             <td style="vertical-align: top; width: 50%;">
-                              <img style="width: 350px; height: 169px;"
-                                src="/static/archivos/logo/{{val_fijos.ruc}}.png" alt=""><br>
+                              <img id="logo_cia" style="width: 350px; height: 169px;" src="/static/archivos/logo/{{val_fijos.ruc}}.png" value="{{val_fijos.ruc}}.png" alt=""><br>
                               &nbsp;{{val_infoCompRetencion.contribuyenteEspecial}}<br>
                               &nbsp;OBLIGADO A LLEVAR CONTABILIDAD
                               <span>&nbsp;{{val_infoCompRetencion.obligadoContabilidad}}<br>
@@ -241,7 +289,7 @@
                                             </td>
                                           </tr>
                                           <tr>
-                                            <td><span>Factura</span><span
+                                            <td><span>Comprobante de Retencion</span><span
                                                 style="color: rgb(136, 18, 128); font-family: monospace; font-size: 10px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span>
                                             </td>
                                             <td style="text-align: right;"></td>
@@ -493,3 +541,5 @@
 </body>
 
 </html>
+
+

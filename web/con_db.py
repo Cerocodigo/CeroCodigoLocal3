@@ -432,7 +432,121 @@ class versiones:
             self.mysql_con.ejecutar("update web_externo_acceso set  DisplayCalendario = ''")
             dbversion = dbversion + 1
 
+        if dbversion == 1:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '2'")
+            self.mysql_con.ejecutar("DROP TABLE IF EXISTS `cmpelect_ret_rembolso`;")
+            self.mysql_con.ejecutar("DROP TABLE IF EXISTS `cmpelect_ret_rembolsodet`;")
+            sente= '''
+                CREATE TABLE `cmpelect_ret_rembolso` (
+                `pk` int(11) NOT NULL AUTO_INCREMENT,
+                `pkcampo` int(11) DEFAULT NULL,
+                `tipoIdentificacionProveedorReembolso` varchar(255) DEFAULT NULL,
+                `identificacionProveedorReembolso` varchar(255) DEFAULT NULL,
+                `codPaisPagoProveedorReembolso` varchar(255) DEFAULT NULL,
+                `tipoProveedorReembolso` varchar(255) DEFAULT NULL,
+                `codDocReembolso` varchar(255) DEFAULT NULL,
+                `estabDocReembolso` varchar(255) DEFAULT NULL,
+                `ptoEmiDocReembolso` varchar(255) DEFAULT NULL,
+                `secuencialDocReembolso` varchar(255) DEFAULT NULL,
+                `fechaEmisionDocReembolso` varchar(255) DEFAULT NULL,
+                `numeroAutorizacionDocReemb` varchar(255) DEFAULT NULL,
+                PRIMARY KEY (`pk`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1
+            '''
+            self.mysql_con.ejecutar(sente)
+            sente = '''
+                CREATE TABLE `cmpelect_ret_rembolsodet` (
+                `pk` int(11) NOT NULL AUTO_INCREMENT,
+                `pkcampo` int(11) DEFAULT NULL,
+                `codigo` varchar(255) DEFAULT NULL,
+                `codigoPorcentaje` varchar(255) DEFAULT NULL,
+                `tarifa` varchar(255) DEFAULT NULL,
+                `baseImponibleReembolso` varchar(255) DEFAULT NULL,
+                `impuestoReembolso` varchar(255) DEFAULT NULL,
+                PRIMARY KEY (`pk`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1
+            '''
+            self.mysql_con.ejecutar(sente)
+            self.mysql_con.ejecutar("INSERT INTO `cmpelect_ret_rembolso` (`pkcampo`, `tipoIdentificacionProveedorReembolso`, `identificacionProveedorReembolso`, `codPaisPagoProveedorReembolso`, `tipoProveedorReembolso`, `codDocReembolso`, `estabDocReembolso`, `ptoEmiDocReembolso`, `secuencialDocReembolso`, `fechaEmisionDocReembolso`, `numeroAutorizacionDocReemb`) VALUES ('4', 'Prov_tipo_electronico', 'Prov_id', '593', 'Prov_tipo_electronico', 'Prov_Doc', 'Prov_establecimiento', 'Prov_Punto_Emision', 'Num_factura', 'Fecha_emision', 'Prov_autorizacion')")
+            self.mysql_con.ejecutar("INSERT INTO `cmpelect_ret_rembolso` (`pkcampo`, `tipoIdentificacionProveedorReembolso`, `identificacionProveedorReembolso`, `codPaisPagoProveedorReembolso`, `tipoProveedorReembolso`, `codDocReembolso`, `estabDocReembolso`, `ptoEmiDocReembolso`, `secuencialDocReembolso`, `fechaEmisionDocReembolso`, `numeroAutorizacionDocReemb`) VALUES ('2', 'Prov_tipo_elect', 'Prov_id', '593', 'Prov_tipo_elect', 'Prov_Doc', 'Prov_establecimiento', 'Prov_Punto_Emision', 'Num_factura', 'Fecha_emision', 'Prov_autorizacion')")
+            self.mysql_con.ejecutar("INSERT INTO `cmpelect_ret_rembolsodet` (`pkcampo`, `codigo`, `codigoPorcentaje`, `tarifa`, `baseImponibleReembolso`, `impuestoReembolso`) VALUES ('4', 'Sri_imp', 'codigoPorcentaje', 'Tarifa_iva', 'Total', 'Iva')")
+            self.mysql_con.ejecutar("INSERT INTO `cmpelect_ret_rembolsodet` (`pkcampo`, `codigo`, `codigoPorcentaje`, `tarifa`, `baseImponibleReembolso`, `impuestoReembolso`) VALUES ('2', 'Sri_imp', 'codigoPorcentaje', 'Tarifa_iva', 'Total', 'Iva')")            
+            self.mysql_con.ejecutar("alter table web_p_panel_grupos add COLUMN condicion text")
+            self.mysql_con.ejecutar("update web_p_panel_grupos set condicion = ''")
+            dbversion = dbversion + 1
         
+        if dbversion == 2:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '3'")
+            self.mysql_con.ejecutar("alter TABLE web_estados_doc add COLUMN accion text")
+            self.mysql_con.ejecutar("update web_estados_doc set accion = 'Accion'")
+            dbversion = dbversion + 1
+        if dbversion == 3:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '4'")
+            self.mysql_con.ejecutar("CREATE TABLE `web_estados_doc_traspaso` (  `pktraspaso` int(11) NOT NULL AUTO_INCREMENT,  `pkestado` int(11) DEFAULT NULL,  `campoDestino` varchar(255) DEFAULT NULL,  `campoOrigen` varchar(255) DEFAULT NULL,  PRIMARY KEY (`pktraspaso`)) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1")
+            dbversion = dbversion + 1
+        if dbversion == 4:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '5'")
+            self.mysql_con.ejecutar("CREATE TABLE `cmpreferenciaaplicar` (  `PkId` int(11) NOT NULL AUTO_INCREMENT,  `PkCampo` int(11) DEFAULT NULL,  `objetivo` varchar(255) DEFAULT NULL,  `campo` varchar(255) DEFAULT NULL,  `c_valor` varchar(255) DEFAULT NULL,  `valor` varchar(255) DEFAULT NULL,  `minimo_registro` varchar(255) DEFAULT NULL,  `minimo_valor` varchar(255) DEFAULT NULL,  `tarjet` varchar(255) DEFAULT NULL,  `objetivoDet` varchar(255) DEFAULT NULL,   `objetivoFiltro` varchar(255) DEFAULT NULL,  PRIMARY KEY (`PkId`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT")
+            self.mysql_con.ejecutar("CREATE TABLE `cmpreferenciaaplicarcond` (  `PkId` int(11) NOT NULL AUTO_INCREMENT,  `PkCampo` int(11) DEFAULT NULL,  `operador` varchar(255) DEFAULT NULL,  `campo` varchar(255) DEFAULT NULL,  `valor` varchar(255) DEFAULT NULL,  PRIMARY KEY (`PkId`) USING BTREE) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT")
+            dbversion = dbversion + 1
+        if dbversion == 5:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '6'")
+            self.mysql_con.ejecutar("CREATE TABLE `web_sri_formularios` (  `pk` int(11) NOT NULL AUTO_INCREMENT,  `fuente` varchar(255) DEFAULT NULL,  `senten` text DEFAULT NULL,  `tag` varchar(255) DEFAULT NULL,   PRIMARY KEY (`pk`) ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1")
+            self.mysql_con.ejecutar("INSERT INTO `web_sri_formularios` (`fuente`, `senten`, `tag`) VALUES ('103', '\r\n\r\n\r\nselect \r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'302\'),sri_comprasdetalle.Base_imponible,0)) as \'302\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'302\'),sri_comprasdetalle.Valor_retencion,0)) as \'352\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'303\'),sri_comprasdetalle.Base_imponible,0)) as \'303\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'303\'),sri_comprasdetalle.Valor_retencion,0)) as \'353\',\r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'304\'),sri_comprasdetalle.Base_imponible,0)) as \'304\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'304\'),sri_comprasdetalle.Valor_retencion,0)) as \'354\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'307\'),sri_comprasdetalle.Base_imponible,0)) as \'307\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'307\'),sri_comprasdetalle.Valor_retencion,0)) as \'357\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'308\'),sri_comprasdetalle.Base_imponible,0)) as \'308\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'308\'),sri_comprasdetalle.Valor_retencion,0)) as \'358\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'309\'),sri_comprasdetalle.Base_imponible,0)) as \'309\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'309\'),sri_comprasdetalle.Valor_retencion,0)) as \'359\',\r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'310\'),sri_comprasdetalle.Base_imponible,0)) as \'310\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'310\'),sri_comprasdetalle.Valor_retencion,0)) as \'360\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'311\'),sri_comprasdetalle.Base_imponible,0)) as \'311\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'311\'),sri_comprasdetalle.Valor_retencion,0)) as \'361\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'312\'),sri_comprasdetalle.Base_imponible,0)) as \'312\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'312\'),sri_comprasdetalle.Valor_retencion,0)) as \'362\',\r\n\r\n\r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'3120\'),sri_comprasdetalle.Base_imponible,0)) as \'3120\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'3120\'),sri_comprasdetalle.Valor_retencion,0)) as \'3620\',\r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'314\'),sri_comprasdetalle.Base_imponible,0)) as \'314\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'314\'),sri_comprasdetalle.Valor_retencion,0)) as \'364\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'319\'),sri_comprasdetalle.Base_imponible,0)) as \'319\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'319\'),sri_comprasdetalle.Valor_retencion,0)) as \'369\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'320\'),sri_comprasdetalle.Base_imponible,0)) as \'320\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'320\'),sri_comprasdetalle.Valor_retencion,0)) as \'370\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'322\'),sri_comprasdetalle.Base_imponible,0)) as \'322\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'322\'),sri_comprasdetalle.Valor_retencion,0)) as \'372\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'323\'),sri_comprasdetalle.Base_imponible,0)) as \'323\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'323\'),sri_comprasdetalle.Valor_retencion,0)) as \'373\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'324\'),sri_comprasdetalle.Base_imponible,0)) as \'324\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'324\'),sri_comprasdetalle.Valor_retencion,0)) as \'374\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'332\'),sri_comprasdetalle.Base_imponible,0)) as \'332\',\r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'333\'),sri_comprasdetalle.Base_imponible,0)) as \'333\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'333\'),sri_comprasdetalle.Valor_retencion,0)) as \'383\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'334\'),sri_comprasdetalle.Base_imponible,0)) as \'334\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'334\'),sri_comprasdetalle.Valor_retencion,0)) as \'384\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'335\'),sri_comprasdetalle.Base_imponible,0)) as \'335\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'335\'),sri_comprasdetalle.Valor_retencion,0)) as \'385\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'336\'),sri_comprasdetalle.Base_imponible,0)) as \'336\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'336\'),sri_comprasdetalle.Valor_retencion,0)) as \'386\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'337\'),sri_comprasdetalle.Base_imponible,0)) as \'337\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'337\'),sri_comprasdetalle.Valor_retencion,0)) as \'387\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'343\'),sri_comprasdetalle.Base_imponible,0)) as \'343\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'343\'),sri_comprasdetalle.Valor_retencion,0)) as \'393\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'344\'),sri_comprasdetalle.Base_imponible,0)) as \'344\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'344\'),sri_comprasdetalle.Valor_retencion,0)) as \'394\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'3440\'),sri_comprasdetalle.Base_imponible,0)) as \'3440\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'3440\'),sri_comprasdetalle.Valor_retencion,0)) as \'3940\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'345\'),sri_comprasdetalle.Base_imponible,0)) as \'345\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'345\'),sri_comprasdetalle.Valor_retencion,0)) as \'395\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'346\'),sri_comprasdetalle.Base_imponible,0)) as \'346\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'346\'),sri_comprasdetalle.Valor_retencion,0)) as \'396\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'348\'),sri_comprasdetalle.Base_imponible,0)) as \'348\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'348\'),sri_comprasdetalle.Valor_retencion,0)) as \'398\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'350\'),sri_comprasdetalle.Base_imponible,0)) as \'350\',\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'350\'),sri_comprasdetalle.Valor_retencion,0)) as \'400\',\r\n\r\n\r\nsum(sri_comprasdetalle.Base_imponible) as \'349\',\r\nsum(sri_comprasdetalle.Valor_retencion) as \'399\',\r\n\r\nsum(sri_comprasdetalle.Valor_retencion) as \'499\',\r\nsum(sri_comprasdetalle.Valor_retencion) as \'902\'\r\n\r\n\r\n\r\n\r\n\r\n\r\nsum(if(sri_comprasdetalle.Cod_retencion in (\'\'),sri_comprasdetalle.Valor_retencion,0)) as \'\'\r\n\r\n\r\nsri_comprasdetalle.Base_imponible,\r\nsri_comprasdetalle.Cod_retencion\r\nsri_comprasdetalle.Valor_retencion,\r\n\r\n\r\n\r\n\r\n from sri_compras, sri_comprasdetalle \r\n\r\nwhere \r\nsri_compras.PkSri_compras = sri_comprasdetalle.PKCabecera\r\nand year(Fecha_emision) = year(\'@fecha@\') and MONTH(Fecha_emision) = MONTH(\'@fecha@\') and  sri_compras.DXP_estado != \'ANULADO\' and sri = \'Si\'\r\nand sri_comprasdetalle.Tipo_retencion = \'FUENTE\'', 'ventas')")
+            self.mysql_con.ejecutar("INSERT INTO `web_sri_formularios` (`fuente`, `senten`, `tag`) VALUES ('104', '\r\nselect \r\nsum(if(Activo_fijo = \'No\' , baseImpGrab, 0)) as \' 401\',\r\nsum(if(Activo_fijo = \'Si\' , baseImpGrab, 0)) as \' 402\',\r\n\r\nsum(if(tipoComprobante = 18  AND Activo_fijo = \'No\', baseImponible, 0))    as \' 403\',\r\n0 as \' 404\',\r\n0 as \' 405\',\r\nsum(if(tipoComprobante = 18  AND Activo_fijo = \'Si\', baseImponible, 0))   as \' 406\',\r\n\r\n0 as \' 407\',\r\n0 as \' 408\',\r\nsum(if(tipoComprobante = 18, baseImponible + baseImpGrab, 0)) as \' 409\',\r\nsum(if(Activo_fijo = \'No\', IF(tipoComprobante = \'04\', (baseImpGrab * -1), baseImpGrab), 0)) as \' 411\',\r\n\r\nsum(if(Activo_fijo = \'Si\', IF(tipoComprobante = \'04\', (baseImpGrab * -1), baseImpGrab), 0)) as \' 412\',\r\nsum(if(Activo_fijo = \'No\', IF(tipoComprobante = \'04\', (baseImponible * -1), baseImponible), 0)) as \' 413\',\r\n0 as \' 414\',\r\n0 as \' 415\',\r\nsum(if(Activo_fijo = \'Si\', IF(tipoComprobante = \'04\', (baseImponible * -1), baseImponible), 0)) as \' 416\',\r\n0 as \' 417\',\r\n0 as \' 418\',\r\nsum(IF(tipoComprobante = \'04\', ((baseImponible + baseImpGrab) * -1), (baseImponible + baseImpGrab))) as \' 419\',\r\nsum(if(Activo_fijo = \'Si\', IF(tipoComprobante = \'04\', (MontoIva * -1), MontoIva), 0)) as \' 421\',\r\nsum(if(Activo_fijo = \'No\', IF(tipoComprobante = \'04\', (MontoIva * -1), MontoIva), 0)) as \' 422\',\r\nsum(IF(tipoComprobante = \'04\', (MontoIva * -1), MontoIva)) as \' 429\',\r\n0 as \' 431\',\r\n0 as \' 434\',\r\n0 as \' 441\',\r\n0 as \' 442\',\r\n0 as \' 443\',\r\n0 as \' 444\',\r\n0 as \' 453\',\r\n0 as \' 454\',\r\nsum(IF(tipoComprobante = \'04\', ((baseImpGrab) * -1), (baseImpGrab))) as \' 480\',\r\n0 as \' 481\',\r\nsum(IF(tipoComprobante = \'04\', ((MontoIva) * -1), (MontoIva)))  as \' 482\',\r\n0 as \' 483\',\r\nsum(IF(tipoComprobante = \'04\', ((MontoIva) * -1), (MontoIva))) as \' 484\',\r\n0 as \' 485\',\r\nsum(IF(tipoComprobante = \'04\', ((MontoIva) * -1), (MontoIva))) as \' 499\',\r\n\r\nsum(ValRetIva) as \' 609\'\r\n\r\nfrom sri_ventas where DXC_estado != \"ANULADO\" and year(Fecha_emision) = year(\'@fecha@\') and MONTH(Fecha_emision) = MONTH(\'@fecha@\') and sri = \'Si\'\r\n\r\n', 'ventas')")
+            self.mysql_con.ejecutar("INSERT INTO `web_sri_formularios` (`fuente`, `senten`, `tag`) VALUES ('104', 'select \r\n\r\nsum(if( tipoComprobante in (\'01\',\'03\') and not(tipoComprobante =\'04\')	and Activo_fijo = \'No\' and not(codSustento = \'0\' or codsustento = \'02\'), baseImpGrab,0)) as \' 500\',\r\n\r\nsum(if( tipoComprobante in (\'01\',\'03\') and not(tipoComprobante =\'04\')	and Activo_fijo = \'Si\' and not(codSustento = \'0\' or codsustento = \'02\'), baseImpGrab,0)) as \' 501\',\r\nsum(if( tipoComprobante in (\'01\',\'03\') and codsustento = \'02\', baseImpGrab,0)) as \' 502\',\r\n0 as \' 503\',\r\n0 as \' 504\',\r\n0 as \' 505\',\r\n0 as \' 506\',\r\nsum(if(not(tipoComprobante =\'04\') AND sri_compras.tipoComprobante = \'01\' and not(codsustento = \'0\' or codsustento = \'02\') , baseImponible,0)) as \' 507\',\r\nsum(if( not(tipoComprobante =\'04\') AND sri_compras.tipoComprobante in(\'02\') and  not(codsustento = \'0\' or codsustento = \'02\'),baseimponible,0 )) as \' 508\',\r\nsum(if( not(tipoComprobante =\'04\') and not(codsustento = \'0\' or codsustento = \'02\'), baseimponible + baseImpGrab,0)) as \' 509\',\r\nsum(if(tipoComprobante in(\'01\', \'04\', \'03\')  and Activo_fijo = \'No\' and not(codsustento = \'0\' or codsustento = \'02\') , if(tipoComprobante =\'04\', (baseImpGrab * -1),(baseImpGrab)),0)) as \' 510\',\r\nsum(if(tipoComprobante in(\'01\', \'04\', \'03\') and sri_compras.DXP_estado != \'ANULADO\' and Activo_fijo = \'Si\' and not(codsustento = \'0\' or codsustento = \'02\') , if(tipoComprobante =\'04\', (baseImpGrab * -1),(baseImpGrab)),0)) as \' 511\',\r\nsum(if(tipoComprobante in(\'01\', \'04\', \'03\') and codsustento = \'02\' , if(tipoComprobante =\'04\', (baseImpGrab * -1),(baseImpGrab)),0)) as \'512\',\r\n0 as \' 513\',\r\n0 as \' 514\',\r\n0 as \' 515\',\r\n0 as \' 516\',\r\nsum(if(sri_compras.tipoComprobante in(\'01\', \'04\', \'03\') and not(codsustento = \'0\' or codsustento = \'02\') ,if(tipoComprobante = \'04\', (baseimponible * -1) ,0),0)) as \'517\',\r\n\r\nsum(if( not(tipoComprobante =\'04\') AND sri_compras.tipoComprobante in(\'02\') and not(codsustento = \'0\' or codsustento = \'02\') ,baseimponible,0)) as \'518\',\r\nsum(if(( tipoComprobante in(\'01\', \'04\', \'02\', \'03\')) and Activo_fijo = \'No\' and not(codsustento = \'0\' or codsustento = \'02\') , if(tipoComprobante = \'04\', ((baseImpGrab + baseimponible) * -1),(baseImpGrab + baseimponible)),0)) as \' 519\',\r\nsum(if(tipoComprobante in (\'04\', \'01\', \'03\') and Activo_fijo = \'No\' and not(codsustento = \'0\' or codsustento = \'02\'), if(tipoComprobante = \'04\', (MontoIva * -1),(MontoIva)),0)) as \' 520\',\r\nsum(if((tipoComprobante = \'01\' and Activo_fijo = \'Si\' and not(codsustento = \'0\' or codsustento = \'02\') ) , if(tipoComprobante = \'04\', (MontoIva * -1),(MontoIva)),0)) as \' 521\',\r\nsum(if( codsustento = \'02\' and (tipoComprobante = \'01\'), if(tipoComprobante = \'04\', (MontoIva * -1),(MontoIva)),0)) as \' 522\',\r\n0 as \' 523\',\r\n0 as \' 524\',\r\n0 as \' 525\',\r\nsum(if(not(codsustento = \'0\') ,if(tipoComprobante = \'04\', (MontoIva * -1),(MontoIva)) ,0)) as \' 529\',\r\n0 as \' 531\',\r\n0 as \' 532\',\r\n0 as \' 535\',\r\n0 as \' 541\',\r\n0 as \' 542\',\r\n0 as \' 543\',\r\n0 as \' 544\',\r\n0 as \' 545\',\r\n0 as \' 554\',\r\n0 as \' 555\',\r\n0 as \' 563\',\r\nsum(if( (tipoComprobante = \'04\' or tipoComprobante = \'01\') and not(codsustento = \'0\') , if(tipoComprobante = \'04\', (MontoIva * -1),(MontoIva)),0)) as \' 564\',\r\n0 as \' 601\',\r\n0 as \' 602\',\r\n0 as \' 605\',\r\n0 as \' 607\',\r\n\r\n\r\n0 as \' 611\',\r\n0 as \' 612\',\r\n0 as \' 613\',\r\n0 as \' 615\',\r\n0 as \' 617\',\r\n0 as \' 619\',\r\n0 as \' 621\',\r\n0 as \' 699\',\r\nsum(ValretBien10) as \' 721\',\r\nsum(valRetServ20)  as \' 723\',\r\nsum(valorRetBienes) as \' 725\',\r\nsum(valorRetServicios) as \' 727\',\r\nsum(valRetServ100) as \' 729\',\r\nsum(valRetServ100 + valRetBien10 + valRetServ20 + valorRetBienes + valorRetServicios) as \' 799\',\r\nsum(valRetServ100 + valRetBien10 + valRetServ20 + valorRetBienes + valorRetServicios) as \' 859\',\r\n0 as \' 880\',\r\n0 as \' 890\',\r\n0 as \' 897\',\r\n0 as \' 898\',\r\n0 as \' 899\',\r\n0 as \' 902\',\r\n0 as \' 903\',\r\n0 as \' 904\',\r\n0 as \' 905\',\r\n0 as \' 906\',\r\n0 as \' 907\',\r\n0 as \' 908\',\r\n0 as \' 909\',\r\n0 as \' 910\',\r\n0 as \' 911\',\r\n0 as \' 912\',\r\n0 as \' 913\',\r\n0 as \' 915\',\r\n0 as \' 916\',\r\n0 as \' 917\',\r\n0 as \' 918\',\r\n0 as \' 919\',\r\n0 as \' 922\',\r\n0 as \' 999\'\r\n\r\n\r\n from sri_compras where year(Fecha_emision) = year(\'@fecha@\') and MONTH(Fecha_emision) = MONTH(\'@fecha@\') and  sri_compras.DXP_estado != \'ANULADO\' and sri = \'Si\'\r\n', 'compras')")
+            dbversion = dbversion + 1
+        if dbversion == 6:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '7'")
+            self.mysql_con.ejecutar("CREATE TABLE `cmptxtsimplesri` (  `pkd` int(11) NOT NULL AUTO_INCREMENT,  `PkCampo` int(11) DEFAULT NULL,  `Tag` varchar(255) DEFAULT NULL,  `Campo` varchar(255) DEFAULT NULL,  PRIMARY KEY (`pkd`)) ENGINE=InnoDB DEFAULT CHARSET=latin1")
+            dbversion = dbversion + 1
+        if dbversion == 7:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '8'")
+            self.mysql_con.ejecutar("ALTER TABLE usuario MODIFY COLUMN Nombre VARCHAR(100);")
+            self.mysql_con.ejecutar("ALTER TABLE usuario MODIFY COLUMN Apellido VARCHAR(100);")
+            self.mysql_con.ejecutar("ALTER TABLE usuario MODIFY COLUMN Apellido2 VARCHAR(100);")
+            self.mysql_con.ejecutar("ALTER TABLE usuario MODIFY COLUMN Clave VARCHAR(100);")
+            self.mysql_con.ejecutar("ALTER TABLE usuario MODIFY COLUMN Usuario VARCHAR(100);")
+            dbversion = dbversion + 1
+        if dbversion == 8:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '9'")
+            self.mysql_con.ejecutar("UPDATE cmpformuladetallecondicion set Operador = 'no igual' where Valor REGEXP '^[0-9.]+$'  = 0 and Operador = '!='")
+            self.mysql_con.ejecutar("UPDATE cmpformuladetallecondicion set Operador = 'igual' where Valor REGEXP '^[0-9.]+$'  = 0 and Operador = '='")
+            dbversion = dbversion + 1
+        if dbversion == 9:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '10'")
+            self.mysql_con.ejecutar("alter table web_externo_acceso add COLUMN htmlup text")
+            self.mysql_con.ejecutar("alter table web_externo_acceso add COLUMN htmldown text")
+            self.mysql_con.ejecutar("CREATE TABLE `acciones_email` (  `PkAccionEmail` varchar(255) NOT NULL,  `PkAccion` varchar(255) DEFAULT NULL,  `De` text DEFAULT NULL,  `Para` text DEFAULT NULL,  `Tema` text DEFAULT NULL,  `Cuerpo` text DEFAULT NULL,  `Variables` text DEFAULT NULL,  PRIMARY KEY (`PkAccionEmail`)) ENGINE=InnoDB DEFAULT CHARSET=latin1")
+            self.mysql_con.ejecutar("CREATE TABLE `acciones_notificaciones` (  `PkAccionNotificacion` int(255) NOT NULL AUTO_INCREMENT,  `Usuario` varchar(255) DEFAULT '',  `Sentencia` text DEFAULT NULL,  `Tipo` varchar(255) DEFAULT NULL,  PRIMARY KEY (`PkAccionNotificacion`)) ENGINE=InnoDB DEFAULT CHARSET=latin1")
+            dbversion = dbversion + 1
+        if dbversion == 10:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '11'")
+            self.mysql_con.ejecutar("ALTER table acciones_email add COLUMN HtmlCuerpoCab text")
+            self.mysql_con.ejecutar("ALTER table acciones_email add COLUMN HtmlCuerpoDet text")
+            self.mysql_con.ejecutar("ALTER table acciones_email add COLUMN HtmlCuerpoPie text")
+            self.mysql_con.ejecutar("update acciones_email set HtmlCuerpoCab = '', HtmlCuerpoDet = '', HtmlCuerpoPie = '' ")
+            dbversion = dbversion + 1
+        if dbversion == 11:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '12'")
+            self.mysql_con.ejecutar("alter table web_externo_acceso add COLUMN tag text")
+            self.mysql_con.ejecutar("UPDATE web_externo_acceso set tag = Usuario")
+            dbversion = dbversion + 1
+        if dbversion == 12:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '13'")
+            self.mysql_con.ejecutar("alter table web_p_panel_plantilla_seg_valor add COLUMN etiqueta text")
+            self.mysql_con.ejecutar("UPDATE web_p_panel_plantilla_seg_valor  set etiqueta = valor")
+            dbversion = dbversion + 1
+        if dbversion == 13:
+            self.mysql_con.ejecutar("update llankay_datos_clientes set versionWeb = '14'")
+            self.mysql_con.ejecutar("alter table web_p_panel_plantilla_seg add COLUMN etiqueta text")
+            self.mysql_con.ejecutar("UPDATE web_p_panel_plantilla_seg set etiqueta = base")
+            dbversion = dbversion + 1
+
+
+
+
+
 
 class offline:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
@@ -562,6 +676,9 @@ class inter_registro:
         return self.mysql_con.table(sentencia)        
     def traer_plantilla_pdf_valor(self,t_pksegmento):
         sentencia = "select * from web_p_panel_plantilla_seg_valor where pksegmento ="+ str(t_pksegmento)
+        return self.mysql_con.table(sentencia)        
+    def traer_plantilla_pdf_valor_SoloCamposen_orden(self,t_pksegmento):
+        sentencia = "select * from web_p_panel_plantilla_seg_valor where pksegmento ="+ str(t_pksegmento) + " and tipo = 'Campo' order by cast(y as decimal(12,0)) "
         return self.mysql_con.table(sentencia)        
     def traer_estructuras_porPkmodulo(self,strpk):
         sentencia = "select Nombre from estructura where pkmodulo ="+ str(strpk)
@@ -793,7 +910,14 @@ class inter_registro:
         except:
             self.mysql_con.ejecutar("CREATE TABLE `web_estados_doc_var` (  `pkvariable` int(11) NOT NULL AUTO_INCREMENT,  `pkestado` int(11) DEFAULT NULL,  `Nombre` varchar(255) DEFAULT NULL,  `Tipo` varchar(255) DEFAULT NULL,  PRIMARY KEY (`pkvariable`)) ENGINE=InnoDB DEFAULT CHARSET=latin1")
             tablas = self.mysql_con.table(t_sentencia)
-        return tablas       
+        return tablas  
+
+    def t_estadostraspaso(self, V_pkestado):
+        t_sentencia = 'select * from web_estados_doc_traspaso where pkestado = "' + str(V_pkestado) +'"' 
+        tablas = self.mysql_con.table(t_sentencia)
+        return tablas  
+
+
     def traer_campos_por_pkestr_solo_visible(self, PkEstructura):
         Campos = self.mysql_con.table('select * from camposxestructura where PkEstructura = "' + str(PkEstructura) +'" and anulado = "N" and (visible = "Y" or Eliminable = "N") order by posicion, x, y')
         return Campos   
@@ -851,13 +975,19 @@ class inter_registro:
                 val_subdetalle = self.mysql_con.table('select '+ select +' from ' + str(tablas[2]['Nombre']) +' where PKCabecera in(select PK' + str(tablas[1]['Nombre']) +' from ' + str(tablas[1]['Nombre']) +' where PKCabecera = "' + V_pkregistro +'")')
         return [val_cabecera, val_detalle, val_subdetalle]  
     
-    def valores_codniones(self, tablas, campos, condiciones, usuario):
+    def valores_codniones(self, tablas, campos, condiciones, usuario, filtro):
         select = ""
+        where_filtro = ""
         t_mix = condiciones[0]['Campo'].split(';')
         for a in campos["campos_cab"]:
             select = select + a['Nombre'] + ', '
+            where_filtro = where_filtro + str(a['Nombre']) + ' like "%'+str(filtro)+'%" or '
         select = select[:-2]
-        senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base']).replace("@Usuario@", usuario)+' order by pk' + str(tablas[0]['Nombre']) +' desc'  #desc
+        where_filtro = '(' + where_filtro[:-3] + ')'
+        if filtro == '':
+            senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base']).replace("@Usuario@", usuario)+' order by pk' + str(tablas[0]['Nombre']) +' desc limit 49'  #desc
+        else:
+            senten = 'select '+ select +' from ' + str(tablas[0]['Nombre']) +' where '+ str(where_filtro) +' and  ' + str(t_mix[0]) +' like "' + str(condiciones[0]['Valor']) +'" '+str(condiciones[0]['cond_base']).replace("@Usuario@", usuario)+' order by pk' + str(tablas[0]['Nombre']) +' desc limit 49'  #desc
         val_cabecera = self.mysql_con.table(senten)
         return [val_cabecera]
     def cmpconso_ejecutar(self, cmpsenten):
@@ -937,7 +1067,10 @@ class inter_registro:
                 fun_cab.update({i["Nombre"]:estru})
             if i["TablaCampo"] == 'cmptxtsimple':
                 estru = self.mysql_con.table("select * from cmptxtsimple where PkCampo = '" + str(i["PkCampo"]) + "'")
+                if estru[0]['Cedula'] == 'Y':
+                    estru[0]['SRI'] = self.mysql_con.table("select * from cmptxtsimpleSRI where PkCampo = '" + str(i["PkCampo"]) + "'")
                 fun_cab.update({i["Nombre"]:estru})
+                
             if i["TablaCampo"] == 'cmpnumsimple':
                 estru = self.mysql_con.table("select * from cmpnumsimple where PkCampo = '" + str(i["PkCampo"]) + "'")
                 fun_cab.update({i["Nombre"]:estru})
@@ -972,7 +1105,10 @@ class inter_registro:
                         t_comulnasdet = self.mysql_con.table("select * from cmpreferenciaaccionescolumnasdetalle where PkColumna = '" + str(t_comulnas["PkColumna"]) + "'")
                         temp5.append(t_comulnasdet)
                     estru4.append([temp1, temp2, temp3, temp4, temp5])
-                fun_cab.update({i["Nombre"]:[estru, estru2, estru3, estru4]})
+                estru5 = self.mysql_con.table("select * from cmpreferenciaaplicar where PkCampo = '" + str(i["PkCampo"]) + "'")
+                estru6 = self.mysql_con.table("select * from cmpreferenciaaplicarcond where PkCampo = '" + str(i["PkCampo"]) + "'")
+                fun_cab.update({i["Nombre"]:[estru, estru2, estru3, estru4, estru5, estru6]})
+
             if i["TablaCampo"] == 'cmpreferenciaadjunto':
                 estru = self.mysql_con.table("select * from cmpreferenciaadjunto where PkCampo = '" + str(i["PkCampo"]) + "'")
                 fun_cab.update({i["Nombre"]:estru})
@@ -1503,9 +1639,18 @@ class paneles:
         else:
             return self.mysql_con.table('select now() as "fehca_act", web_p_panel.*, web_p_panel_user.* from  web_p_panel, web_p_panel_user where  web_p_panel.pkPanel = web_p_panel_user.pkpanel and web_p_panel_user.usuario = "'+ str(usuario) +'" and web_p_panel.pkPanel = "'+str(pkpanel)+'"')
 
+    def traer_paneles_todos(self):
+        return self.mysql_con.table('select * from web_p_panel')
 
-    def traer_paneles_grupos(self, pk, t_usuario):
-        return self.mysql_con.table('select * from  web_p_panel_grupos where  web_p_panel_grupos.pkpanel = "'+ str(pk) +'" and (uslectura = "todos" or uslectura like "%('+str(t_usuario)+')%") ORDER BY orderby ')
+    def listadoUser(self, pk):
+        return self.mysql_con.table('select Usuario from usuario order by usuario')
+
+    def traer_paneles_grupos(self, pk):
+        return self.mysql_con.table('select * from  web_p_panel_grupos where  web_p_panel_grupos.pkpanel = "'+ str(pk) +'" ORDER BY orderby ')
+
+    def traer_paneles_usuarios(self, t_pkpanel, t_pkgrupo):
+        return self.mysql_con.table('SELECT usuario.Usuario, COALESCE(web_p_panel_grupos_permisos.pconsultar, "N") as "pconsultar", COALESCE(web_p_panel_grupos_permisos.pcrear, "N") as "pcrear", COALESCE(web_p_panel_grupos_permisos.pmodificar, "N") as "pmodificar", COALESCE(web_p_panel_grupos_permisos.peliminar, "N") as "peliminar" from usuario LEFT JOIN web_p_panel_grupos_permisos on (web_p_panel_grupos_permisos.usuario = usuario.Usuario and web_p_panel_grupos_permisos.pkpanel = '+str(t_pkpanel)+' and web_p_panel_grupos_permisos.pkgrupo = '+str(t_pkgrupo)+') order by usuario.Usuario')
+                
     def traer_sql_directo_cant_registros(self, senten):
         return self.mysql_con.table(senten)
     def traer_sql_directo(self, senten):
@@ -2038,7 +2183,31 @@ class Usuarios:
         return self.mysql_con.table(sentencia)
 
 
+"""
+class SRI() 
+    Maneja ATS, 103, 104
+"""
+class SRI:
+    def __init__(self, conn_user, conn_pass, conn_base, conn_ip, conn_port):
+        """
+        __init__ solo para instanciar la clase Mysql
+        Input: conn_user: Usuario de base de datos, conn_pass: Clave de base de datos, conn_base: NOmbre de base de datos, conn_ip: Ip del host de la base de datos
+        Return: Nada
+        """
+        self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, conn_port)
 
+    def formularios(self, t_fuente):
+        """
+        devuelve los querys para los formularios
+        """
+        sentencia = "select * from web_sri_formularios where fuente ='"+str(t_fuente)+"'"
+        return self.mysql_con.table(sentencia)
+
+    def devolver_tabla(self, t_senten):
+        """
+        devuelve los querys para los formularios
+        """
+        return self.mysql_con.table(t_senten)
 
 
 

@@ -26,255 +26,311 @@
   <script type="text/javascript">
 
 
-web_token = '{{ csrf_token }}'
-web_Id_empresa = '{{Id_empresa}}'
+    web_token = '{{ csrf_token }}'
+    web_Id_empresa = '{{Id_empresa}}'
 
-var t_inputUsuario = ''
-var t_inputPassword = ''
-var t_campo = {}
-var t_calendarios = []
-var columnas = '{{acceso.campos}}'.split(',')
-var t_directo = 'directo'
+    var t_inputUsuario = ''
+    var t_inputPassword = ''
+    var t_campo = {}
+    var t_calendarios = []
+    var columnas = '{{acceso.campos}}'.split(',')
+    var t_directo = 'directo'
 
-{% for calendario in web_calendar %}
-t_calendarios.push('{{ calendario.nombre }}')
-{% endfor %}   
+    {% for calendario in web_calendar %}
+    t_calendarios.push('{{ calendario.nombre }}')
+    {% endfor %}
 
 
-function Crear(){
+    function Crear() {
 
-  valio = false
-  html_invisibles = ''
-    for (x = 0; x < columnas.length; x++) {
-      campo = document.getElementById(columnas[x])
-      
-      if(campo.value ==''){
-        valio = true
-        campo.style.backgroundColor = 'yellow'
-      }else{
-        if(campo.style.backgroundColor == 'yellow'){campo.style.backgroundColor = 'white'}
-        t_campo[columnas[x]] = campo.value
-        html_invisibles = html_invisibles + '<input type="hidden" id="'+columnas[x]+'" value="'+campo.value+'">'
-      }
-    }
+      valio = false
+      html_invisibles = ''
+      for (x = 0; x < columnas.length; x++) {
+        campo = document.getElementById(columnas[x])
 
-    html_invisibles = html_invisibles + '<input type="hidden" id="ingreso" value="Crear">'
-
-    html_invisibles = html_invisibles + '<input type="hidden" id="t_inputUsuario" value="'+t_inputUsuario+'">'
-    html_invisibles = html_invisibles + '<input type="hidden" id="t_inputPassword" value="'+t_inputPassword+'">'
-    html_invisibles = html_invisibles + "{% csrf_token %}"
-
-    if(valio == false){
-      t_directo = 'crear'
-      var fecha_now = new Date();
-      html_calen = '<form id="formy" method="POST"><section class="login_content"><h1>Seleccione<h1><div class="form-group is-empty"><input type="date" id="calendar_date" style="font-size: initial;" value="'+ fecha_now.format("Y-m-d") +'"></div>'
-      html_calen = html_calen + '<br><div id="diCalen">'
-      for (x = 0; x < t_calendarios.length; x++) {
-        html_calen =html_calen + '<button class="btn btn-info" onclick="poner_calen(\''+t_calendarios[x]+'\')">'+t_calendarios[x]+'</button>'
+        if (campo.value == '') {
+          valio = true
+          campo.style.backgroundColor = 'yellow'
+        } else {
+          if (campo.style.backgroundColor == 'yellow') { campo.style.backgroundColor = 'white' }
+          t_campo[columnas[x]] = campo.value
+          html_invisibles = html_invisibles + '<input type="hidden" id="' + columnas[x] + '" value="' + campo.value + '">'
+        }
       }
 
-      html_calen = html_calen  + '</div>'
+      html_invisibles = html_invisibles + '<input type="hidden" id="ingreso" value="Crear">'
 
-      divi = document.getElementById('divInicial')
+      html_invisibles = html_invisibles + '<input type="hidden" id="t_inputUsuario" value="' + t_inputUsuario + '">'
+      html_invisibles = html_invisibles + '<input type="hidden" id="t_inputPassword" value="' + t_inputPassword + '">'
+      html_invisibles = html_invisibles + "{% csrf_token %}"
 
-      divi.innerHTML = html_calen  + '</section>' + html_invisibles + '</form>'
-      //document.getElementById("calendar_date").value = fecha_now.format("Y-m-d") + 'T' + fecha_now.format("H:i:s")
+      if (valio == false) {
+        t_directo = 'crear'
+        var fecha_now = new Date();
+        html_calen = '<form id="formy" method="POST"><section class="login_content"><h1>Seleccione<h1><div class="form-group is-empty"><input type="date" id="calendar_date" style="font-size: initial;" value="' + fecha_now.format("Y-m-d") + '"></div>'
+        html_calen = html_calen + '<br><div id="diCalen">'
+        for (x = 0; x < t_calendarios.length; x++) {
+          html_calen = html_calen + '<button class="btn btn-info" onclick="poner_calen(\'' + t_calendarios[x] + '\')">' + t_calendarios[x] + '</button>'
+        }
+
+        html_calen = html_calen + '</div>'
+
+        divi = document.getElementById('divInicial')
+
+        divi.innerHTML = html_calen + '</section>' + html_invisibles + '</form>'
+        //document.getElementById("calendar_date").value = fecha_now.format("Y-m-d") + 'T' + fecha_now.format("H:i:s")
+      }
+
+
     }
-      
 
-}
+    function poner_calen(calen) {
+      formulario = document.getElementById('formy')
 
-function poner_calen(calen){
-  formulario = document.getElementById('formy')
-  
-  var element2 = document.createElement("input");         
-  element2.name="fecha"
-  element2.value = document.getElementById('calendar_date').value;
-  element2.type = 'hidden'
-  formulario.appendChild(element2);
-
-  var element2 = document.createElement("input");         
-  element2.name="calendario"
-  element2.value = calen;
-  element2.type = 'hidden'
-  formulario.appendChild(element2);
-
-  var element2 = document.createElement("input");         
-  element2.name="t_inputUsuario"
-  if(t_directo == 'crear'){
-    element2.value = '';
-  }
-  if(t_directo == 'directo'){
-    element2.value = t_inputUsuario.value;
-  }
-  element2.type = 'hidden'
-  formulario.appendChild(element2);
-
-  var element2 = document.createElement("input");         
-  element2.name="t_inputPassword"
-  if(t_directo == 'crear'){
-    element2.value = '';
-  }
-  if(t_directo == 'directo'){
-    element2.value = t_inputPassword;    
-  }
-  element2.type = 'hidden'
-  formulario.appendChild(element2);
-
-  var element2 = document.createElement("input");         
-  element2.name="ingreso"
-  element2.value = t_directo;
-  element2.type = 'hidden'
-  formulario.appendChild(element2);
-
-  var element2 = document.createElement("input");         
-  element2.name="negocio"
-  element2.value = '{{Empresa}}';
-  element2.type = 'hidden'
-  formulario.appendChild(element2);
-
-  if(Object.keys(t_campo).length >0){  
-    for (x = 0; x < columnas.length; x++) {
-      var element2 = document.createElement("input");         
-      element2.name=columnas[x]
-      element2.value = t_campo[columnas[x]]
+      var element2 = document.createElement("input");
+      element2.name = "fecha"
+      element2.value = document.getElementById('calendar_date').value;
       element2.type = 'hidden'
       formulario.appendChild(element2);
+
+      var element2 = document.createElement("input");
+      element2.name = "calendario"
+      element2.value = calen;
+      element2.type = 'hidden'
+      formulario.appendChild(element2);
+
+      var element2 = document.createElement("input");
+      element2.name = "t_inputUsuario"
+      if (t_directo == 'crear') {
+        element2.value = '';
+      }
+      if (t_directo == 'directo') {
+        element2.value = t_inputUsuario.value;
+      }
+      element2.type = 'hidden'
+      formulario.appendChild(element2);
+
+      var element2 = document.createElement("input");
+      element2.name = "t_inputPassword"
+      if (t_directo == 'crear') {
+        element2.value = '';
+      }
+      if (t_directo == 'directo') {
+        element2.value = t_inputPassword;
+      }
+      element2.type = 'hidden'
+      formulario.appendChild(element2);
+
+      var element2 = document.createElement("input");
+      element2.name = "ingreso"
+      element2.value = t_directo;
+      element2.type = 'hidden'
+      formulario.appendChild(element2);
+
+      var element2 = document.createElement("input");
+      element2.name = "negocio"
+      element2.value = '{{Empresa}}';
+      element2.type = 'hidden'
+      formulario.appendChild(element2);
+
+      if (Object.keys(t_campo).length > 0) {
+        for (x = 0; x < columnas.length; x++) {
+          var element2 = document.createElement("input");
+          element2.name = columnas[x]
+          element2.value = t_campo[columnas[x]]
+          element2.type = 'hidden'
+          formulario.appendChild(element2);
+        }
+      }
+
+      formulario.submit();
+
     }
-  }
 
-  formulario.submit();
+    function log_externo() {
 
-}
+      t_inputUsuario = document.getElementById('inputUsuario')
+      t_inputPassword = document.getElementById('inputPassword')
+      if (t_inputPassword == undefined) {
+        t_inputPassword = t_inputUsuario.value
+      } else {
+        t_inputPassword = t_inputPassword.value
+      }
+      t_directo = 'directo'
 
-function log_externo() {
-
-  t_inputUsuario = document.getElementById('inputUsuario')
-  t_inputPassword = document.getElementById('inputPassword')
-  if(t_inputPassword == undefined){
-    t_inputPassword = t_inputUsuario.value
-  }else{
-    t_inputPassword = t_inputPassword.value
-  }
-  t_directo = 'directo'
-
-  $.ajax({
+      $.ajax({
         type: 'POST',
         url: '/logExterno',
-        data: { 'csrfmiddlewaretoken': web_token, 'negocio': '{{Empresa}}', 'Id_empresa': '{{Empresa}}','t_inputUsuario':t_inputUsuario.value, 't_inputPassword':t_inputPassword, 'ingreso':t_directo},
+        data: { 'csrfmiddlewaretoken': web_token, 'negocio': '{{Empresa}}', 'Id_empresa': '{{Empresa}}', 't_inputUsuario': t_inputUsuario.value, 't_inputPassword': t_inputPassword, 'ingreso': t_directo },
         error: function (request, error) {
-            alert(" Error mostrar a administrador: " + error);
+          alert(" Error mostrar a administrador: " + error);
         },
         success: function (Response) {
-          if(Response['Existe'] == 'Si'){
+          if (Response['Existe'] == 'Si') {
             //mostrar calen y tiempo
             var fecha_now = new Date();
             t_directo = 'directo'
-            html_calen = '<form id="formy" method="POST"><section class="login_content"><h1>Seleccione<h1><div class="form-group is-empty"><input type="date" id="calendar_date" style="font-size: initial;" value="'+ fecha_now.format("Y-m-d")+'"></div>'
+            html_calen = '<form id="formy" method="POST"><section class="login_content"><h1>Seleccione<h1><div class="form-group is-empty"><input type="date" id="calendar_date" style="font-size: initial;" value="' + fecha_now.format("Y-m-d") + '"></div>'
             html_calen = html_calen + '<br><div id="diCalen">'
             for (x = 0; x < Response['web_calendar'].length; x++) {
-              html_calen =html_calen + '<button class="btn btn-info" onclick="poner_calen(\''+Response['web_calendar'][x]['nombre']+'\')">'+Response['web_calendar'][x]['nombre']+'</button>'
+              html_calen = html_calen + '<button class="btn btn-info" onclick="poner_calen(\'' + Response['web_calendar'][x]['nombre'] + '\')">' + Response['web_calendar'][x]['nombre'] + '</button>'
 
             }
-            html_calen = html_calen  + "{% csrf_token %}"
+            html_calen = html_calen + "{% csrf_token %}"
 
-            html_calen = html_calen  + '</div>'
+            html_calen = html_calen + '</div>'
 
             divi = document.getElementById('divInicial')
 
-            divi.innerHTML = html_calen  + '</section></form>'
+            divi.innerHTML = html_calen + '</section></form>'
             //document.getElementById("calendar_date").value = fecha_now.format("Y-m-d") + 'T' + fecha_now.format("H:i:s")
 
           }
-          if(Response['Existe'] == 'No'){
+          if (Response['Existe'] == 'No') {
             var t_msg = document.getElementById('msg')
             t_msg.innerText = 'No existe'
             Formulario_crear()
           }
         }
-    });
-}
+      });
+    }
 
-function Formulario_crear(){
-  html_calen = '<form id="formy" method="POST"><section class="login_content"><h1>Crear Usuario<h1>'
-  html_calen = html_calen + '<br><div id="crearUsuario">'
-  for (x = 0; x < columnas.length; x++) {
-    html_calen =html_calen + '<div class="form-group is-empty"><input type="text" class="form-control" placeholder="'+columnas[x]+'" required="" name="'+columnas[x]+'" value="" id="'+columnas[x]+'"></div>'
-  }
+    function Formulario_crear() {
+      html_calen = '<form id="formy" method="POST"><section class="login_content"><h1>Crear Usuario<h1>'
+      html_calen = html_calen + '<br><div id="crearUsuario">'
+      for (x = 0; x < columnas.length; x++) {
+        html_calen = html_calen + '<div class="form-group is-empty"><input type="text" class="form-control" placeholder="' + columnas[x] + '" required="" name="' + columnas[x] + '" value="" id="' + columnas[x] + '"></div>'
+      }
 
-  html_calen = html_calen  + '<div><button class="btn btn-success" onclick="Crear()">Crear</button></div></div>'
+      html_calen = html_calen + '<div><button class="btn btn-success" onclick="Crear()">Crear</button></div></div>'
 
-  
 
-  divi = document.getElementById('divInicial')
 
-  divi.innerHTML = html_calen  + '</section></form>'
-}
+      divi = document.getElementById('divInicial')
 
- 
- </script>
+      divi.innerHTML = html_calen + '</section></form>'
+    }
+
+
+  </script>
 
 
 </head>
 
 <body class="login">
+
+  <table style="background-color: white; width: 60%; text-align: left;" align="center" border="0" cellpadding="2"
+    cellspacing="2">
+    <tbody>
+      <tr align="center">
+
+        <td>
+
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+            </div>
+            <div class="panel-body">
+
+              <div class=" ">
+                <div class=" " >
+                  <div class=" ">
+                    {% autoescape off %}
+
+                    {{acceso.htmlup}}
+                    {% endautoescape %}
+
+                  </div>
+                                    
+
+                  <div class=" ">
+                    <img style="width: 350px;" src="/media/archivos/{{Empresa}}/logo.png"
+                    value="logo.png" alt="">
+                  </div>
+
+                  <div class=" " id="divInicial">
+                    
+
+                    <h1>{{acceso.Display}}</h1>
+                    <div>
+                      <input type="text" class="form-control" placeholder="{{acceso.tag}}" required=""
+                        name="inputUsuario" value="" id="inputUsuario" />
+                    </div>
+                    <div>
+                      {% if acceso.Usuario == acceso.Clave %}
+                      <input type="hidden" class="form-control" placeholder="{{acceso.Clave}}" required=""
+                        name="inputPassword" value="hidden" />
+                      {% else %}
+                      <input type="password" class="form-control" placeholder="{{acceso.Clave}}" required=""
+                        name="inputPassword" value="" id="inputPassword" />
+                      {% endif %}
+                      <input type="hidden" name="Empresa" value="{{Empresa}}" />
+                      <input type="hidden" name="ingreso" value="directo" />
+
+
+                    </div>
+                    <div>
+                      <p style="color: red;" id="msg">{{msg}}</p>
+
+                    </div>
+                    <div>
+                      <button class="btn btn-success" onclick="log_externo()">Ingresar</button>
+                      {% if acceso.Crear == "Si" %}
+
+                      <button class="btn btn-info" onclick="Formulario_crear()">Crear Cuenta</button>
+                      {% endif %}
+
+                    </div>
+
+                  </div>
+
+                  <div class=" ">
+                    {% autoescape off %}
+  
+                    {{acceso.htmldown}}
+                    {% endautoescape %}
+  
+                  </div>
+                </div>
+              </div>
+
+
+
+
+     
+
+
+             
+
+            </div>
+
+            <div class="panel-heading" style="padding-top: 1px;padding-bottom: 0px;height: 25.8px;padding-right: 15px;">
+                      <a href="http://www.cerocodigo.com" target="_blank">
+                        <h5 class="ms-footbar-title text-center mb-2" style="color: white;font-size: x-small;">Copyrights © CERO CODIGO SAS</h5></a>
+                    </div>
+          </div>
+
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
   <div>
-    <a class="hiddenanchor" id="signup"></a>
-    <a class="hiddenanchor" id="signin"></a>
-
-    <div class="login_wrapper">
-      <div class="animate form login_form" id="divInicial">
-        <section class="login_content">
-
-              <h1>{{Empresa}}</h1>
-              <h1>{{acceso.Display}}</h1>
-              <div>
-                <input type="text" class="form-control" placeholder="{{acceso.Usuario}}" required="" name="inputUsuario"
-                  value="" id="inputUsuario" />
-              </div>
-              <div>
-                {% if acceso.Usuario == acceso.Clave %}
-                <input type="hidden" class="form-control" placeholder="{{acceso.Clave}}" required=""
-                  name="inputPassword" value="hidden" />
-                {% else %}
-                <input type="password" class="form-control" placeholder="{{acceso.Clave}}" required=""
-                  name="inputPassword" value="" id="inputPassword" />
-                {% endif %}
-                <input type="hidden" name="Empresa" value="{{Empresa}}" />
-                <input type="hidden" name="ingreso" value="directo" />
 
 
-              </div>
-              <div>
-                <p style="color: red;" id="msg">{{msg}}</p>
 
-              </div>
-              <div>
-                <button class="btn btn-success" onclick="log_externo()">Ingresar</button>
-                {% if acceso.Crear == "Si" %}
 
-                <button class="btn btn-info" onclick="Formulario_crear()">Crear Cuenta</button>
-                {% endif %}
 
-              </div>
-              <div class="clearfix"></div>
-              <div>
-                <h1><i class="fa fa-bar-chart"></i> CeroCodigo</h1>
-                <p>©2016 All Rights Reserved.</p>
-              </div>
-              </div>
-          
-      </section>
-    </div>
   </div>
   </div>
 </body>
- <!-- jQuery 3 -->
- <script src="/static/a/bower_components/jquery/dist/jquery.min.js"></script>
- <!-- jQuery UI 1.11.4 -->
- <script src="/static/a/bower_components/jquery-ui/jquery-ui.min.js"></script>
- <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
- <script>
+<!-- jQuery 3 -->
+<script src="/static/a/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="/static/a/bower_components/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
   $.widget.bridge('uibutton', $.ui.button);
 </script>
 <!-- Bootstrap 3.3.7 -->

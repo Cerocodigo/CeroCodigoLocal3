@@ -281,7 +281,7 @@ def paneles_carga(request, Id_empresa, pkpanel):
     grupos_datos_valor = {}
     
     for a in paneles:
-        grupos[a['pkPanel']] = db.traer_paneles_grupos(a['pkPanel'], request.POST.getlist('usuario')[0]) 
+        grupos[a['pkPanel']] = db.traer_paneles_grupos(a['pkPanel']) 
         grupos_datos[a['pkPanel']] = []
         if a['tipo'] == 'Estado':
             if a['agrupar'] == '$directo':

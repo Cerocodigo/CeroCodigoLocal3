@@ -47,6 +47,7 @@ import web.firma_pdf
 import web.pdf
 import web.externo
 import web.empaquetado
+import web.sri
 
 
 
@@ -76,8 +77,39 @@ from django.conf import settings
 
 from django.contrib.humanize.templatetags.humanize import intcomma
 
+def sri_103(request):
+    if request.method == 'POST':
+        sri = web.sri
+        Respuesta = sri.sri_formularios(request, request.POST.getlist('Id_empresa')[0], '103')
+        context = Respuesta
+        return JsonResponse(context)
 
+def sri_descarga(request):
+    if request.method == 'GET':
+        sri = web.sri
+        SRI_usuario = "0920028057001"
+        SRI_contrasena = "animalote1234"
+        SRI_periodo = "2023-05"  # Por ejemplo, para descargar los comprobantes de mayo de 2023
 
+        descargador = sri.DescargadorComprobantesSRI(SRI_usuario, SRI_contrasena)
+        descargador.Descargar()
+        return JsonResponse({})
+
+def sri_104(request):
+    if request.method == 'POST':
+        sri = web.sri
+        Respuesta = sri.sri_formularios(request, request.POST.getlist('Id_empresa')[0], '104')
+        context = Respuesta
+        return JsonResponse(context)
+
+def sri_cedula(request):
+    if request.method == 'POST':
+        sri = web.sri
+        Respuesta = sri.cedulaRuc(request.POST.getlist('id')[0])
+        Respuesta['campo'] = request.POST.getlist('campo')[0]
+        Respuesta['pestana'] =request.POST.getlist('pestana')[0]
+        context = Respuesta
+        return JsonResponse(context)
 
 def PanelCambioTag(request):
     if request.method == 'POST':
@@ -339,12 +371,23 @@ def ccimagenes(request):
     myfile = request.FILES['files']
     filename = str(myfile)
     filename = filename.replace('Ñ','N')
+    ##dejar los 2  ñ y ñ ni idea pero no son lo mismo
     filename = filename.replace('ñ','n')
+    filename = filename.replace('ñ','n')
+
     filename = filename.replace('á','a')
     filename = filename.replace('é','e')
     filename = filename.replace('í','i')
     filename = filename.replace('ó','o')
     filename = filename.replace('ú','u')
+
+
+    filename = filename.replace('Á','A')
+    filename = filename.replace('É','E')
+    filename = filename.replace('Í','I')
+    filename = filename.replace('Ó','O')
+    filename = filename.replace('Ú','U')
+
 
     path = default_storage.save('archivos/'+ str(request.POST.getlist('Id_empresa')[0]) + '/' + filename, ContentFile(myfile.read()))
     tmp_file = os.path.join(settings.STATIC_URL, path)
@@ -1351,6 +1394,27 @@ def acc_usuario(request):
             context = erp_data.acc_usuario(request, request.POST.getlist('Id_empresa')[0])
             return JsonResponse(context)
 
+def acc_panelesdatagrupo(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.acc_panelesdatagrupo(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_pkpanel')[0], request.POST.getlist('t_pkgrupo')[0])
+            return JsonResponse(context)
+
+
+def acc_panelesdata(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.acc_panelesdata(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('t_pkpanel')[0])
+            return JsonResponse(context)
+
+def acc_paneles(request):
+    if request.session.has_key('conn_ip'):
+        if request.method == 'POST':
+            erp_data = web.erp_log_menu        
+            context = erp_data.acc_paneles(request, request.POST.getlist('Id_empresa')[0]) 
+            return JsonResponse(context)
 
 def test_correo(request):
     sender_email = "documentos@cerocodigo.com"
@@ -1679,7 +1743,7 @@ def paneles_items(request):
                         campo_fix[1].append(a['valor'])
                     traer_campos = erp_data.traer_campos_desdePanel(request, request.POST.getlist('Id_empresa')[0])
                     traer_campos_funciones = erp_data.traer_campos_funciones(request, request.POST.getlist('Id_empresa')[0], traer_campos, request.POST.getlist('pkmodulo')[0])
-                    traer_registro = erp_data.traer_registro_desde_panel(request, request.POST.getlist('Id_empresa')[0], traer_campos, panel_grupo)
+                    traer_registro = erp_data.traer_registro_desde_panel(request, request.POST.getlist('Id_empresa')[0], traer_campos, panel_grupo, request.POST.getlist('filtro')[0])
                     context = traer_campos
                     context.update({'tipo':'tabla'})
                     context.update({'valores_cab':traer_registro[0]})
