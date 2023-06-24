@@ -13,6 +13,7 @@ import datetime
 import json
 import random
 import logging
+import openpyxl
 logger = logging.getLogger(__name__)
 
 from django.core.mail import EmailMessage
@@ -30,7 +31,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import xml.etree.ElementTree as ET # Python 2.5
 from lxml import etree
 from datetime import datetime
-
+from django.core.files.storage import FileSystemStorage
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -48,6 +49,9 @@ import web.pdf
 import web.externo
 import web.empaquetado
 import web.sri
+import web.estructuras
+import web.condiciones
+
 
 
 
@@ -76,6 +80,51 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 
 from django.contrib.humanize.templatetags.humanize import intcomma
+
+# Retorna el listado de estructuras por modulo
+def CondicionesTraer(request):
+    if request.method == 'POST':
+        csestructura = web.estructuras
+        # Obtiene un listado con las estructuras
+        Listado = csestructura.estructurasListado(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkmodulo')[0])
+        context = {'estructuras':Listado}
+        # Retorna el listado en formato JSON
+        return JsonResponse(context)
+
+# Obtener condiciones detalle
+def CondicionesDetalleXCondicionesTraer(request):
+    if request.method == 'POST':
+        cscondiciones = web.condiciones
+        # Obtiene un listado con las condiciones detalle
+        Listado = cscondiciones.condicionesdetalleListado(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkestructura')[0])
+        context = {'condiciones':Listado}
+        # Retorna el listado en formato JSON
+        return JsonResponse(context)
+
+# Guardar condiciones
+def CondicionesDetalleXCondicionesGuardar(request):
+    if request.method == 'POST':
+        cscondiciones = web.condiciones
+        # Obtiene el arrayData que contiene los datos de las condiciones enviadas desde el front
+        array_data = request.POST.get('arrayData')
+        # Guarda las condiciones
+        response  = cscondiciones.guardar_condiciones(request, request.POST.getlist('Id_empresa')[0], array_data)
+        # Retorna la respuesta en formato JSON
+        return JsonResponse(response)
+
+# Eliminar condiciones	
+def CondicionesDetalleXCondicionesEliminar(request):
+    if request.method == 'POST':
+        cscondiciones = web.condiciones
+        # Elimina las condiciones
+        response  = cscondiciones.eliminar_condiciones(request, request.POST.getlist('Id_empresa')[0], request.POST.getlist('pkCondDetalle')[0])    
+        # Retorna la respuesta en formato JSON  
+        return JsonResponse(response)
+    
+
+
+        
+    
 
 def sri_103(request):
     if request.method == 'POST':

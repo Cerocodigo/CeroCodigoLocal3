@@ -250,6 +250,7 @@ function menu_proceso_abrir_dropdown_item(este_id){
   
               data_new = data_new + '<button class="btn bg-yellow btn-flat margin" onclick="modificar_estilo_PDF(' + Response["pestalla"] + ')">Editar Pdf</span></button>'
               data_new = data_new + '<button class="btn bg-yellow btn-flat margin" onclick="Editar_estados(' + Response["pestalla"] + ')">Editar Estados</span></button>'
+              data_new = data_new + '<button class="btn bg-yellow btn-flat margin" onclick="CondicionesEditar(' + Response["pestalla"] + ')">Editar condiciones</span></button>'
   
               data_new = data_new + '<button class="btn bg-yellow btn-flat margin" onclick="Importar_datos(' + Response["pestalla"] + ')">Importar Datos</span></button>'
   

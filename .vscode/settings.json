@@ -1,4 +1,7 @@
 {
-    "python.formatting.provider": "black",
-    "git.ignoreLimitWarning": true
+    "python.formatting.provider": "none",
+    "git.ignoreLimitWarning": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }

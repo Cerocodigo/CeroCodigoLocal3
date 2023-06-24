@@ -15,7 +15,17 @@ class inter_login_LOGIN:
         self.mysql_int = web.mysql.class_mysql( claves_int[0],claves_int[1],claves_int[2],claves_int[3],claves_con[4])
         #test de branch
 
-            
+
+
+    def Cedula_CC_Insertar(self, t_cedula, t_nombre, t_persona):
+        if self.V_base == "Mysql":
+            sentencia = "INSERT INTO `id_validos` (`identificacion`, `nombreCompleto`, `tipoPersona`) VALUES ('"+ str(t_cedula) +"', '"+ str(t_nombre) +"', '"+ str(t_persona) +"')"
+            return self.mysql_con.ejecutar(sentencia)
+
+    def Cedula_CC_Verificar(self, t_cedula):
+        if self.V_base == "Mysql":
+            sentencia = 'select * from id_validos where identificacion = "'+ str(t_cedula) +'"'
+            return self.mysql_con.table(sentencia)
     def traer_negocio(self, V_negocio):
         if self.V_base == "Mysql":
             sentencia = 'select * from empresas_erp where empresas_erp.Negocio = "'+ V_negocio +'"'
@@ -411,7 +421,52 @@ class menu_modulos:
 
     def modulo_devolver_estructura(self, str_PkEstructura):
         return self.mysql_con.table("Select * from estructura where PkEstructura = '"+(str_PkEstructura)+"'")  
+    def modulo_devolver_estructuraPorModulo(self, str_PkModulo):
+        return self.mysql_con.table("Select * from estructura where PkModulo = '"+(str_PkModulo)+"'")  
 
+    #Funcion para obtener las condiciones de la estructura    
+    def modulo_devolver_condicionesdetallexcondicion(self, str_PkEstructura):
+        #Retorna las condiciones de la estructura en función de su PkEstructura
+        return self.mysql_con.table("SELECT c.PkEstructura, cd.* FROM condicionesdetalle cd INNER JOIN condiciones c ON cd.PkCondicion = c.PkCondicion WHERE c.PkEstructura = '"+(str_PkEstructura)+"'")  
+    
+    #Funcion para guardar las condiciones de la estructura en la base de datos
+    def modulo_guardar_condicionesdetallexcondicion(self, str_PkEstructura, str_PkId ,str_ElementoA, str_ElementoB, str_Operador, str_EstadoA, str_EstadoB, str_Mensaje):
+        #Buscar el PkCondicion de la estructura
+        PkCondicion = self.mysql_con.table("SELECT PkCondicion FROM condiciones WHERE PkEstructura = '"+(str_PkEstructura)+"'")
+        #Transformar el PkCondicion en un string
+        PkCondicion = str(PkCondicion[0]['PkCondicion'])
+
+        #Buscar el PkId en la tabla condicionesdetalle para ver si existe
+        PkCondicionDetalle = self.mysql_con.table("SELECT * FROM condicionesdetalle WHERE PkCondicion = '"+str(PkCondicion)+"' AND PkId = '"+(str_PkId)+"'")
+        #Validar si existe el registro
+        if len(PkCondicionDetalle) == 0:
+            #Insertar el registro
+            sentencia = "INSERT INTO `condicionesdetalle` (`PkCondicion`, `ElementoA`, `ElementoB`, `Operador`, `EstadoA`, `EstadoB`, `Mensaje` ) VALUES ('" + str(PkCondicion) + "', '" +str( str_ElementoA )+ "', '" +str( str_ElementoB )+ "', '" +str( str_Operador )+ "', '" +str( str_EstadoA )+ "', '" +str( str_EstadoB )+ "', '" +str( str_Mensaje )+ "')"
+            self.mysql_con.ejecutar(sentencia)
+        else:
+            #Actualizar el registro
+            sentencia = "UPDATE `condicionesdetalle` SET `ElementoA` = '" +str( str_ElementoA )+ "', `ElementoB` = '" +str( str_ElementoB )+ "', `Operador` = '" +str( str_Operador )+ "', `EstadoA` = '" +str( str_EstadoA )+ "', `EstadoB` = '" +str( str_EstadoB )+ "', `Mensaje` = '" +str( str_Mensaje )+ "' WHERE `condicionesdetalle`.`PkId` = " +str(str_PkId)+ " AND `condicionesdetalle`.`PkCondicion` = " +str(PkCondicion)+ ""
+            self.mysql_con.ejecutar(sentencia)
+
+        #Retornar el registro de datos actualizados o insertados 
+        return self.mysql_con.table("Select * from condicionesdetalle where PkCondicion = '"+str(PkCondicion)+"' AND PkId = '"+str(str_PkId)+"'")
+
+    #Funcion para eliminar las condiciones de la estructura en la base de datos
+    def modulo_eliminar_condicionesdetallexcondicion(self, str_PkId):
+        #Buscar el PkCondicion en la tabla condicionesdetalle para ver si existe
+        PkCondicionDetalle = self.mysql_con.table("SELECT * FROM condicionesdetalle WHERE PkId = '"+str(str_PkId)+"'")
+        #Validar si existe el registro
+        if len(PkCondicionDetalle) > 0:
+            #Eliminar el registro
+            sentencia = "DELETE FROM `condicionesdetalle` WHERE `condicionesdetalle`.`PkId` = " +str(str_PkId)+ ""
+            self.mysql_con.ejecutar(sentencia)
+            #Retornar que se elimino el registro con exito
+            return True
+        else:
+            #Retornar que no se elimino el registro
+            return False
+        
+    
 class versiones:
     def __init__(self, conn_user, conn_pass, conn_base, conn_ip):
         self.mysql_con = web.mysql.class_mysql(conn_user, conn_pass, conn_base, conn_ip, '3306') 
@@ -644,7 +699,7 @@ class inter_registro:
         return self.mysql_con.table(sentencia)
     
     def traer_plantilla_pdf_fechas(self,t_pkpaneL_g, t_valor, t_fecha):
-        sentencia = "select * from web_p_panel_grupo_track where pkPanel = '"+str(t_pkpaneL_g)+"' and pk_valor = '"+str(t_valor)+"' and date(fecha) <= date('"+str(t_fecha)+"')"
+        sentencia = "select * from web_p_panel_grupo_track where pkPanel = '"+str(t_pkpaneL_g)+"' and pk_valor = '"+str(t_valor)+"' and date(fecha) <= date('"+str(t_fecha)+"')  order by fecha desc"
         return self.mysql_con.table(sentencia)        
     def traer_plantilla_pdf_solo_fecha(self,t_pkpaneL_g, t_valor, t_fecha, t_user):
         if t_user != '%':
