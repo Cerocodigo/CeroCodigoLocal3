@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*gv8+f&eskyq+sas)p0-c@^h9bwpb!#r+#za06*g$prk8rm&9$'
+SECRET_KEY = '0000000000'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -142,7 +142,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.ipage.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'documentos@cerocodigo.com'
-EMAIL_HOST_PASSWORD = '@Dmin1992'
+EMAIL_HOST_PASSWORD = 'xxxxxxx'
 
 
 MEDIA_URL = '/media/'
